@@ -1,0 +1,10 @@
+{"time": "2026-09-29 12:07:14", "event": "mlm_epoch", "epoch": 1, "loss": 7.147260561324003, "seconds": 4.92}
+{"time": "2026-09-29 12:07:19", "event": "mlm_epoch", "epoch": 2, "loss": 5.992082855157685, "seconds": 4.85}
+{"time": "2026-09-29 12:07:24", "event": "mlm_epoch", "epoch": 3, "loss": 5.705122947692871, "seconds": 4.86}
+{"time": "2026-09-29 12:07:29", "event": "mlm_epoch", "epoch": 4, "loss": 5.53311648703458, "seconds": 4.87}
+{"time": "2026-09-29 12:07:34", "event": "mlm_epoch", "epoch": 5, "loss": 5.3883027277494735, "seconds": 4.86}
+{"time": "2026-09-29 12:07:39", "event": "mlm_epoch", "epoch": 6, "loss": 5.2915317552131516, "seconds": 4.87}
+{"time": "2026-09-29 12:07:44", "event": "mlm_epoch", "epoch": 7, "loss": 5.208776202118187, "seconds": 4.87}
+{"time": "2026-09-29 12:07:48", "event": "mlm_epoch", "epoch": 8, "loss": 5.130361147094191, "seconds": 4.86}
+{"time": "2026-09-29 12:07:53", "event": "mlm_epoch", "epoch": 9, "loss": 5.104247402726558, "seconds": 4.86}
+{"time": "2026-09-29 12:07:58", "event": "mlm_epoch", "epoch": 10, "loss": 5.1001927852630615, "seconds": 4.85}
