@@ -85,7 +85,7 @@ if __name__ == "__main__":  # nb-skip
     r = run_experiment("smoke_dact", cfg, "dact", data, device, seeds=[0])  # nb-skip
     r = test_experiment(r, data, device)  # nb-skip
     print(r["test"])  # nb-skip
-    for kw in ({"use_diff_tags": False}, {"use_cross_solution": False}, {"pool_mode": "mean"}, {"pool_mode": "attn"}, {"objective": "pointwise", "mlm_epochs": 0}):  # nb-skip
+    for kw in ({"use_diff_tags": False}, {"use_cross_solution": False}, {"pool_mode": "mean"}, {"pool_mode": "attn"}, {"objective": "pointwise", "mlm_epochs": 0}, {"tag_bias_init": 0.0}):  # nb-skip
         run_experiment("smoke_" + "_".join(f"{a}{b}" for a, b in kw.items()), cfg.but(**kw), "dact", data, device, seeds=[0])  # nb-skip
     b = run_experiment("smoke_bilstm", cfg, "bilstm", data, device, seeds=[0])  # nb-skip
     print(test_experiment(b, data, device)["test"])  # nb-skip

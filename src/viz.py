@@ -1,10 +1,14 @@
 """Attention visualisation and quantitative attention statistics for DACT."""
+import copy
+
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from matplotlib.gridspec import GridSpec
 
+from config import set_seed  # nb-skip
 from data import TAG_DIFF, collate, encode_example, token_strings  # nb-skip
+from model import DACT  # nb-skip
 from train import to_device  # nb-skip
 
 
@@ -99,6 +103,24 @@ def diff_attention_mass(model, loader, device):
         mass.append(m[has_diff].cpu())
         correct.append((out["logits"].argmax(-1) == batch["labels"])[has_diff].cpu())
     return torch.cat(mass).numpy(), torch.cat(correct).numpy()
+
+
+@torch.no_grad()
+def diff_attention_controls(model, cfg, vocab_size, loader, device, seed=0):
+    """Separates learned from built-in attention on differing tokens (mean pooling mass per condition).
+
+    trained               : the trained model, as used for prediction
+    trained, tag bias = 0 : same weights with the tag bias removed -> focus coming from learned token content only
+    untrained             : a freshly initialised model -> focus produced by the initial tag bias alone
+    """
+    no_bias = copy.deepcopy(model)
+    no_bias.pool.tag_bias.zero_()
+    set_seed(seed)
+    untrained = DACT(cfg, vocab_size).to(device)
+    conditions = {"trained": model, "trained, tag bias = 0": no_bias, "untrained (initialisation)": untrained}
+    out = {name: float(diff_attention_mass(m, loader, device)[0].mean()) for name, m in conditions.items()}
+    del no_bias, untrained
+    return out
 
 
 def diff_token_share(loader):

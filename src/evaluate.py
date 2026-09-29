@@ -33,6 +33,20 @@ def mcnemar_exact(pred_a, pred_b, label):
     return b, c, min(1.0, 2 * p)
 
 
+def error_overlap(pred_a, pred_b, label):
+    """How two models' errors overlap: shares of items both / only A / only B / neither get right.
+
+    `oracle` is the accuracy if we always picked whichever model is right, an upper bound on what combining
+    them could achieve; a large gap to both models means they have learned different cues.
+    """
+    ca = np.asarray(pred_a) == np.asarray(label)
+    cb = np.asarray(pred_b) == np.asarray(label)
+    return {"both correct": float((ca & cb).mean()), "only A": float((ca & ~cb).mean()),
+            "only B": float((~ca & cb).mean()), "both wrong": float((~ca & ~cb).mean()),
+            "agreement": float((np.asarray(pred_a) == np.asarray(pred_b)).mean()),
+            "oracle": float((ca | cb).mean())}
+
+
 def summarise_seeds(accs):
     accs = np.asarray(accs, dtype=float)
     return {"mean": float(accs.mean()), "std": float(accs.std(ddof=1)) if len(accs) > 1 else 0.0,

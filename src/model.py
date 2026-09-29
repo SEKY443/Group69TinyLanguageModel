@@ -101,12 +101,12 @@ class AttentionPooling(nn.Module):
     mode="mean":      uniform average (ablation)
     """
 
-    def __init__(self, d_model, mode):
+    def __init__(self, d_model, mode, diff_bias_init=1.0):
         super().__init__()
         self.mode = mode
         self.proj = nn.Linear(d_model, d_model)
         self.v = nn.Linear(d_model, 1, bias=False)
-        self.tag_bias = nn.Parameter(torch.tensor([0.0, 0.0, 1.0]))  # other, shared, diff
+        self.tag_bias = nn.Parameter(torch.tensor([0.0, 0.0, diff_bias_init]))  # other, shared, diff
 
     def forward(self, h, mask, tags):
         mask = mask.clone()
@@ -136,7 +136,7 @@ class DACT(nn.Module):
         self.layers = nn.ModuleList([EncoderLayer(cfg) for _ in range(cfg.n_layers)])
         self.final_ln = nn.LayerNorm(d)
         self.cross = ContrastiveCrossSolution(cfg) if cfg.use_cross_solution else None
-        self.pool = AttentionPooling(d, cfg.pool_mode)
+        self.pool = AttentionPooling(d, cfg.pool_mode, cfg.tag_bias_init)
         self.scorer = nn.Sequential(nn.Linear(2 * d, d), nn.GELU(), nn.Dropout(cfg.dropout), nn.Linear(d, 1))
         # masked-LM head (only used for the optional in-domain warm-up), tied to the token embedding
         self.mlm_transform = nn.Sequential(nn.Linear(d, d), nn.GELU(), nn.LayerNorm(d))

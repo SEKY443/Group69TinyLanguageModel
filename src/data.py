@@ -122,12 +122,34 @@ def diff_tags(a, b):
     return ta, tb
 
 
+def truncate_around_diff(ids, tags, max_len):
+    """Keeps a window of max_len tokens that covers as much of the differing span as possible.
+
+    Plain prefix truncation can cut off the only differing words of two near-identical long solutions,
+    making the two inputs identical (e.g. test item 1433).
+    """
+    if len(ids) <= max_len:
+        return ids, tags
+    diff_pos = [i for i, t in enumerate(tags) if t == TAG_DIFF]
+    if not diff_pos:
+        return ids[:max_len], tags[:max_len]
+    first, last = diff_pos[0], diff_pos[-1]
+    start = first - max(0, max_len - (last - first + 1)) // 2   # centre the differing span in the window
+    start = min(max(0, start), len(ids) - max_len)
+    return ids[start:start + max_len], tags[start:start + max_len]
+
+
 def encode_example(row, tok, cfg: Config):
     """Encodes one PIQA item into two sequences [CLS] goal [SEP] sol_i [SEP] plus side information."""
     g = tok.encode(row["goal"]).ids[: cfg.max_goal_len]
-    s1 = tok.encode(row["sol1"]).ids[: cfg.max_sol_len]
-    s2 = tok.encode(row["sol2"]).ids[: cfg.max_sol_len]
-    t1, t2 = diff_tags(s1, s2)
+    s1, s2 = tok.encode(row["sol1"]).ids, tok.encode(row["sol2"]).ids
+    if cfg.diff_aware_truncation:
+        t1, t2 = diff_tags(s1, s2)   # align the full solutions, then cut both around their differences
+        s1, t1 = truncate_around_diff(s1, t1, cfg.max_sol_len)
+        s2, t2 = truncate_around_diff(s2, t2, cfg.max_sol_len)
+    else:
+        s1, s2 = s1[: cfg.max_sol_len], s2[: cfg.max_sol_len]
+        t1, t2 = diff_tags(s1, s2)
     out = []
     for s, t in ((s1, t1), (s2, t2)):
         ids = [CLS] + g + [SEP] + s + [SEP]

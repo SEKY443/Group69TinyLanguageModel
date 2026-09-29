@@ -27,6 +27,7 @@ All times are local (CST, UTC+8) on **2026-09-29**. Times of the Colab run come 
 19. Version control
 20. Reproduction
 21. Limitations
+22. Revision 2: review-driven improvements
 
 ---
 
@@ -440,3 +441,82 @@ colab stop -s group69                                        # always stop: sess
 - The **Google Drive loading path** was not exercised in the CLI run (the files were uploaded directly). It is standard `google.colab.drive` code, but it was not tested end-to-end.
 - Results come from **one Colab run with 3 seeds**. With about ±1 point seed std and a ±2.3-point test CI, differences under about 2 points are not conclusive.
 - Pretrained models were used only as baselines, as required. The gap to B3/B4 suggests that pairing this architecture with pretrained representations would be the natural next step outside the assignment constraints.
+
+---
+
+## 22. Revision 2: review-driven improvements (2026-09-29, ≈21:00–22:00)
+
+The project was reviewed against the marking guide in the brief. The review scored it at about 70/100 and found the weaknesses below. Revision 2 addresses the ones that code can fix. The changes were made with **Claude Code (an AI coding assistant)** at a group member's request. Declare this AI assistance in the way the unit requires.
+
+### 22.1 Review findings that motivated the changes
+| # | Finding | Evidence | Action |
+|---|---|---|---|
+| 1 | The attention claim is partly built in: the diff-token pooling bias starts at 1.0 and only reached ≈1.02 | Section 3.3 of the notebook | Attention controls + new ablation (22.2 b, c) |
+| 2 | Prefix truncation can delete the only difference between the two options | Cobbler item 1433, listed in section 21 | Difference-aware truncation (22.2 a) |
+| 3 | RoBERTa (B3) ran with 1 seed while the from-scratch models ran with 3 | `final_results.csv` | B3 with 3 seeds (22.2 d) |
+| 4 | Accuracy alone can't show whether DACT and TF-IDF + LR solve the same items | DACT 60.4 % vs B1 61.2 % on test | Error-overlap analysis (22.2 e) |
+| 5 | Almost no references (only ESIM) | Notebook text | `references.bib` + References cell (22.2 f) |
+| 6 | Empty template copy left in the repository | `Copy_of_CITS4012_YourGroupID.ipynb` | Removed (22.2 g) |
+| – | No ACL report PDF yet | Repository | **Not done here**: the group still has to write the report |
+
+### 22.2 Changes
+**a) Difference-aware truncation** (`src/data.py`, `Config.diff_aware_truncation = True`)
+- New function `truncate_around_diff`. When a solution is longer than `max_sol_len` (96), it keeps the 96-token window centred on the span where the two options differ, instead of the first 96 tokens.
+- The difference tags are now computed on the **full** solutions before truncation. Before, they were computed on the truncated ones.
+- Only over-long solutions are affected: about 1.6 % of test solutions, per section 5. Every other item encodes exactly as before.
+- Setting the flag to `False` restores the original behaviour exactly.
+
+**b) New ablation "diff-bias prior 0"** (`Config.tag_bias_init`, `src/model.py`)
+- `AttentionPooling` now takes the initial value of the differing-token bias from the config. The default stays 1.0, so the main model is unchanged.
+- The ablation starts the bias at 0. It tests whether DACT *learns* to focus on differing tokens or whether the focus comes only from the initial bias.
+- It is appended after the existing ablations, so earlier run names stay stable. It runs as `abl7` when the selected config uses the MLM warm-up.
+
+**c) Attention controls** (`diff_attention_controls` in `src/viz.py`, notebook Section 3.3)
+- Measures the mean pooling mass on differing tokens under four conditions:
+  - the trained model;
+  - the trained model with the tag bias set to 0 (focus from learned content only);
+  - an untrained, freshly initialised model (focus from the initial bias only);
+  - uniform attention (reference).
+- The sentence "So the model does base its decision on the tokens where the options disagree, as intended" was replaced. The new text explains the confound and points to the controls.
+
+**d) RoBERTa baseline with 3 seeds** (notebook Step 4 and Step 5)
+- B3 is fine-tuned with the same `SEEDS` as the from-scratch models.
+- The result table reports its mean ± std on validation and test.
+- The McNemar test and the CI use the best-**validation** seed, as for DACT.
+
+**e) Error-overlap analysis** (`error_overlap` in `src/evaluate.py`; new notebook cell before the quantitative discussion)
+- Compares DACT against B1, B2, the vanilla Transformer and B3.
+- For each pair it reports the share of test items that both models, only one model, or neither model get right, plus their agreement and the oracle accuracy (correct if either model is correct).
+- Saved to `outputs/results/error_overlap.csv`.
+
+**f) References**
+- New `references.bib` with 15 entries: PIQA, Transformer, pre-LN, ESIM, additive attention, BERT, RoBERTa, Qwen2.5, BPE, annotation artefacts, the two attention-as-explanation papers, McNemar, the bootstrap, and significance testing in NLP.
+- A References cell was added at the end of the notebook.
+
+**g) Housekeeping**
+- `tools/sync_notebook.py` (new) copies `src/*.py` into the notebook's module cells. It drops `# nb-skip` lines and collapses the blank lines that removed imports leave behind. `--check` reports cells that are out of date. The original `tools/build_notebook.py` from section 11 was never committed.
+- `README.md` now describes the repository layout and how to run it.
+- `Copy_of_CITS4012_YourGroupID.ipynb` was removed. The official template is still available from the unit page.
+- Notebook Readme updated with a *Revision 2* bullet, the new runtime estimate (≈60 min on an A100) and the sync-script note. The protocol cell and ablation table mention the new items.
+
+### 22.3 Verification (local, CPU only; no GPU was available)
+- Environment: Python 3.12 virtual environment in a temporary folder, PyTorch 2.14.0+cpu, current releases of numpy, scikit-learn, scipy, pandas, matplotlib and tokenizers.
+- Data: a **synthetic** PIQA-format dataset (600 train, 120 test). Every 20th item had a long solution whose only difference was at BPE position > 96. The real data was not available locally. **None of these numbers are results.**
+- `src/experiments.py` module smoke test: all paths ran, including the new `tag_bias_init=0` ablation, the BiLSTM and the separate test pass.
+- The whole notebook ran top to bottom in `PIQA_SMOKE=1` mode. RoBERTa and Qwen were **stubbed** with random predictions, because `transformers` and the model downloads weren't available. Everything else was real code. The final table showed B3 with mean ± std, and the error-overlap and attention-control tables printed.
+- Truncation check on the synthetic long items:
+  - prefix truncation: 6 of 6 items had identical inputs for both options, and 0 differing tokens were kept;
+  - difference-aware truncation: 0 of 6 identical, and 12 differing tokens kept.
+  - Unit checks of the window (differing span in the middle, at the end, no difference, short input) passed.
+- `python tools/sync_notebook.py --check` reports no out-of-date cells.
+
+### 22.4 What the group still has to do
+1. **Re-run the notebook on Colab** (`Runtime → Run all`, ≈60 min on an A100). The outputs of every changed code cell were cleared because they no longer matched the code. The saved outputs must come from one clean run of the current code.
+2. **Update the numbers in the two discussion cells.** Each one is preceded by a ⚠️ note. Delete the notes afterwards. Things to check:
+   - the new truncation fixes the cobbler item, so the "uncertain" example in Section 3.3 will change;
+   - the ablation table gains a *diff-bias prior 0* row;
+   - B3 gets a ± std;
+   - interpret the controls: if *trained, tag bias = 0* is close to the uniform reference, the focus is built in rather than learned, and the text must say so.
+3. **Commit and push** once the re-run has passed. Nothing from revision 2 has been committed or pushed yet.
+4. **Write the ACL-format report** (≤ 6 pages) using `references.bib`, and make sure every number in it matches the re-run notebook.
+5. **Declare AI assistance** as the unit's policy requires. Section 19 says AI co-author lines were deliberately left out of the commits. The brief requires the pipeline to be implemented by the team, so check with the unit coordinator how AI-assisted work must be acknowledged.

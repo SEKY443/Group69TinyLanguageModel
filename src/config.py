@@ -24,6 +24,7 @@ class Config:
     min_frequency: int = 2
     max_goal_len: int = 40      # BPE tokens
     max_sol_len: int = 96
+    diff_aware_truncation: bool = True  # over-long solutions keep the window around the differing span, not the prefix
 
     # ---- model (DACT) ----
     d_model: int = 256
@@ -38,6 +39,7 @@ class Config:
     use_diff_tags: bool = True        # difference-tag embedding
     use_cross_solution: bool = True   # sol1 <-> sol2 contrastive cross-attention
     pool_mode: str = "diff_attn"      # "diff_attn" | "attn" | "mean"
+    tag_bias_init: float = 1.0        # initial pooling bias for difference-tagged tokens (0.0 = no built-in prior)
     objective: str = "pairwise"       # "pairwise" (softmax over the two options) | "pointwise" (independent BCE)
     mlm_epochs: int = 0               # in-domain masked-LM warm-up on the training split only
 
