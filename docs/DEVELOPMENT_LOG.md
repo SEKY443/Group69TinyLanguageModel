@@ -28,6 +28,7 @@ All times are local (CST, UTC+8) on **2026-09-29**. Times of the Colab run come 
 20. Reproduction
 21. Limitations
 22. Revision 2: review-driven improvements
+23. Revision 2b: council review and follow-up changes
 
 ---
 
@@ -520,3 +521,80 @@ The project was reviewed against the marking guide in the brief. The review scor
 3. **Commit and push** once the re-run has passed. Nothing from revision 2 has been committed or pushed yet.
 4. **Write the ACL-format report** (≤ 6 pages) using `references.bib`, and make sure every number in it matches the re-run notebook.
 5. **Declare AI assistance** as the unit's policy requires. Section 19 says AI co-author lines were deliberately left out of the commits. The brief requires the pipeline to be implemented by the team, so check with the unit coordinator how AI-assisted work must be acknowledged.
+
+---
+
+## 23. Revision 2b: council review and follow-up changes (2026-09-29, ≈22:30–23:15)
+
+After revision 2 was pushed, a group member asked Claude Code to "check the work then improve it" with an **LLM council**:
+- Five independent AI advisors (Contrarian, First Principles, Expansionist, Outsider, Executor) each assessed the repository.
+- Five anonymous peer reviews ranked their answers.
+- A chairman agent combined everything into a verdict.
+
+All of these were Claude sub-agents, not people. This revision was also written with Claude Code.
+
+### 23.1 Council verdict (summary)
+- **Agreed:**
+  - The GPU re-run is required.
+  - Don't chase accuracy. The honest result (DACT below TF-IDF, focus built in by the bias initialisation) is the story.
+  - The report must open by saying what is claimed and what is not.
+  - The AI-authorship record is the biggest risk: 4 of 5 advisors and all 5 reviewers said so.
+- **Resolved clashes:**
+  - The integrity question comes first, ahead of technical work.
+  - Add the cheap diagnostics, but no new model variants and no Qwen few-shot.
+  - Write predicted outcomes down *before* the re-run, so the discussion can't be reshaped around the numbers.
+- **Blind spots raised in peer review:**
+  - Disclosing AI use may not satisfy "implemented by your team".
+  - The group must be able to explain the code if questioned.
+  - Revision 2 was made with the same AI tool.
+  - There was no fallback plan if the GPU run fails.
+  - The gap to TF-IDF needs a testable explanation, not "small dataset".
+- **The chairman's first step:** the group reads the unit's AI-use policy and emails the coordinator before the re-run.
+
+### 23.2 Changes made (the five items the council assigned to Claude Code)
+**a) Crash-safe resume** (`src/experiments.py`)
+- `run_experiment(..., resume=True)` loads an experiment that already finished in the same runtime, with the same config, the same seeds and its checkpoints on disk, instead of retraining it.
+- If the VM kernel crashes, `Run all` continues where it stopped.
+- A changed config always retrains.
+
+**b) Seed counts in the results** (notebook Step 5)
+- `final_results.csv` and the table gain an `n seeds` column and a `note` column ("single run: no seed std").
+- Blank std/CI cells no longer look like missing data.
+
+**c) What DACT adds beyond word statistics** (after the error-overlap table)
+- Counts the test items that DACT solves and TF-IDF + LR does not, and prints three of them for the qualitative analysis.
+
+**d) Printed key numbers**
+- A new cell before the quantitative discussion prints every number that discussion quotes (%, seed counts, Δ vs DACT) straight from `RESULTS`, so nothing has to be retyped by hand.
+
+**e) Diagnostic for the gap to bag-of-words** (Section 3.3, validation split only). It tests two explanations:
+- **H1, the pooling does not select:** the normalised entropy of the pooling weights (1 = uniform), overall and for correct vs wrong predictions. Functions: `pooling_entropy` in `src/viz.py`.
+- **H2, the difference signal fades or is never learned:** a logistic-regression probe for "differing vs shared" solution tokens at each layer, for DACT and the vanilla Transformer.
+  - Saved to `outputs/results/diff_probe_by_layer.csv`.
+  - Functions: `diff_probe_by_layer` and `_layer_states` in `src/viz.py`.
+  - The text says to read each layer against the embedding row, because word identity alone already predicts some differing tokens.
+
+**f) Consistency check** (new cell before the Drive copy)
+- Asserts that `final_results.csv` matches the table.
+- Asserts that every `*_val.json` matches its experiment.
+- Asserts that every training run has a JSONL log.
+- Runs `tools/sync_notebook.py --check` when the notebook runs from a repository checkout.
+
+### 23.3 Verification (CPU, synthetic data as in 22.3; not results)
+- The whole notebook ran top to bottom in smoke mode (59 cells), with RoBERTa and Qwen stubbed.
+- The new outputs printed:
+  - the table with `n seeds` and `note`;
+  - the items only DACT solves;
+  - the key-numbers table;
+  - H1 entropy and the H2 probe table;
+  - `OK: 13 result rows, 9 training runs with logs`.
+- Resume test: the first call trained in 14.4 s, the identical second call loaded in 0.01 s, and a changed config retrained.
+- On the synthetic data the attention controls behaved as designed: *trained* 0.339 ≈ *untrained* 0.337, and *bias = 0* 0.163 ≈ *uniform* 0.165. So a one-epoch model's focus came entirely from the initial bias, which is exactly the confound the controls exist to reveal.
+- `tools/sync_notebook.py --check`: in sync.
+
+### 23.4 Still open: only the group can do these (in the order the council recommends)
+1. **Read the unit's AI-use policy and email the coordinator in writing.** Disclose the full extent of AI use, including revisions 2 and 2b, and ask whether the work is still eligible. Don't delete this log or rewrite git history: that would turn a disclosure problem into misconduct.
+2. **Each member works through the code** until they can explain DACT, the difference tags, the pooling bias and the truncation without notes. Rewrite parts yourselves where you can.
+3. **Commit the predicted outcomes before the re-run.** For example: does *diff-bias prior 0* match the full model? Is *trained, tag bias = 0* near uniform? Does the vanilla probe rise above its embedding row?
+4. **Re-run on Colab (A100).** Then fill the two discussion cells from the printed key numbers and delete the ⚠️ notes.
+5. **Write the 6-page ACL report.** Open with what is claimed and what isn't, and put the AI-use statement where a marker will see it.

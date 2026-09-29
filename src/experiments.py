@@ -19,8 +19,29 @@ def build_model(arch, cfg, vocab_size):
     return ARCHS[arch](cfg, vocab_size)
 
 
-def run_experiment(name, cfg, arch, data, device, seeds, verbose=True):
-    """Trains `arch` with each seed. Only the validation split is touched; checkpoints are kept for the test pass."""
+def _load_finished(name, cfg, seeds):
+    """Returns the saved validation result of `name` if it finished with the same config, seeds and checkpoints."""
+    path = os.path.join(cfg.out_dir, "results", f"{name}_val.json")
+    if not os.path.isfile(path):
+        return None
+    with open(path) as f:
+        res = json.load(f)
+    same = res["config"] == cfg.to_dict() and [r["seed"] for r in res["runs"]] == list(seeds)
+    return res if same and all(os.path.isfile(r["ckpt"]) for r in res["runs"]) else None
+
+
+def run_experiment(name, cfg, arch, data, device, seeds, verbose=True, resume=True):
+    """Trains `arch` with each seed. Only the validation split is touched; checkpoints are kept for the test pass.
+
+    With resume=True an experiment that already finished in this runtime (same config, seeds and checkpoints on
+    disk) is loaded instead of retrained, so re-running the notebook after a crash continues where it stopped.
+    """
+    if resume:
+        done = _load_finished(name, cfg, seeds)
+        if done is not None:
+            if verbose:
+                print(f"==> {name}: already finished, loaded (val acc {done['val']['mean']:.4f})")
+            return done
     runs = []
     for seed in seeds:
         set_seed(seed)

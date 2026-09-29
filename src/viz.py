@@ -123,6 +123,77 @@ def diff_attention_controls(model, cfg, vocab_size, loader, device, seed=0):
     return out
 
 
+@torch.no_grad()
+def pooling_entropy(model, loader, device):
+    """Normalised entropy of the pooling weights over each option's solution tokens (1 = uniform, 0 = one token).
+
+    Returns per-item values (mean of the two options) and whether the item was predicted correctly.
+    """
+    model.eval()
+    ent, correct = [], []
+    for batch in loader:
+        batch = to_device(batch, device)
+        out = model(batch)
+        w = out["pool"].float().clamp_min(1e-12)
+        n = batch["sol_mask"].sum(-1).float()
+        h = -(w * w.log() * batch["sol_mask"]).sum(-1) / n.clamp(min=2).log()
+        keep = (n > 1).all(-1)
+        ent.append(h.mean(-1)[keep].cpu())
+        correct.append((out["logits"].argmax(-1) == batch["labels"])[keep].cpu())
+    return torch.cat(ent).numpy(), torch.cat(correct).numpy()
+
+
+@torch.no_grad()
+def _layer_states(model, batch):
+    """Hidden states after the embedding and after every encoder layer, for both options: list of [N, L, d]."""
+    ids, seg, tags, mask = (batch[k].flatten(0, 1) for k in ("input_ids", "segment", "tags", "attn_mask"))
+    pos = torch.arange(ids.size(1), device=ids.device)[None]
+    x = model.tok(ids) + model.pos(pos) + model.seg(seg)
+    if model.tag is not None:
+        x = x + model.tag(tags)
+    x = model.emb_ln(x)
+    states = [x]
+    for layer in model.layers:
+        x, _ = layer(x, mask)
+        states.append(x)
+    return states
+
+
+def diff_probe_by_layer(model, train_loader, eval_loader, device, max_tokens=40000, seed=0):
+    """Linear probe: can a logistic regression tell differing from shared solution tokens at each layer?
+
+    Trained on solution tokens from `train_loader` and scored (balanced accuracy, 0.5 = chance) on `eval_loader`.
+    For a model without tag embeddings this shows whether the encoder works out the difference by itself; for DACT
+    it shows whether the injected tag survives through the layers or fades.
+    """
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import balanced_accuracy_score
+
+    model.eval()
+
+    def collect(loader):
+        per_layer, labels, n = [[] for _ in range(len(model.layers) + 1)], [], 0
+        for batch in loader:
+            batch = to_device(batch, device)
+            sol = batch["sol_mask"].flatten(0, 1)
+            for store, s in zip(per_layer, _layer_states(model, batch)):
+                store.append(s[sol].float().cpu())
+            labels.append((batch["tags"].flatten(0, 1) == TAG_DIFF)[sol].cpu())
+            n += int(sol.sum())
+            if n >= max_tokens:
+                break
+        return [torch.cat(s).numpy() for s in per_layer], torch.cat(labels).numpy()
+
+    Xtr, ytr = collect(train_loader)
+    Xte, yte = collect(eval_loader)
+    scores = []
+    for layer, (a, b) in enumerate(zip(Xtr, Xte)):
+        clf = LogisticRegression(max_iter=1000, class_weight="balanced", random_state=seed).fit(a, ytr)
+        scores.append({"layer": "embedding" if layer == 0 else f"encoder {layer}",
+                       "balanced acc": float(balanced_accuracy_score(yte, clf.predict(b)))})
+    return scores
+
+
 def diff_token_share(loader):
     """Fraction of solution tokens that are difference-tagged, per item (the uniform-attention reference)."""
     shares = []
