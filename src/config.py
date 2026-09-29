@@ -85,10 +85,13 @@ def get_device():
 
 
 def amp_dtype(device):
-    """bf16 autocast on GPUs that support it, fp16 on older CUDA GPUs, disabled elsewhere."""
+    """bf16 autocast on GPUs with native bf16 (Ampere+), fp16 on older CUDA GPUs, disabled elsewhere.
+
+    Only *native* support counts: a T4 reports bf16 as supported through emulation, which trains 3.5x slower than fp16.
+    """
     if device.type != "cuda":
         return None
-    return torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+    return torch.bfloat16 if torch.cuda.is_bf16_supported(including_emulation=False) else torch.float16
 
 
 class JsonlLogger:
