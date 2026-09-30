@@ -1,0 +1,28 @@
+model,experiment,seed,parameters,validation_accuracy,test_accuracy,epochs,checkpoint_available,provenance
+DACT (full),dact_full,42,6114628,0.5998759305210918,0.6088139281828074,8,False,historical A100 saved logs/JSON; not rerun
+DACT (full),dact_full,43,6114628,0.5949131513647643,0.6120783460282916,13,False,historical A100 saved logs/JSON; not rerun
+DACT (full),dact_full,44,6114628,0.607940446650124,0.5903155603917302,8,False,historical A100 saved logs/JSON; not rerun
+− difference tags,abl0,42,6113860,0.5911910669975186,0.6082698585418934,12,False,historical A100 saved logs/JSON; not rerun
+− difference tags,abl0,43,6113860,0.5899503722084367,0.6077257889009793,10,False,historical A100 saved logs/JSON; not rerun
+− difference tags,abl0,44,6113860,0.5880893300248139,0.5995647442872688,9,False,historical A100 saved logs/JSON; not rerun
+− cross-solution attention,abl1,42,5522244,0.6017369727047146,0.6224156692056583,9,False,historical A100 saved logs/JSON; not rerun
+− cross-solution attention,abl1,43,5522244,0.597394540942928,0.6207834602829162,10,False,historical A100 saved logs/JSON; not rerun
+− cross-solution attention,abl1,44,5522244,0.6023573200992556,0.6088139281828074,9,False,historical A100 saved logs/JSON; not rerun
+− diff bias in pooling,abl2,42,6114628,0.5856079404466501,0.6011969532100109,12,False,historical A100 saved logs/JSON; not rerun
+− diff bias in pooling,abl2,43,6114628,0.5918114143920595,0.6262241566920566,9,False,historical A100 saved logs/JSON; not rerun
+− diff bias in pooling,abl2,44,6114628,0.6054590570719603,0.6175190424374319,10,False,historical A100 saved logs/JSON; not rerun
+mean pooling,abl3,42,6114628,0.6017369727047146,0.6093579978237215,15,False,historical A100 saved logs/JSON; not rerun
+mean pooling,abl3,43,6114628,0.5893300248138957,0.6267682263329706,9,False,historical A100 saved logs/JSON; not rerun
+mean pooling,abl3,44,6114628,0.6029776674937966,0.6077257889009793,9,False,historical A100 saved logs/JSON; not rerun
+pointwise objective,abl4,42,6114628,0.6042183622828784,0.6050054406964092,8,False,historical A100 saved logs/JSON; not rerun
+pointwise objective,abl4,43,6114628,0.5955334987593052,0.6191512513601741,9,False,historical A100 saved logs/JSON; not rerun
+pointwise objective,abl4,44,6114628,0.6023573200992556,0.6033732317736671,8,False,historical A100 saved logs/JSON; not rerun
+vanilla Transformer,abl5,42,5521476,0.5843672456575683,0.5935799782372143,10,False,historical A100 saved logs/JSON; not rerun
+vanilla Transformer,abl5,43,5521476,0.5837468982630273,0.5914036996735582,10,False,historical A100 saved logs/JSON; not rerun
+vanilla Transformer,abl5,44,5521476,0.5682382133995038,0.5761697497279652,11,False,historical A100 saved logs/JSON; not rerun
+− MLM warm-up,abl6,42,6114628,0.5918114143920595,0.602829162132753,10,False,historical A100 saved logs/JSON; not rerun
+− MLM warm-up,abl6,43,6114628,0.5874689826302729,0.6273122959738846,9,False,historical A100 saved logs/JSON; not rerun
+− MLM warm-up,abl6,44,6114628,0.5949131513647643,0.6109902067464635,8,False,historical A100 saved logs/JSON; not rerun
+B2 BiLSTM + attention,b2_bilstm,42,5072385,0.5825062034739454,0.5843307943416758,12,False,historical A100 saved logs/JSON; not rerun
+B2 BiLSTM + attention,b2_bilstm,43,5072385,0.6011166253101737,0.6001088139281828,20,False,historical A100 saved logs/JSON; not rerun
+B2 BiLSTM + attention,b2_bilstm,44,5072385,0.6035980148883374,0.6017410228509249,16,False,historical A100 saved logs/JSON; not rerun

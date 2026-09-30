@@ -1,0 +1,1006 @@
+split,index,asymmetric_tags,identical_encoded_options,goal
+train,13,True,False,How do I make my homemade salsa extra spicy?
+train,19,True,False,To make pizza from scratch.
+train,24,True,False,To sort the Rocky movies in chronological order.
+train,39,True,False,A tree trimmer
+train,46,True,False,Clean second story windows
+train,65,True,False,How to apply facial scrub to skin
+train,83,True,False,How do you attach zipies to a lampshade to make a ziptie lampshade?
+train,104,True,False,How do you organize your DVDs?
+train,121,True,False,"To prevent meat from moving when flipping skewers of meat,"
+train,135,True,False,how to make kale chips at home?
+train,144,False,True,How to make Red Velvet Fudge at home.
+train,148,False,True,How to make Kiwi/Gooseberry cobbler
+train,152,True,False,How to best feed baby rabbits?
+train,157,True,False,How can I repair a coffee mug that has a broken handle?
+train,170,True,False,"To add water to cracked eggs,"
+train,172,True,False,Make a ring toss game for the carnival.
+train,243,True,False,How to clean the halter top when needed?
+train,244,True,False,How can I check if an appliance is properly receiving power from an outlet?
+train,252,True,False,How to get rid of crows.
+train,298,True,False,What is the difference in the way a girl mounts a bicycle and the way a boy does?
+train,299,False,True,How to make Turkey Meatloaf
+train,313,True,False,How do I compare cheap airline tickets on multiple websites?
+train,319,True,False,To switch off a television set.
+train,338,True,False,How to make a ham sandwich?
+train,365,True,False,"If you have an allergy to nuts, do you have to mention it to your restaurant server?"
+train,380,True,False,Reinforce the glued on face of the cabinet drawer
+train,381,True,False,how do you use a belt?
+train,393,True,False,How do I make sure my cat's fur is not matted or tangled?
+train,402,True,False,How do you prep a turkey for deep frying?
+train,411,True,False,"To save money when you need cash,"
+train,425,False,True,make an asian salad in a jar
+train,433,True,False,Can you paint with a toothbrush?
+train,448,True,False,how do you record a show on dvr?
+train,507,True,False,What can I do about a rash or when my skin is irritated?
+train,516,True,False,Make pop corn.
+train,549,True,False,Make a nice path in the back yard.
+train,576,True,False,"To save money while running errands around town,"
+train,581,True,False,What is the best way to light birthday candles that are already placed on a cake?
+train,583,True,False,What is the quickest way to melt a block of wax?
+train,593,True,False,"To avoid cutting yourself when opening plastic packages with thick packaging,"
+train,615,True,False,How do you press rice krispy treat mixture into the pan?
+train,642,True,False,To clean a motherboard.
+train,655,True,False,Prevent buildup of grime on tiles.
+train,665,True,False,to make salad tastier.
+train,667,True,False,To start writing a book.
+train,672,True,False,"To sharpen a dull knife without a sharpening tool,"
+train,687,True,False,Make a blooming onion.
+train,696,True,False,What material should the handle of a wire-cutter be?
+train,705,True,False,How to make a box hard to store delicates?
+train,710,True,False,"To quickly locate a lost screw when it has fallen,"
+train,737,True,False,Prepare an image to make a bottle cap pin.
+train,745,True,False,"To make pizza crispier without affecting the texture of the pizza,"
+train,761,False,True,How to Kill Hydra in a Freshwater Aquarium
+train,830,True,False,how to choose a good basketball to play with.
+train,849,True,False,To make lemon curd in the microwave
+train,872,True,False,How to ozonate your drinking water?
+train,885,True,False,How do I cut a potato accordian style?
+train,899,True,False,to paint a mini tackle box.
+train,930,True,False,How To make a sweet vanilla Souffle
+train,943,True,False,How to install the mailbox.
+train,1009,True,False,How do you fuse bungee cords together?
+train,1022,True,False,How do you know if you should clean your video game cartridge?
+train,1042,True,False,how do you see how many hits are left from a certain requester on mturk?
+train,1076,True,False,To attach a leather strap to a leather box
+train,1086,True,False,"To heat food more evenly in the microwave,"
+train,1092,True,False,how do you open a safe?
+train,1102,True,False,How can I fix a knife that is dull or has a chipped blade?
+train,1107,True,False,What is the best way to add glaze to a lemon pound cake?
+train,1141,True,False,.what to do with zucchini tops
+train,1164,True,False,Cool off the house
+train,1200,True,False,To update android mobile application.
+train,1247,True,False,how to cream butter
+train,1278,True,False,Running shoes
+train,1290,True,False,Make errie looking fake cuts on arms and face to create a scary costume look.
+train,1291,True,False,How can I accurately determine the height distance of a fall or a ledge?
+train,1298,True,False,"To melt honey that has crystallized,"
+train,1316,True,False,What is the best way to clean a ceiling fan?
+train,1349,True,False,How do you build a table?
+train,1351,True,False,How do I water my garden less?
+train,1360,True,False,to clean horizontal blinds.
+train,1376,True,False,How can we make a mobile charging station?
+train,1391,True,False,"Learn how to get a wooden box ready to paint, to use for jump ups for athletes."
+train,1423,False,True,Make Parmesan crisps
+train,1503,True,False,What ingredients do you need to make Peanut Butter Fudge?
+train,1522,True,False,How to infuse grapefruit flavor into suntea?
+train,1529,True,False,How to Prepare SKittles Candy for Candy Chromatography
+train,1542,True,False,Write a book.
+train,1558,True,False,jar
+train,1567,True,False,How can I identify keys quickly on a key ring?
+train,1576,True,False,"To determine if an avocado is ripe for eating,"
+train,1590,True,False,To grease a baking dish
+train,1592,True,False,To build home furniture.
+train,1653,True,False,"To help the thread slide through the fabric,"
+train,1687,True,False,how do you open youtube on an iphone?
+train,1723,True,False,How often should air filters be cleaned or replaced?
+train,1738,True,False,Designing and layout of a perimeter fence on your land.
+train,1760,True,False,How to create custom sitckers are home.
+train,1769,True,False,"To increase the value of a home, a homeowner should,"
+train,1770,True,False,How much thermal paste should be applied on a CPU before installing the CPU fan?
+train,1782,False,True,How to Make Driftwood Sink in an Aquarium
+train,1802,True,False,"To save money on gas,"
+train,1805,True,False,How to best fix a wobbly leg of of a table?
+train,1820,True,False,How to purchase a commodity from Amazon
+train,1827,True,False,how do you shart?
+train,1830,True,False,How do you start the basics of making a shelter in the woods?
+train,1832,True,False,How do I properly soak chickpeas before using them?
+train,1838,True,False,how do you graduate high school?
+train,1848,True,False,Make leg warmers.
+train,1865,True,False,How do you select ripe strawberries to eat?
+train,1877,False,True,How to make an Apple Pie at home.
+train,1892,True,False,Is apple cider vinegar a good health food?
+train,1896,True,False,Can you pop your thumb out of place?
+train,1907,True,False,how to take oatmeal cookies to another level?
+train,1937,True,False,how do you make detox strawberry water?
+train,1947,True,False,How do I choose the right pumpkin to be turned into a cooler?
+train,1958,True,False,How do you prepare scallops in the shell for cooking?
+train,1973,True,False,"To attach two sticks together,"
+train,1979,True,False,How do you do a crossover in basketball?
+train,1996,True,False,how do you get sober from alcohol?
+train,2036,True,False,"To easily recreate an image many times repeatedly,"
+train,2160,True,False,What do you use to make rocket powered Matchbox cars?
+train,2179,True,False,Clean a hairbrush.
+train,2206,True,False,"What materials are used to create a spooky, witch-like Halloween spice jar?"
+train,2219,True,False,how do you clean up the floor of your car?
+train,2231,True,False,how do you use the keyboard buttons on a laptop?
+train,2242,True,False,To make a strawberry smoothie.
+train,2247,True,False,How to cosplay.
+train,2284,True,False,how do you set of the SOS alert on an iphone?
+train,2308,True,False,"To make a beer cold quickly,"
+train,2327,True,False,To Share a link with friends.
+train,2335,True,False,Vacuum a floor.
+train,2342,True,False,To stop flies from being around.
+train,2366,True,False,How would you create uniformity in the look of the bookshelf?
+train,2377,True,False,To easily do cardio at home.
+train,2406,True,False,Make a medical pillow for extra back support.
+train,2429,True,False,Sharpen your scissors
+train,2443,True,False,"To top the pizza,"
+train,2447,True,False,"Once the bread slices for dry-fried garlic sourdough soldiers have been dry-fried, what should you then do with them?"
+train,2452,True,False,To make the edges of a work piece smoother and blunt
+train,2468,True,False,paint the ceiling without dripping paint on the floor
+train,2514,True,False,how to cook macaroni
+train,2532,False,True,how to move daffodils
+train,2544,True,False,How can prevent stains from forming on my coffee table from drinks or hot food items?
+train,2555,True,False,How to keep calm when it storms.
+train,2591,True,False,How to prep potatoes for hash browns before frying.
+train,2593,True,False,Decorate a Christmas tree.
+train,2621,True,False,emergency fix for a wheel that has broken off.
+train,2663,True,False,Installing handles on a drawer.
+train,2669,False,True,Make quick pickled vegetables
+train,2683,True,False,How many references should a resume include?
+train,2699,True,False,How can I remove a water stain from an oak table top?
+train,2716,True,False,"To make tights easier to put on,"
+train,2722,True,False,How to know when to water my apple tree?
+train,2803,True,False,"To make a 10 degree angle cut on piece of plywood,"
+train,2809,True,False,"To win a relay race,"
+train,2835,True,False,how to fold in egg whites
+train,2841,True,False,Makeshift baby crib.
+train,2870,False,True,How to make a Butterscotch Meringue pie at home.
+train,2921,True,False,What tools are needed to build a PVC irrigation network?
+train,2930,True,False,To increase protein naturally.
+train,2943,True,False,how do you steal an item?
+train,2945,True,False,How can we change and install the lock?
+train,2954,True,False,How to access the unlock screen on an Android phone
+train,2967,True,False,What are three ways to burn 100 calories in less than one hour?
+train,2990,True,False,How can I make a mouse trap that doesn't harm the mouse it catches.
+train,3054,True,False,how do you dry your hands with a hand towel?
+train,3073,True,False,how to make an easy fire starter?
+train,3086,True,False,The best kind of tool to handle in the workshop
+train,3106,True,False,how to keep sweet potatoes from turning dingy
+train,3114,True,False,Weave three strands of thin wire to make one thicker wire.
+train,3121,True,False,How to wash the childs hair.
+train,3155,False,True,How to Make Chocolate Mousse
+train,3167,True,False,How to make a good bleach.
+train,3177,True,False,How to warm food using microwave
+train,3182,True,False,how do you floss your teeth?
+train,3189,True,False,"To make potato chips crunchier when they get soft,"
+train,3207,True,False,How do I remove sharpie or permanent marker from a wood table?
+train,3228,True,False,"To easily retrieve crumbs from in between keys on a keyboard,"
+train,3325,True,False,how do you sing along to a song?
+train,3361,True,False,Reduce amount of fruit sugar.
+train,3385,True,False,"To make your own sauce for waffles,"
+train,3398,True,False,Balance the checkbook
+train,3441,True,False,How can I quickly dry wet dishware or containers?
+train,3451,False,True,make crescent sausage casserole
+train,3456,True,False,What ingredients should I use to make the batter?
+train,3462,True,False,"To provide necessary nutrients to garden vegetables,"
+train,3487,True,False,How do you set goals for weight loss in a one month period?
+train,3495,True,False,How do I mop the floors?
+train,3509,True,False,how do you use teeth whitening toothpaste?
+train,3515,True,False,How do you add hinges to a cabinet?
+train,3553,True,False,To make spaghetti.
+train,3566,True,False,how to smooth out frosting after the cake is frosted?
+train,3592,True,False,How to create a hidden storage space in a room
+train,3603,True,False,"To prevent sound from escaping from speakers when listening to music in public,"
+train,3685,False,True,How do you make DIY Root Fertilizer Tabs for Planted Aquariums?
+train,3703,True,False,To eat healthier.
+train,3726,True,False,What is commonly seen as the best star wars movie?
+train,3744,True,False,How do you remove the motherboard from a computer case.
+train,3760,True,False,What ingredients do I need to make Skittles Vodka?
+train,3775,True,False,How can I get dust and dirt from between the keys of a laptop?
+train,3789,True,False,Make real vanilla extract.
+train,3870,True,False,To get dressed.
+train,3893,True,False,"To separate salt from water that it is mixed into,"
+train,3898,True,False,how to make homemade bread crumbs
+train,3906,True,False,How to boil water.
+train,3918,True,False,What do I need to make a sugar candy?
+train,3933,True,False,"To allow a cake to cool,"
+train,3955,True,False,How do you escape a car if the car is sinking?
+train,3964,False,True,How do you make ginger simple syrup?
+train,3987,True,False,To make a reminder on your iphone.
+train,3991,True,False,"To grip a football for throwing,"
+train,4021,True,False,"To label various cords for easy identification,"
+train,4033,True,False,how do you get free throws in basketball?
+train,4036,True,False,how do you use a parking meter?
+train,4037,True,False,how do you frost a cake?
+train,4044,True,False,"To find new, local bands that you may like,"
+train,4049,True,False,how to cook pasta
+train,4061,True,False,Filter water using a charcoal filter.
+train,4063,True,False,How do you remove drawers from a dresser?
+train,4071,True,False,"To speed up the process of cooking food in restaurants,"
+train,4075,True,False,How to make a human sized body shell.
+train,4079,True,False,Measuring a cup of sugar.
+train,4088,True,False,To create a hidden vessel to store valuable items.
+train,4091,True,False,"My phone does not properly charge, or it charges slowly, how can I fix this?"
+train,4098,True,False,"To help dry out shoes when they are wet from rain,"
+train,4136,True,False,how do you cash a check?
+train,4141,True,False,stop rust on garden furniture
+train,4162,False,True,make easy boiled chicken
+train,4196,True,False,How can you attach a paperclip to a plastic baggy?
+train,4208,True,False,How do I correctly put the letters onto the sign?
+train,4296,True,False,How to make a simple glass feature for a synthetic plant?
+train,4308,True,False,To make chocolate milk.
+train,4313,True,False,How to best mow the lawn
+train,4335,True,False,How do I improve my mood naturally?
+train,4376,True,False,"To prevent burning hands when lighting a candle,"
+train,4391,True,False,How do you make the first braid?
+train,4392,True,False,What is a fun way to add style to your fringe t-shirt?
+train,4413,True,False,"To keep pizza warm when driving the pizza home,"
+train,4452,True,False,How do you get penalized for pass interference in football?
+train,4474,True,False,how do you indent something?
+train,4485,True,False,"To make bread that matches Indian food well,"
+train,4486,True,False,how can you soften butter?
+train,4498,True,False,how to remove excess grease from a cooked hamburger
+train,4600,True,False,To tighten a screw
+train,4607,True,False,how do you get rid of boogers in your eyes when you wake up?
+train,4673,True,False,How to make the board look for attractive?
+train,4676,True,False,How to prevent your garden producing stubby carrots?
+train,4677,True,False,To tighten a nut
+train,4683,True,False,How do you clean a bowl?
+train,4709,True,False,How do you finish felling a tree after making your wedge cut?
+train,4713,True,False,heal a paper cut immediately
+train,4719,True,False,What's your favorite desert?
+train,4771,False,True,peanut butter cookie recipe
+train,4787,True,False,How do you remove a sliver?
+train,4797,True,False,How to tell if cake is done baking.
+train,4801,True,False,How do I sooth sun burned skin after a beach visit?
+train,4804,True,False,How to wash your bike off after a muddy ride
+train,4813,True,False,How do you remove stains from a shirt?
+train,4838,True,False,How to easily make an infinity dress versatile?
+train,4872,True,False,how do you use milk with cereal?
+train,4902,True,False,How to best protect food from cockroaches?
+train,4930,True,False,Make a chair for yard.
+train,4945,True,False,How to dice a potato quickly.
+train,4975,True,False,Test an Egg’s Freshness
+train,4982,True,False,"To prepare a professional Christmas card without spending a lot,"
+train,5006,True,False,"To prevent white clothes from turning pink, or other colors, in the wash,"
+train,5041,True,False,To light the room up.
+train,5063,True,False,How long should the dimensions of the wood be to build an easy cleaning guinea pig cage?
+train,5067,True,False,How to make a nintendo switch RCM jig.
+train,5080,True,False,Hem your own pants.
+train,5082,True,False,How to get rid of cockroaches?
+train,5180,True,False,how do you translate from spanish to english?
+train,5190,True,False,How did Amazon get its name?
+train,5223,False,True,To strain yogurt.
+train,5226,True,False,How can I prevent splinters when handling wood for wood crafting?
+train,5260,True,False,How to prepare a pan for triple chocolate cake.
+train,5299,True,False,how do you wipe after using the restroom?
+train,5320,True,False,To harvest from your home garden.
+train,5349,True,False,remove water rings on wood
+train,5411,True,False,What is the best way to prepare a steak for grilling?
+train,5412,True,False,how do you get the toothfairy to come after you've lost a tooth?
+train,5419,True,False,how to make toast that isn't dry
+train,5430,True,False,To stream an item on YouTube
+train,5511,True,False,How do you decorate upcycled pirate coin treasure?
+train,5541,False,True,leek and potato soup
+train,5543,True,False,Aphids aphids everywhere what can I do?
+train,5600,True,False,"To open a box of kleenex,"
+train,5602,True,False,how do you keep water inside of a shower?
+train,5603,True,False,Make a nice candle holder.
+train,5634,True,False,How do i make the sugar syrup for making candy?
+train,5656,True,False,How do you win in Four Square?
+train,5665,True,False,how do you stop yourself from oversleeping?
+train,5686,True,False,To get Jello to completely dissolve.
+train,5688,True,False,What materials are needed to make dip dye ombre curtains?
+train,5698,True,False,how to freeze berries
+train,5714,True,False,To thoroughly mix the dry ingredients for a chocolate cake.
+train,5726,True,False,"To stay focused while working on an arduous task,"
+train,5752,True,False,How can I cook bacon for a recipe?
+train,5759,True,False,how do you fill a gas can?
+train,5778,True,False,How best to microwave rice.
+train,5854,True,False,how to maximize herbs
+train,5857,False,True,how to make butter in a mason jar
+train,5873,True,False,"To open a beer bottle with a watch,"
+train,5897,True,False,Clean the bathtub.
+train,5919,True,False,Make a book.
+train,5935,True,False,"To clean a shirt quickly without laundering it,"
+train,5973,True,False,To clean out the dishwasher.
+train,6016,True,False,How to adjust the reach on your Sram brake levers
+train,6067,True,False,How to raise the audio volume on windows 10
+train,6075,True,False,Prepare the concrete to pour into a form.
+train,6088,True,False,Conceal the coffee stain in a new white blouse.
+train,6113,True,False,Keep fleas out of the house
+train,6128,True,False,To open a coca cola glass bottle top
+train,6133,True,False,Extend the life of spices.
+train,6168,True,False,How can I easily remove waterproof face makeup?
+train,6174,True,False,What kind of rice do I need when I am making fried rice ?
+train,6179,True,False,how do you react to a message on facebook?
+train,6189,True,False,How to perfectly cut the strap of a dress?
+train,6210,True,False,how to use a computer mouse
+train,6223,True,False,Plant a flower in your garden.
+train,6238,True,False,Get your car unstuck in snow.
+train,6280,True,False,how do you sign up for facebook?
+train,6298,True,False,How do I make sure the shoes stay attached to the babies feet?
+train,6303,True,False,How to decorate the front yard.
+train,6339,True,False,how to sear effectively
+train,6353,True,False,What is the best way to attach a magnet on to a wooden plank?
+train,6361,True,False,To remove the old strings from a guitar.
+train,6368,True,False,Feed 4 people for $5.
+train,6418,True,False,"To clean suede boots without destroying the texture,"
+train,6420,True,False,To install a program on your computer.
+train,6479,True,False,How to sew a straight stitch for mending a pillowcase seam by hand?
+train,6492,True,False,To dust a large piece of furniture.
+train,6508,True,False,how to do spin painting
+train,6517,True,False,"To get natural curls in your hair,"
+train,6526,True,False,how do you put on a clip on tie?
+train,6539,True,False,To open a stuck jar.
+train,6564,True,False,How to make a handle for a sword?
+train,6566,True,False,"To find a space large enough for an office set up,"
+train,6571,True,False,To sign up to amazonmTurk
+train,6590,True,False,Make a nutritious breakfast drink.
+train,6598,True,False,What is the first step in building a boat?
+train,6610,True,False,"To raise your children to be more self sufficient,"
+train,6612,False,True,What is a good way to close a sale when the buyer is uncertain?
+train,6627,True,False,"To help focus an eye that usually requires glasses,"
+train,6632,True,False,What is the best way to cut a watermelon?
+train,6638,True,False,how do you take a pregnancy test?
+train,6650,True,False,How do you add flavoring to stove popped popcorn?
+train,6651,True,False,how do you read a book?
+train,6667,True,False,"To attract and remove fruit flies from a living space,"
+train,6668,True,False,"To easily keep business card contacts without filling your wallet to the brim,"
+train,6670,True,False,Draw a rainbow.
+train,6679,True,False,How to check if your child has a fever.
+train,6692,False,True,how do I make cherry crumb bars?
+train,6697,True,False,Eat sweet potatos
+train,6718,False,True,How to Make Biscuits and Gravy
+train,6719,True,False,"To prepare the side panels of bottle holder,"
+train,6740,True,False,To get fish for my aquarium.
+train,6752,False,True,How to make a cherry Cobbler at home.
+train,6787,True,False,What type of finish should you use on the handle?
+train,6810,True,False,How can you make a pedestal for a homemade rain gauge?
+train,6816,True,False,How can you increase the shelf life of bananas?
+train,6824,True,False,"To keep track of your daily medication,"
+train,6828,True,False,How do you make a pixel heart out of paper?
+train,6845,True,False,"To make a S'moreo when camping outdoors,"
+train,6858,True,False,"To safely get rid of a dog that you can no longer take care of,"
+train,6862,True,False,How do you tie off crochet?
+train,6864,True,False,What is an easy way to chop onions without tearing up?
+train,6868,True,False,To melt chocolate for fondue.
+train,6877,True,False,To light a campfire.
+train,6879,True,False,How do you properly bake chickpeas so they come out crispy?
+train,6907,True,False,To harvest herbs from my home garden.
+train,6948,True,False,How would you use a brick to open a bottle?
+train,6978,True,False,"To absorb extra salt that has been added to a dish,"
+train,6983,True,False,How to make tea with no electricity.
+train,6985,True,False,how do you pay your cellphone bill over the phone?
+train,6996,True,False,"To make an award winning chili for a chili cook off,"
+train,6999,True,False,How to dissuade trick or treaters from coming to your place.
+train,7019,True,False,Make sweets for the birthday party.
+train,7024,True,False,To dry candied violets
+train,7038,True,False,How do you keep the heat from a fire inside a primitive shelter?
+train,7047,True,False,Are there other trees besides maple trees that you can tap for maple syrup?
+train,7088,True,False,Should I add nuts to a cookie I am taking to a party?
+train,7095,True,False,how to rehydrate a sharpie
+train,7105,True,False,How can I dice garlic without stinky hands after?
+train,7121,True,False,Reuse an old mailbox in your garden.
+train,7127,True,False,How to sound better while singing
+train,7135,True,False,Make a neat place to write notes in kitchen.
+train,7157,True,False,How to decorate a lamp shade colorfully?
+train,7167,True,False,"To keep your lawn watered without having to stand outside and do it yourself,"
+train,7201,True,False,"When rendering duck fat, what is the best way to cook it?"
+train,7214,True,False,how to stuff bell peppers
+train,7262,True,False,How to make wood not look like wood after production.
+train,7265,True,False,how to shred tuna by hand
+train,7320,True,False,Dice an onion.
+train,7322,True,False,easily peel a kiwi
+train,7338,True,False,does cooking spray break down hard water particles?
+train,7339,True,False,"To wake up a sleeping body part that feels numb,"
+train,7404,False,True,How to make Vegetarian vegetable Stew
+train,7412,True,False,Draw a perfect circle.
+train,7442,True,False,How to make a dress form
+train,7475,True,False,how do I make infused olive oil?
+train,7502,True,False,how do you do jumping jacks?
+train,7514,False,True,How do you set up an aquarium for Wrestling Halfbeaks?
+train,7536,True,False,how do you kill someone?
+train,7537,True,False,how to add shine to hair
+train,7552,True,False,Make a blanket ladder.
+train,7565,True,False,What is the current standard way for a bystander to provide CPR?
+train,7571,True,False,Make a mixed drink.
+train,7617,True,False,How to pay a bill that comes in late?
+train,7623,True,False,To quickly put even holes into card stock.
+train,7644,True,False,What will happen if I accidentally eat the sticker on my fruit?
+train,7645,True,False,How should you act if bitten by a Shark in the ocean?
+train,7684,True,False,How can I organize my clothes during a trip?
+train,7701,True,False,how do you remind someone of something?
+train,7743,True,False,Make a rug for the bathroom.
+train,7761,True,False,To learn to dance.
+train,7788,True,False,How to start a mower that has no oil in it.
+train,7830,True,False,Keep nail polish from chipping.
+train,7877,True,False,"To eat out to a nice restaurant for cheap,"
+train,7886,True,False,how do you carry a tv without damaging the screen?
+train,7896,True,False,How can you air dry bottles with what you already have on hand?
+train,7900,True,False,Carve a funny face into an apple.
+train,8005,True,False,Remove olive pit
+train,8014,True,False,Use an old CD for scaring birds from your garden.
+train,8022,True,False,"To fold the socks into a ball,"
+train,8023,True,False,Is there a natural way to repel mosquitoes without using chemical sprays?
+train,8072,False,True,How to Make Easy Donuts
+train,8079,True,False,how do you save a video from snapchat?
+train,8103,True,False,Loosen your hard to use zippers
+train,8106,True,False,How to build a PC at home.
+train,8124,True,False,To hang wall art on a wall.
+train,8131,True,False,how to program a new smart code on Weiser door lock code?
+train,8146,True,False,"To make remembering which shoe fits on which foot easier for kids,"
+train,8162,True,False,"To ensure you do not get a hangover after a night of heavy drinking,"
+train,8198,True,False,After putting the jenga set together to secure them
+train,8204,True,False,To easily remove mud from boots.
+train,8205,False,True,how ot make meatballs
+train,8217,True,False,"To swap between Super NES, Nintendo 64, and Game Cube audio/video cables."
+train,8223,True,False,How can I make my own chip clips at home?
+train,8228,True,False,What can I plant in my garden to repel pests?
+train,8243,False,True,how to make peanut butter chocolate bites
+train,8265,True,False,how to melt butter on the grill
+train,8269,True,False,"To save money when pulling out cash from a bank account,"
+train,8274,True,False,Keep your knife edges sharp in a drawer.
+train,8297,True,False,How can you teach your dog to do tricks?
+train,8306,True,False,How to trouble shoot a wifi router?
+train,8338,False,True,To brown butter
+train,8346,True,False,Open the plastic packaging from the store quickly and easily.
+train,8354,True,False,"How do I remove cigarette smell from an electronic device, silicone material, or clothes?"
+train,8355,False,True,How to make a chocolate Meringue pie at home.
+train,8384,True,False,how do you sing karaoke?
+train,8399,False,True,Make peach cobbler in a jar
+train,8402,True,False,"To make a sponge cake,"
+train,8407,True,False,How to make healthier dressings.
+train,8420,True,False,"To avoid other poker players figuring out what kind of hand you have,"
+train,8448,True,False,What should I use to make batter for a southern fried pizza?
+train,8449,True,False,To cut hexagon pieces for decoration.
+train,8467,True,False,How can I fix a metal ring that has become snapped and no longer fits on my finger?
+train,8498,True,False,how do you put gauges in your ear?
+train,8513,True,False,Make patio stepping Stones
+train,8518,True,False,What material is good to make a wall pocket from?
+train,8520,True,False,How do you choose a pair of shoes?
+train,8525,True,False,How do you spray paint the sword?
+train,8540,True,False,How do I get a stuck bunt cake out of the pan when it is still warm?
+train,8541,True,False,How to throw a left hook
+train,8548,True,False,how do you empty a soda can?
+train,8553,True,False,make an indention in a cookie
+train,8571,True,False,"To save money on seeing a movie in the theaters,"
+train,8579,True,False,To grow a line of trees.
+train,8611,True,False,How to make Back Pack Quick Release Pins with a lathe
+train,8623,True,False,How do you accurately measure dry ingredients with measuring spoons?
+train,8668,True,False,"To push the stem out of a strawberry with ease,"
+train,8679,True,False,"To measure granulated sugar into a cup,"
+train,8703,True,False,How can I stain a piece of paper using tea.
+train,8798,True,False,To put the cut wood together to make the tray
+train,8815,True,False,how do you swipe right on your phone?
+train,8866,True,False,"To safe time when wanting an ice cold bottle of water,"
+train,8928,True,False,How can I keep toes separated while painting my toenails?
+train,8944,True,False,bend a screwdriver end to replace belt prong
+train,8950,True,False,How do you get the sugary texture for health sour patch grapes?
+train,8972,True,False,Make a hidden treasure box for fun and collect coins in it.
+train,8979,True,False,"How can I remove a nail or screw that is bent into a wall or surface, and can no longer be hammered in?"
+train,8986,True,False,how to keep a pie crust from becoming gummy?
+train,8994,True,False,Make shaped inserts for cakes
+train,9000,True,False,How to quickly dry out flowers for crafts and projects?
+train,9018,True,False,To cut veggies efficiently.
+train,9024,True,False,"To help a mechanic determine the issue involved with a car,"
+train,9038,True,False,how far in advanced should I slice cake?
+train,9044,True,False,Check the tread on your tires.
+train,9060,True,False,easily shred cheese without much of a mess
+train,9068,True,False,how do you torch something?
+train,9072,True,False,How to make popcorn on the stove.
+train,9084,True,False,How to prevent pain while cutting your nails?
+train,9095,True,False,To install an application on a smart television
+train,9134,True,False,How to make coffee in electric coffee maker.
+train,9144,True,False,Make a heartfelt Mothers Day card for mom.
+train,9174,True,False,"To spread pizza sauce over dough,"
+train,9175,True,False,What is the best way to reward kids?
+train,9205,True,False,Apply blush
+train,9211,True,False,How to snap a banana peel
+train,9213,True,False,Can I make my pocket friends stay in my pocket?
+train,9221,True,False,To get free food on your birthday.
+train,9253,True,False,How to portion baked chicken into 4 ounces.
+train,9276,True,False,Use paper mache to make a specific shape.
+train,9287,True,False,how to create a sweet baste for meat
+train,9315,True,False,Create a ghost for your front yard for Halloween.
+train,9329,True,False,How to Cut Out Pattern To Make BiFold Wallet
+train,9408,True,False,How do you roll a bowling ball?
+train,9409,True,False,How to fix the problem of a slippery spot on the floor.
+train,9422,True,False,how to get crispy skin on chicken
+train,9430,True,False,How can I prevent static cling on clothes when I'm out of dryer sheets?
+train,9436,True,False,To uninstall a software from a windows computer.
+train,9440,True,False,To get through to someone who's phone is on do not disturb.
+train,9450,True,False,"To harvest corn,"
+train,9476,True,False,To make a healthy vegetable smoothie.
+train,9493,True,False,How do you make a key lock easier to open?
+train,9507,True,False,"To fix some smudged frosting on a cake,"
+train,9526,False,True,make chex mix
+train,9548,True,False,What should you do to keep paint from drying on a hair brush in between coats.
+train,9549,True,False,how do you cast something to your tv?
+train,9560,True,False,"How to get a ball point pen writing again when it stops, even though there is lots of ink in the pen?"
+train,9572,True,False,"To make a chocolate milk shake,"
+train,9605,True,False,How can I fill the pond I just made in my backyard?
+train,9623,True,False,how to keep fish from sticking to the pan
+train,9630,True,False,What ingredients do I need to make homemade Hummus?
+train,9634,True,False,How to make a magazine rack.
+train,9635,True,False,Prevent tea bag from falling.
+train,9671,True,False,How can you add graphic designs to a table cloth?
+train,9679,True,False,To water your garden quickly and efficiently
+train,9684,True,False,Homemade peanut butter cookies.
+train,9689,True,False,Create a pattern for a shirt.
+train,9713,True,False,brush
+train,9726,True,False,To make a costume
+train,9759,True,False,"To produce dye of certain colors when out in nature,"
+train,9761,True,False,What should you do if bitten by a Rattlesnake?
+train,9783,True,False,how to get a great sear on a steak
+train,9784,True,False,"To cook food wrapped in foil in a microwave,"
+train,9793,True,False,To make your house smell great.
+train,9805,True,False,how do you win at go fish?
+train,9825,True,False,To mask the vodka taste in vodka-infused gummy bears
+train,9850,True,False,How do you build an upcycled sewing station?
+train,9852,True,False,Trim a christmas tree.
+train,9873,True,False,Keep your rose bushes healthy and blooming.
+train,9888,True,False,"To get homemade quantum dots to glow,"
+train,9891,True,False,"To keep your kid's rooms clean without constantly demanding that they clean up,"
+train,9898,True,False,how to keep chopped vegetables from becoming slimy
+train,9899,True,False,how do you read a book?
+train,9909,True,False,how do you play a dvd on an xbox?
+train,9921,True,False,"To avoid packing too much for your trip,"
+train,9951,True,False,Make a travel mug.
+train,9958,True,False,Make zucchini noodles
+train,9971,True,False,"To avoid ruining a nice Halloween costume,"
+train,9975,True,False,"To make cinnamon waffles easily without any hassle,"
+train,9983,False,True,how to make candy apples
+train,9987,False,True,how to make almond nougat
+train,9997,True,False,Is genetically modifying DNA the same as what breeders and horiculturalists have been doing for centuries?
+train,10013,True,False,how do you show a surprised face
+train,10017,True,False,how do you use hand sanitizer?
+train,10058,True,False,How to make a cast iron frying pan non stick?
+train,10062,True,False,"To boil water more quickly on the stove top,"
+train,10107,True,False,Make a double boiler to melt chocolate
+train,10171,True,False,Open a jelly jar that is stuck shut using a rubber dish washing glove.
+train,10189,True,False,How to make a simple wooden frame?
+train,10197,True,False,To peel the papery skin from ginger.
+train,10198,True,False,how to keep food hot on your plate?
+train,10200,True,False,"To properly, thoroughly apply bug spray while camping,"
+train,10297,True,False,"To save money on wedding flowers,"
+train,10298,True,False,Which is the best side to push a broken down car?
+train,10329,True,False,Determine if something is brass or gold.
+train,10336,True,False,"To reduce the sodium in instant Ramen packets,"
+train,10341,True,False,how to stain wood
+train,10380,True,False,Make a man love you.
+train,10389,True,False,"To slice cookie bars in a pan,"
+train,10429,True,False,How to cover stamp in ink.
+train,10440,True,False,How to make sure the bacon is done.
+train,10443,True,False,How can I make two pieces of wood stick without using nails or screws?
+train,10445,True,False,How to organize a suitcase.
+train,10470,True,False,"To increase the gas mileage of your vehicle,"
+train,10491,True,False,What size of wheels should be used on a barn door?
+train,10499,True,False,Build a book shelf out of old lumber.
+train,10503,False,True,How to make a Fried Cherry Pie on your stovetop.
+train,10505,True,False,How would you attach leather to a metal surface?
+train,10507,True,False,how do you blend eyeshadow colors?
+train,10552,True,False,"To give away baby pets after a pet gives birth,"
+train,10555,True,False,"To prepare for a security check at the airport,"
+train,10576,True,False,Catch a fish with a primative fishing rig.
+train,10605,True,False,Help me get rid of the frogs and toads in my garden.
+train,10624,True,False,how to splatter paint a wall.
+train,10626,True,False,How do you choose what video game to buy?
+train,10657,True,False,How do you make chocolate ganache for macarons?
+train,10690,True,False,"To help calm down a panicking dog,"
+train,10699,True,False,To make your hair soft.
+train,10711,True,False,"To open a can of evaporated milk,"
+train,10714,True,False,Jump start a car battery
+train,10715,True,False,What happens if a breeder crosses a horse with a donkey?
+train,10729,True,False,handkerchief
+train,10749,True,False,is it okay to eat baking chocolate with a white film?
+train,10771,True,False,How can I acquire more crochet material without buying it at a specialty store?
+train,10779,True,False,To fix a PC that won't turn on.
+train,10783,False,True,how can I broil meat?
+train,10790,True,False,How do you make bait to put inside a homemade soda can wasp trap?
+train,10816,True,False,"To become a manager of a business,"
+train,10844,True,False,Turn on oven and bake ingredients that were added for cookies.
+train,10849,True,False,To create a Yahoo account
+train,10859,False,True,How To Make Banana Bread from Scratch
+train,10896,True,False,"To pack for a vacation carefully,"
+train,10901,True,False,How to change engine oil.
+train,10903,True,False,How do you calculate your gas mileage?
+train,10954,True,False,Use a mason jar to make a appealing drink.
+train,10956,True,False,How do I ask my daughter about her new boyfriend?
+train,10974,True,False,How do I set up my charcoal grill for indirect heat ?
+train,10980,True,False,To change a router WiFi password
+train,10990,True,False,"To know what your home smells like to guests,"
+train,11023,True,False,How do you paint a stencil?
+train,11040,True,False,how to make a roux
+train,11052,True,False,Frying up some french fries
+train,11108,True,False,What can I use in case of emergency if I don't have a candle?
+train,11128,True,False,How do you win a bid on eBay?
+train,11200,True,False,What does the FAST acronym mean to a first aid technician?
+train,11203,True,False,"To travel with an infant in arms,"
+train,11220,True,False,"To prepare to have a baby in the hospital,"
+train,11233,True,False,What can I use as impromptu or make shift crochet sticks?
+train,11253,True,False,How do you attach two boards for a door frame?
+train,11269,True,False,"To secure a thread inside of a needle, you can"
+train,11303,True,False,Apply mascara
+train,11304,True,False,"To make French fries,"
+train,11308,True,False,To eat a healthy chicken bowl.
+train,11318,True,False,How can you make you own video game sprite craft?
+train,11320,True,False,What must be done before the first step?
+train,11357,True,False,how do you open a book?
+train,11374,True,False,"To remove gum easily from clothing,"
+train,11383,False,True,Bracing the base pf your platform with 2 x 4.
+train,11405,True,False,"Make a leg support for bed time, to take pressure off of your back."
+train,11406,False,True,What are the steps to making a paracord eternity bracelet?
+train,11411,True,False,"To prep the baking sheet,"
+train,11435,True,False,Saute onions in a pan
+train,11441,True,False,Feed 6 people for under $5?
+train,11448,True,False,how do you use an extension cord?
+train,11469,True,False,How often should I water my apple tree?
+train,11484,True,False,Stand straighter
+train,11486,True,False,Trim the tree.
+train,11487,True,False,To delete file in a computer
+train,11568,False,True,What supplies are needed to build a treeless tree house?
+train,11570,True,False,To make vegetable salad tastier.
+train,11607,True,False,How to quickly cool fried chicken so it can be eaten?
+train,11614,True,False,How do you clean egg from a pan?
+train,11624,True,False,How do you make unique shapes with a 3d paper snowflake?
+train,11646,True,False,To cut a hole into the bottom of a can.
+train,11670,True,False,"To save time when watching a long lecture or video on YouTube,"
+train,11701,True,False,How can I re-purpose an old circuit board?
+train,11718,True,False,"To clean an Xbox 360 controller,"
+train,11735,True,False,"To disassemble a computer,"
+train,11769,True,False,"To provide nutrients to plants and vegetables while growing,"
+train,11780,True,False,How to you attach a piece of felt to a piece of wood?
+train,11786,True,False,how to clean white shoes
+train,11806,True,False,How do I obtain an error code on a broken Xbox 360 that can't output video?
+train,11831,True,False,What is the easiest way to use cream to decorate a cake?
+train,11849,False,True,How do you cook mashed yams?
+train,11863,True,False,To prep the jalapenos for stuffing.
+train,11889,True,False,How do you proceed with a yield sign?
+train,11896,True,False,How to cook rice perfectly every time?
+train,11903,True,False,To prepare the maple wood for the tray file project
+train,11933,True,False,"To protect a note from any damage,"
+train,11991,True,False,What do you need to grow an avocado tree?
+train,12020,True,False,How to make a simple bow and arrow?
+train,12068,True,False,How to clean a hand saw.
+train,12078,True,False,how do you use fly trap tape?
+train,12081,True,False,hide your valuables while at the beach.
+train,12102,True,False,Is there an easy way to remove mud from the bottom of your shoes?
+train,12106,True,False,How to check your bicycle tire pressure by hand
+train,12132,True,False,How to potty train a puppy.
+train,12143,True,False,How to make water balloons at home?
+train,12158,True,False,"what to substitute for hamburger, for a veggie burger"
+train,12174,True,False,How to heat coals for a charcoal fire?
+train,12219,True,False,how do you put a onesie on a baby?
+train,12222,True,False,"To break an egg,"
+train,12238,True,False,Make a small rock garden.
+train,12259,True,False,Make a headboard for a Queen sized bed.
+train,12262,False,True,How to make fried chocolate pies at home.
+train,12265,True,False,How do I reinflate a flat bicycle tire?
+train,12270,True,False,to get rid of rough feet.
+train,12290,True,False,Talk to your family for free.
+train,12294,True,False,fix burnt toast
+train,12310,True,False,How do I prolong the sharpness of a kitchen knife?
+train,12315,True,False,To make home furniture.
+train,12318,True,False,How to shape melted aluminium?
+train,12341,True,False,Make tea.
+train,12348,True,False,how do i color my hair?
+train,12354,True,False,To replace the N64 jumper pak.
+train,12398,True,False,Disinfect your sponges
+train,12419,True,False,Where do you commonly hide money?
+train,12424,True,False,How to make banana chips
+train,12442,True,False,how do you play fetch?
+train,12448,True,False,how do you get a drivers license?
+train,12449,True,False,I can't remember what the name is but is there a plant that smells like pineapples?
+train,12457,True,False,DIY floating ping pong table
+train,12527,True,False,"To help encourage your cat to stay hydrated,"
+train,12534,True,False,easily remove dough from hands
+train,12539,True,False,how to keep bacteria from forming in flower vases
+train,12560,True,False,"To keep ants away from your food during a picnic,"
+train,12562,True,False,Make a peanut butter and jelly sandwich.
+train,12564,True,False,To download an application using android phone.
+train,12565,True,False,To purify tap water.
+train,12574,True,False,"How to open a tab again that was recently closed,"
+train,12590,True,False,"To help sharpen garbage disposal's blades,"
+train,12616,True,False,"Before you dissemble an electronics or furniture, what should you do?"
+train,12618,True,False,"To warm up after coming in from the snow,"
+train,12629,True,False,To coax the dog into the yard once he's run away.
+train,12643,True,False,Clean your armpits.
+train,12646,False,True,How to Make Fried Chicken
+train,12660,True,False,how do you circle something?
+train,12686,True,False,To allow the Minnesota cookies to cool completely
+train,12712,True,False,how do you meditate?
+train,12726,True,False,clean caked on food in the oven
+train,12727,True,False,To increase your PS4 hard drive.
+train,12738,True,False,To start the duct tape woven purse
+train,12741,True,False,shape a soda can
+train,12754,True,False,"To type the sun symbol into your computer using your keyboard,"
+train,12786,True,False,"To make popcorn on a camp fire,"
+train,12803,True,False,to remove a bee stinger from your foot
+train,12851,True,False,"To polish a hex nut,"
+train,12860,True,False,How do I clean my computer monitor with toothpaste?
+train,12912,True,False,Make oatmeal.
+train,12924,True,False,Make a crown.
+train,12953,False,True,make a pineapple upside down cake sundae
+train,12962,False,True,Make mouthwash with peroxide
+train,12974,True,False,To tighten a wrench.
+train,12987,True,False,Easiest way to peel tomatoes?
+train,13015,True,False,"To find yeast in the wild,"
+train,13066,True,False,Should I keep the water or drain it for my romen?
+train,13067,False,True,How to make great Strawberry Rhubarb cobbler at home.
+train,13072,True,False,How do you keep your room organized?
+train,13080,True,False,What is the best way to tell someone that they need to use deodorant?
+train,13087,True,False,Candied Orange Peels
+train,13098,False,True,To cut perfect cookies
+train,13107,True,False,How do you hang a picture on the wall?
+train,13155,True,False,Make a Turkey decoration.
+train,13169,True,False,how do you play sardines?
+train,13190,True,False,"To remove freshly baked, hot bread out of the pan,"
+train,13214,True,False,How To Make Creamy Mac N Cheese
+train,13230,True,False,To plug a sega genesis controller into an atari 2600.
+train,13250,True,False,To change a flat tire on your vehicle.
+train,13251,True,False,How do you look up words in an Arabic dictionary?
+train,13261,True,False,How do I add egg to the hot water to poach it?
+train,13263,True,False,How to wax the car.
+train,13264,True,False,how do you peel a banana?
+train,13300,True,False,How to upcycle old clothes.
+train,13306,False,True,How to make Peanutbutter Rice Crispy Fantasy fudge crunch at home.
+train,13317,True,False,How can I fix a phone or tablet that has its screen frozen?
+train,13330,True,False,how to get cheap textbooks
+train,13338,False,True,how can i make Blonde butter syrup
+train,13383,True,False,how do you catch mice?
+train,13415,True,False,To waterproof wood for rain.
+train,13426,False,True,How to clean wall clock battery Terminals?
+train,13438,True,False,Sort laundry.
+train,13455,True,False,In order to attach the clothespins to the plywood for a glove holder
+train,13459,True,False,How to find a word quickly in a dictionary or other alphabetized index.
+train,13461,True,False,"To show school spirit without a lot of money,"
+train,13470,True,False,The main material in an Autumn glow.
+train,13476,True,False,How do you lock rods into a baseplate?
+train,13497,True,False,"To shine colored pencils,"
+train,13505,True,False,Make a neat trash container for your car.
+train,13508,True,False,How to easily prepare potatoes for a potato omelette?
+train,13541,True,False,To trim a sheet of paper
+train,13554,True,False,How do you easily use icing to decorate a cake?
+train,13582,True,False,How to scrub grout clean.
+train,13595,True,False,How do you deep fry coke?
+train,13598,True,False,How can I prevent ceramic bowls from being scratched up or damaged?
+train,13637,True,False,"To score a run in a baseball game,"
+train,13659,True,False,Wash the fabric before creating a costume.
+train,13666,True,False,"To make sure that your child's clothing options fit as they grow quickly,"
+train,13702,True,False,pot
+train,13721,True,False,To help the toddler make a mermaid tail!
+train,13731,True,False,How can I remove an oil-based paint stain from my clothes?
+train,13743,True,False,Where should you shelter in a thunderstorm?
+train,13773,True,False,Remove shingles from a roof.
+train,13799,True,False,"To get a piece of parchment paper,"
+train,13823,True,False,How do you stick to a diet?
+train,13824,True,False,Make a Picture frame.
+train,13842,True,False,Grill pork outdoors on a charcoal grill
+train,13856,True,False,How can you make easy wall art decor?
+train,13872,False,True,Make your own hot dog sauce
+train,13882,True,False,Choose some suitable paper.
+train,13898,True,False,easiest way to cook bacon without burning it.
+train,13905,True,False,"To make purple paint,"
+train,13934,True,False,To cut a metal bar into two equal sizes.
+train,13977,True,False,How can I clean a wine stain from my bed sheets quickly and easily?
+train,13999,True,False,Preserve fish for use at a later date.
+train,14030,True,False,How to clean a pot after cooking rice?
+train,14050,True,False,How do you pack a first aid kit?
+train,14071,True,False,how do you do a reverse layup?
+train,14075,True,False,Making a portable stove
+train,14080,True,False,Make toast.
+train,14097,False,True,How to make a automatic fish feeder?
+train,14113,True,False,how to sanitize a kitchen sponge?
+train,14153,True,False,To boil rice on a stove.
+train,14171,False,True,What supplies are needed to make a baby arms jewelry rack?
+train,14172,True,False,Make a waste basket from cardboard.
+train,14175,True,False,Create an Easter basket.
+train,14188,True,False,"An instant pot recipe calls for water, should it be hot or cold water?"
+train,14255,True,False,"To make an easy carnita feast,"
+train,14256,True,False,How do I attach two or more pieces of foam together.
+train,14351,True,False,how do you look through all the app pages on an iphone folder?
+train,14354,True,False,To clean an oven.
+train,14357,True,False,"To help to dissipate the tension after upsetting someone,"
+train,14397,True,False,how do you test out a camera?
+train,14401,True,False,"To make your house the best for trick-or-treating,"
+train,14411,True,False,"To cut shapes out of the dough,"
+train,14427,False,True,How to make Blueberry bubble cobbler at home.
+train,14485,True,False,Make a phone stand for your smart phone.
+validation,35,True,False,"To prevent clumpy gravy when making it homemade,"
+validation,44,True,False,To prepare the wooden panels from a wooden pallet to be used in making a table.
+validation,115,True,False,How can I stop a vacuum from overheating or jamming when in use?
+validation,129,True,False,What is the best way to go to sleep at a decent hour?
+validation,150,True,False,To pit a cherry while keeping the stem of the cherry intact.
+validation,176,False,True,make easy shortbread cookies
+validation,193,True,False,Sew your own clothes by hand.
+validation,203,True,False,To search for items in YouTube.
+validation,235,True,False,Draw more shoppers to your garage sale.
+validation,238,True,False,How can I mount a poster in my bedroom wall?
+validation,243,True,False,how do you sign out of the netflix app?
+validation,254,True,False,How do I filter the ocean water?
+validation,262,True,False,How do you throw a spiral with a football?
+validation,287,False,True,How to Make a Snowy Paper Christmas Tree
+validation,335,True,False,How to best store chocolate dough for long term usage?
+validation,363,True,False,make a bird house.
+validation,369,False,True,How to make Wild Mountain Dewberry cobbler at home.
+validation,378,True,False,How do I remove candle wax from my clothes?
+validation,396,True,False,make instant air conditioner
+validation,400,True,False,how to prepare jasmine rice for cooking
+validation,423,True,False,divide a 8.5 x 11 piece of paper into three equal parts.
+validation,437,True,False,"When stamping cookies with a pattern, do you cut or stamp first?"
+validation,442,True,False,Fix the hole in the screen in the window
+validation,444,True,False,How to Fill A Lost Glove Owl
+validation,445,True,False,Make animal shapes with the pancake batter.
+validation,485,True,False,how do you use a tanning bed?
+validation,491,True,False,To reset a router.
+validation,510,True,False,"To make old glass bottles into an instrument,"
+validation,538,True,False,When is the best time to aerate your lawn?
+validation,570,True,False,To make banana pudding with vanilla wafers.
+validation,588,False,True,How do you Safely Remove Toxic Palythoas from your Saltwater Aquarium
+validation,609,True,False,"To make the best nachos ever,"
+validation,650,True,False,To protect your iphone properly.
+validation,691,True,False,What do you do if you hit another car?
+validation,694,True,False,"To make a scavenger hunt activity for a party,"
+validation,706,True,False,What is a good way to find your lost phone.
+validation,732,True,False,How do I remove a door from its hinges?
+validation,743,True,False,How do you condense a toilet to be taken out for trash?
+validation,774,False,True,How to make Italian Beef soup
+validation,811,True,False,Seal the ends of a plastic drinking straw.
+validation,829,True,False,how do you turn off an xbox?
+validation,862,True,False,How to mark where to cut a hole for a new window in your vanlife van.
+validation,868,True,False,how do you wipe yourself after using the restroom?
+validation,894,True,False,how to get a more flavorful french fry
+validation,898,True,False,How to keep rare pokemon cards protected.
+validation,899,True,False,Make oatmeal.
+validation,908,True,False,"To remove a screw from the wall that has been stripped,"
+validation,919,True,False,"To rename a file on a computer,"
+validation,923,True,False,how do you clean fruit?
+validation,926,True,False,To melt chocolate for fondue.
+validation,938,True,False,Bake the cookies in the oven.
+validation,939,True,False,"How can I make a cool mail holder, cheaply?"
+validation,954,True,False,"To prevent a sandwich from getting soggy inside a sandwich bag,"
+validation,962,True,False,To create a Google account
+validation,972,True,False,Protect neck from sun.
+validation,974,True,False,How do you identify when to take a stem cutting from a gardenia plant?
+validation,988,True,False,How to remove skin from a chicken drumstick?
+validation,994,True,False,How to easily capture the shape of a human eye on a drawing?
+validation,1008,True,False,how to pick up tiny shards of glass
+validation,1009,True,False,how do you bake ribs?
+validation,1013,True,False,to make my chili hotter.
+validation,1041,True,False,How do I fix a hole in my wall?
+validation,1060,True,False,"How do I cook pasta, such as spaghetti or linguini?"
+validation,1091,True,False,To open laptop screws.
+validation,1119,True,False,Clean the bottom of the underground pool.
+validation,1156,True,False,Make a merry go round
+validation,1210,True,False,How do I remove the seeds from a whole cranberry fruit?
+validation,1212,True,False,"To remove excess glue,"
+validation,1225,True,False,Cleaning your house binds
+validation,1229,True,False,To attach the bottom of the mushroom cookie to the top
+validation,1289,True,False,How do you see better while driving at night?
+validation,1319,True,False,To melt butter for a recipe
+validation,1332,True,False,"When shopping for apples, how do I know which ones to pick?"
+validation,1336,True,False,Clean the pool
+validation,1361,True,False,how do you deflate a tire?
+validation,1364,True,False,easily peel a kiwi
+validation,1387,True,False,To Clean vegetables.
+validation,1388,False,True,make chewy brownies
+validation,1428,True,False,how do you boil potatoes?
+validation,1441,True,False,"To make an easy, no-mess paint toy for kids,"
+validation,1480,True,False,"To open a can of cherry pie filling,"
+validation,1483,True,False,Making pumpkin pie.
+validation,1501,True,False,DIY face mask for dry skin
+validation,1505,False,True,Make coconut oatmeal in a jar
+validation,1510,True,False,where do you cut your long-sleeve shirt if you want to make your arm warmer as long as possible from it?
+validation,1513,True,False,Make a mushroom omelette.
+validation,1544,True,False,How long do you have to cook the ricotta for?
+validation,1561,True,False,"To open a jar that will not open up due to its lid's tightness,"
+validation,1566,True,False,"To raise baby chicks in a cold climate,"
+validation,1604,True,False,making six pack holder
+test,16,True,False,"To get a video game console for a cheap price,"
+test,22,True,False,How to make sure all the clocks in the house are set accurately?
+test,33,True,False,"To make a bedroom temperature colder without a fan or air conditioner,"
+test,36,True,False,To spare the plant while picking lettuce
+test,41,True,False,Eliminate odors in the laundry room.
+test,54,True,False,Trim apple trees.
+test,66,True,False,How to light a candle with a deep seated wick?
+test,85,True,False,How do you harvest honey from a bee box?
+test,87,True,False,How to create Dorodango (Japanese mud-art).
+test,129,True,False,"To simmer water, you can"
+test,130,True,False,how to add a deeper flavor to ground beef?
+test,150,True,False,"To make the caffeine in coffee release slowly after consumption,"
+test,179,True,False,How to teach your toddler how to talk.
+test,180,True,False,How to prevent BBQ chicken skin from burning on the grill?
+test,190,True,False,How do I get glitter to stay on ribbon?
+test,209,True,False,Harvest maple syrup.
+test,223,True,False,How To Find a Stud in the Wall to Secure Workshop Cabinets
+test,237,True,False,How can I stop Eye strain and help prevent headaches?
+test,244,True,False,How to get people to come to the carnival.
+test,251,True,False,How do I prevent my muscles from getting sore after lifting weights or exercise?
+test,264,True,False,After baking the rollo cookies
+test,277,True,False,To make hay.
+test,278,True,False,Best way to pierce ears.
+test,346,True,False,how do you save a contact in your phone?
+test,362,True,False,How do I get fish for my aquarium?
+test,390,True,False,How to mail a letter.
+test,394,True,False,How should I drill the hole in the back of the frame?
+test,396,True,False,How can I make glow sticks last longer?
+test,399,True,False,What size fish tank should I buy for my Betta fish?
+test,402,True,False,"To easily disburse pancake mix on a pan,"
+test,404,True,False,"To prevent a door from latching shut,"
+test,413,True,False,how to add feet to a coaster.
+test,460,True,False,How to create a golf ball pendant?
+test,462,True,False,The best nail to use at every crossing of a roofing job
+test,484,True,False,To hang a picture frame up.
+test,500,True,False,How to stop a pie crust from burning while it bakes.
+test,512,True,False,To make caramel popcorn.
+test,554,True,False,"To measure oats into a measuring cup without making a mess,"
+test,558,True,False,How to cut wood on a band saw.
+test,584,True,False,"To cook down chopped apples mixture,"
+test,586,True,False,how do you chew your food?
+test,587,True,False,Make homemade pasta from dough
+test,631,True,False,Is there a product that helps keep dirt and grime from sticking to my car?
+test,640,True,False,make a bowling game in the yard.
+test,664,True,False,How to make a garden in the city
+test,692,True,False,"To charge a phone while out in public with only the charger,"
+test,738,True,False,how do you use concealer?
+test,747,True,False,adding scents to lotion bars
+test,771,True,False,How to wash your windows without leaving streaks?
+test,836,True,False,How to attract hummingbirds to your garden?
+test,853,True,False,"To decrease the amount of car pollution in the atmostphere,"
+test,873,True,False,"To increase the flavor intensity in a pot of soup,"
+test,892,True,False,To make corn bread.
+test,914,True,False,How do you make a snow ball?
+test,925,True,False,What is the best way to apply nail polish to a professional result?
+test,961,True,False,"To quickly cook broccoli when making rice,"
+test,970,True,False,What surface can I use to properly iron a shirt?
+test,979,True,False,How do you remove the center seed pack?
+test,993,True,False,How to make a simple camping lantern.
+test,1024,True,False,how to keep earbuds from tangling?
+test,1044,True,False,"To pit whole olives,"
+test,1049,True,False,To regulate a fan speed.
+test,1050,True,False,How can I keep a piece of paper from sliding around on a table?
+test,1059,True,False,Make a toy for baby.
+test,1060,True,False,How do you kick a soccer ball?
+test,1095,True,False,Dye lace with koolaid.
+test,1100,True,False,To fit the crust to the pie.
+test,1118,True,False,How to make homemade mac n cheese?
+test,1123,True,False,can you use any oil for frying foods?
+test,1153,True,False,To melt the chocolate for the pot brownies
+test,1215,True,False,"To assemble furniture,"
+test,1225,True,False,How to best carve out a wooden clamp for picture frames?
+test,1230,True,False,how to melt beeswax
+test,1293,False,True,How do you ship live aquatic snails in the mail?
+test,1311,True,False,"To scramble eggs once cooking in a pan,"
+test,1351,True,False,Make the best tasting lemonade you've ever tried.
+test,1363,True,False,Make oatmeal.
+test,1369,True,False,Is there a best way to blow up party balloons?
+test,1375,True,False,Buy name brand clothing inexpensively.
+test,1384,True,False,To make an alcohol watermelon.
+test,1416,True,False,how to easily cut bacon and pancetta.
+test,1424,True,False,How to eat a grapefruit.
+test,1427,True,False,How should I start the assembling process?
+test,1433,False,True,How to make a Wild Blackberry cobbler at home.
+test,1454,True,False,how do you butter toast?
+test,1476,True,False,How do I make glow-in-the-dark planters?
+test,1490,True,False,How do I know what to do if a service dog comes up to me without their owner?
+test,1495,True,False,How to easily fish from a pier?
+test,1501,True,False,To make a flakey pie crust.
+test,1520,True,False,How to dissolve iron
+test,1583,True,False,how do you crisp something
+test,1592,True,False,How to keep flour from going everywhere when using a mixer.
+test,1603,True,False,To make a cheap terrarium for gecko.
+test,1613,True,False,easiest way to pick up shards of broken glass
+test,1645,True,False,"To check your breath in a short amount of time,"
+test,1683,True,False,Sharpen a pencil with a knife.
+test,1687,True,False,Pay the mortgage payment.
+test,1689,True,False,"To smoke tobacco with a coke can,"
+test,1718,True,False,How to clean your computer keyboard keys?
+test,1751,True,False,how do you cook chicken?
+test,1754,True,False,How to increase the water content of a piece of meat.
+test,1766,True,False,"To protect your car from scratches in your garage,"
+test,1773,True,False,"To make a pastry crispier after it has gone soft,"
+test,1802,True,False,To eliminate the chance of sparks when cutting an aerosol can.
+test,1825,True,False,how do you make a copy of a key?

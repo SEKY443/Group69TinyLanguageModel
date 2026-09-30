@@ -1,0 +1,8 @@
+{
+  "historical_code_and_outputs_preserved": true,
+  "executed_notebook_overwrite_blocked": true,
+  "generated_source_matches_all_modules": true,
+  "latest_smoke_matches_generated_code": true,
+  "latest_smoke_errors": 0,
+  "portable_source_paths": true
+}

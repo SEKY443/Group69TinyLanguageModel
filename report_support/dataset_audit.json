@@ -1,0 +1,133 @@
+{
+  "raw": {
+    "train": {
+      "schema_variants": [
+        [
+          "goal",
+          "sol1",
+          "sol2"
+        ]
+      ],
+      "nonstring_or_missing": 0,
+      "empty_text": 0,
+      "irregular_whitespace_items": 2335,
+      "raw_identical_options": 0
+    },
+    "test": {
+      "schema_variants": [
+        [
+          "goal",
+          "sol1",
+          "sol2"
+        ]
+      ],
+      "nonstring_or_missing": 0,
+      "empty_text": 0,
+      "irregular_whitespace_items": 281,
+      "raw_identical_options": 0
+    }
+  },
+  "splits": {
+    "train": {
+      "n": 14501,
+      "label_counts": {
+        "0": 7247,
+        "1": 7254
+      },
+      "exact_duplicate_excess": 6,
+      "unique_goals_casefold": 13361,
+      "asymmetric_tag_items": 755,
+      "identical_encoded_options": 55,
+      "lost_difference_by_truncation": 54,
+      "same_full_token_options": 1,
+      "canonical_duplicate_excess": 7,
+      "canonical_conflicting_answer_groups": 0,
+      "unknown_tokens": 0,
+      "token_count": 766424,
+      "unknown_rate": 0.0,
+      "whitespace_word_types": 26178,
+      "word_hapaxes": 7260
+    },
+    "validation": {
+      "n": 1612,
+      "label_counts": {
+        "1": 806,
+        "0": 806
+      },
+      "exact_duplicate_excess": 0,
+      "unique_goals_casefold": 1592,
+      "asymmetric_tag_items": 83,
+      "identical_encoded_options": 7,
+      "lost_difference_by_truncation": 7,
+      "same_full_token_options": 0,
+      "canonical_duplicate_excess": 0,
+      "canonical_conflicting_answer_groups": 0,
+      "unknown_tokens": 0,
+      "token_count": 86958,
+      "unknown_rate": 0.0,
+      "whitespace_word_types": 7673,
+      "word_hapaxes": 2466
+    },
+    "test": {
+      "n": 1838,
+      "label_counts": {
+        "0": 910,
+        "1": 928
+      },
+      "exact_duplicate_excess": 0,
+      "unique_goals_casefold": 1802,
+      "asymmetric_tag_items": 103,
+      "identical_encoded_options": 2,
+      "lost_difference_by_truncation": 2,
+      "same_full_token_options": 0,
+      "canonical_duplicate_excess": 0,
+      "canonical_conflicting_answer_groups": 0,
+      "unknown_tokens": 0,
+      "token_count": 97241,
+      "unknown_rate": 0.0,
+      "whitespace_word_types": 8452,
+      "word_hapaxes": 2829
+    }
+  },
+  "overlaps": [
+    {
+      "split_a": "train",
+      "split_b": "validation",
+      "exact_triples": 0,
+      "canonical_casefold_unordered_overlap": 0,
+      "shared_goals_casefold": 131,
+      "matches": []
+    },
+    {
+      "split_a": "train",
+      "split_b": "test",
+      "exact_triples": 1,
+      "canonical_casefold_unordered_overlap": 1,
+      "shared_goals_casefold": 152,
+      "matches": [
+        {
+          "a_indices": [
+            565,
+            1354
+          ],
+          "b_indices": [
+            1545
+          ],
+          "text": {
+            "goal": "How to make a vodka and soda?",
+            "sol1": "Put some ice in a glass. Measure an ounce and a half of vodka in glass. Finish the cocktail with soda.",
+            "sol2": "Put some ice in a glass. Measure an ounce and a half of soda in a glass. Finish the cocktail with vodka."
+          }
+        }
+      ]
+    },
+    {
+      "split_a": "validation",
+      "split_b": "test",
+      "exact_triples": 0,
+      "canonical_casefold_unordered_overlap": 0,
+      "shared_goals_casefold": 43,
+      "matches": []
+    }
+  ]
+}

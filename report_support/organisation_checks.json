@@ -1,0 +1,9 @@
+{
+  "relocated_files": 258,
+  "unchanged_after_path_updates": 256,
+  "deliberate_documentation_or_generated_notebook_updates": [
+    "docs/REFINEMENT_SUMMARY.md",
+    "notebooks/CITS4012_69_reproducible.ipynb"
+  ],
+  "unexpected_missing_or_changed_files": 0
+}

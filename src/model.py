@@ -211,8 +211,11 @@ class DACT(nn.Module):
         w = F.embedding(torch.cat([uni, bi], dim=1), self.lex_w, padding_idx=0)
         return w.float().sum((1, 2))
 
-    def mlm_logits(self, ids, seg, tags, attn_mask):
+    def mlm_logits(self, ids, seg, tags, attn_mask, selected=None):
         h, _ = self.encode(ids, seg, tags, attn_mask)
+        if selected is not None:
+            # The pointwise MLM head need only run at supervised positions. The encoder is unchanged.
+            h = h[selected]
         return self.mlm_transform(h) @ self.tok.weight.T + self.mlm_bias
 
 

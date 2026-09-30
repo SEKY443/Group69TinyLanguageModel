@@ -1,0 +1,20 @@
+{
+  "original_archived_files_verified": 10,
+  "original_output_files_unchanged": 88,
+  "original_code_output_pairs_preserved": 27,
+  "notebooks_validated_without_errors": [
+    "CITS4012_69.ipynb",
+    "notebooks\\CITS4012_69_reproducible.ipynb",
+    "evidence\\archive\\CITS4012_69_replication_verification.ipynb",
+    "evidence\\CITS4012_69_development_smoke.ipynb",
+    "evidence\\CITS4012_69_development_smoke_20260930_132631.ipynb",
+    "evidence\\CITS4012_69_development_smoke_20260930_234421.ipynb",
+    "evidence\\CITS4012_69_replication_verification.ipynb"
+  ],
+  "generated_modules_match": true,
+  "fresh_kernel_smoke_matches_current_code": true,
+  "replication_artifact_hashes_verified": 38,
+  "git_diff_check": "PASS",
+  "full_revised_Colab_and_pretrained_paths": "NOT EXECUTED",
+  "final_report_pdf": "NOT CREATED"
+}

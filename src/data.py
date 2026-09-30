@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import zipfile
+import hashlib
 
 import numpy as np
 import torch
@@ -94,16 +95,20 @@ def prepare_data(cfg: Config):
 
 
 def load_split(data_dir, split):
-    with open(os.path.join(data_dir, f"{split}.jsonl")) as f:
+    with open(os.path.join(data_dir, f"{split}.jsonl"), encoding="utf-8") as f:
         rows = [json.loads(line) for line in f if line.strip()]
-    with open(os.path.join(data_dir, f"{split}-labels.lst")) as f:
+    with open(os.path.join(data_dir, f"{split}-labels.lst"), encoding="utf-8") as f:
         labels = [int(line) for line in f if line.strip()]
-    assert len(rows) == len(labels), f"{split}: {len(rows)} rows vs {len(labels)} labels"
-    for r, y in zip(rows, labels):
-        assert y in (0, 1)
+    if len(rows) != len(labels):
+        raise ValueError(f"{split}: {len(rows)} rows vs {len(labels)} labels")
+    for i, (r, y) in enumerate(zip(rows, labels)):
+        if y not in (0, 1):
+            raise ValueError(f"{split} row {i}: label must be 0 or 1")
         r["label"] = y
         for k in ("goal", "sol1", "sol2"):
-            r[k] = " ".join(str(r[k]).split())  # collapse irregular whitespace
+            if not isinstance(r.get(k), str) or not r[k].strip():
+                raise ValueError(f"{split} row {i}: {k} must be a nonempty string")
+            r[k] = " ".join(r[k].split())  # collapse irregular whitespace
     return rows
 
 
@@ -127,6 +132,8 @@ def load_piqa(cfg: Config):
 # 2. Tokenizer (BPE learned from the training split only)
 # ----------------------------------------------------------------------------------------------
 def train_tokenizer(train_rows, cfg: Config, path=None):
+    if path and os.path.exists(path):
+        raise FileExistsError(f"Tokenizer evidence already exists: {path}. Use a fresh output directory.")
     tok = Tokenizer(models.BPE(unk_token="[UNK]"))
     tok.normalizer = normalizers.Sequence([normalizers.NFKC(), normalizers.Lowercase()])
     tok.pre_tokenizer = pre_tokenizers.Sequence([pre_tokenizers.Whitespace(), pre_tokenizers.Digits(individual_digits=True)])
@@ -140,8 +147,15 @@ def train_tokenizer(train_rows, cfg: Config, path=None):
     return tok
 
 
-def diff_tags(a, b):
-    """Token-level alignment of two solutions: TAG_SHARED where aligned-equal, TAG_DIFF otherwise."""
+def diff_tags(a, b, symmetric=False):
+    """Legacy alignment by default; canonical option order is an opt-in new preprocessing protocol.
+
+    SequenceMatcher tie-breaking is directional. Canonical ordering makes alignment equivariant
+    without consulting labels. Historical results must not be attributed to symmetric=True.
+    """
+    if symmetric and tuple(a) > tuple(b):
+        tb, ta = diff_tags(b, a)
+        return ta, tb
     ta, tb = [TAG_DIFF] * len(a), [TAG_DIFF] * len(b)
     sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
@@ -173,12 +187,13 @@ def encode_example(row, tok, cfg: Config):
     g = tok.encode(row["goal"]).ids[: cfg.max_goal_len]
     s1, s2 = tok.encode(row["sol1"]).ids, tok.encode(row["sol2"]).ids
     if cfg.diff_aware_truncation:
-        t1, t2 = diff_tags(s1, s2)   # align the full solutions, then cut both around their differences
+        # align the full solutions, then cut both around their differences
+        t1, t2 = diff_tags(s1, s2, cfg.symmetric_diff_tags)
         s1, t1 = truncate_around_diff(s1, t1, cfg.max_sol_len)
         s2, t2 = truncate_around_diff(s2, t2, cfg.max_sol_len)
     else:
         s1, s2 = s1[: cfg.max_sol_len], s2[: cfg.max_sol_len]
-        t1, t2 = diff_tags(s1, s2)
+        t1, t2 = diff_tags(s1, s2, cfg.symmetric_diff_tags)
     out = []
     for s, t in ((s1, t1), (s2, t2)):
         ids = [CLS] + g + [SEP] + s + [SEP]
@@ -237,6 +252,16 @@ def prepare_everything(cfg: Config):
     """Loads the splits, learns the BPE tokenizer on the training split and pre-tokenises every split."""
     train, val, test = load_piqa(cfg)
     tok = train_tokenizer(train, cfg, path=os.path.join(cfg.out_dir, "tokenizer.json"))
+    manifest = {"split_seed": cfg.seed, "val_frac": cfg.val_frac, "files": {}, "splits": {}}
+    for fname in EXPECTED_FILES:
+        with open(os.path.join(cfg.data_dir, fname), "rb") as stream:
+            manifest["files"][fname] = hashlib.sha256(stream.read()).hexdigest()
+    for name, rows in (("train", train), ("val", val), ("test", test)):
+        payload = json.dumps(rows, ensure_ascii=False, sort_keys=True).encode("utf-8")
+        manifest["splits"][name] = {"size": len(rows), "ordered_sha256": hashlib.sha256(payload).hexdigest()}
+    manifest["tokenizer_sha256"] = hashlib.sha256(tok.to_str().encode("utf-8")).hexdigest()
+    with open(os.path.join(cfg.out_dir, "data_manifest.json"), "w", encoding="utf-8") as stream:
+        json.dump(manifest, stream, indent=2)
     return {"train": train, "val": val, "test": test, "tok": tok, "vocab_size": tok.get_vocab_size(),
             "train_ds": PIQADataset(train, tok, cfg), "val_ds": PIQADataset(val, tok, cfg),
             "test_ds": PIQADataset(test, tok, cfg)}

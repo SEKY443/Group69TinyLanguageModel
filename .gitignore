@@ -7,3 +7,4 @@ outputs_*/
 *.zip
 CHANGELOG.local.md
 .DS_Store
+tmp/

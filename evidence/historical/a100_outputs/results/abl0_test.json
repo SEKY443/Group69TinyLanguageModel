@@ -1,0 +1,84 @@
+{
+  "name": "abl0",
+  "arch": "dact",
+  "config": {
+    "drive_zip": "/content/drive/MyDrive/Group69/PIQA.zip",
+    "local_zip_glob": "*.zip",
+    "data_dir": "data/piqa",
+    "out_dir": "outputs",
+    "seed": 42,
+    "val_frac": 0.1,
+    "vocab_size": 8000,
+    "min_frequency": 2,
+    "max_goal_len": 40,
+    "max_sol_len": 96,
+    "d_model": 256,
+    "n_heads": 4,
+    "n_layers": 4,
+    "d_ff": 1024,
+    "dropout": 0.2,
+    "attn_dropout": 0.1,
+    "max_len": 160,
+    "use_diff_tags": false,
+    "use_cross_solution": true,
+    "pool_mode": "diff_attn",
+    "objective": "pairwise",
+    "mlm_epochs": 10,
+    "batch_size": 128,
+    "lr": 0.0003,
+    "weight_decay": 0.05,
+    "epochs": 20,
+    "warmup_ratio": 0.06,
+    "label_smoothing": 0.1,
+    "patience": 6,
+    "grad_clip": 1.0,
+    "mlm_lr": 0.0005,
+    "mlm_prob": 0.15,
+    "amp": true,
+    "num_workers": 2
+  },
+  "runs": [
+    {
+      "seed": 42,
+      "ckpt": "outputs/checkpoints/abl0_seed42.pt",
+      "val_acc": 0.5911910669975186,
+      "epochs": 12
+    },
+    {
+      "seed": 43,
+      "ckpt": "outputs/checkpoints/abl0_seed43.pt",
+      "val_acc": 0.5899503722084367,
+      "epochs": 10
+    },
+    {
+      "seed": 44,
+      "ckpt": "outputs/checkpoints/abl0_seed44.pt",
+      "val_acc": 0.5880893300248139,
+      "epochs": 9
+    }
+  ],
+  "val": {
+    "mean": 0.5897435897435898,
+    "std": 0.0015611733737118747,
+    "runs": [
+      0.5911910669975186,
+      0.5899503722084367,
+      0.5880893300248139
+    ]
+  },
+  "test": {
+    "mean": 0.6051867972433804,
+    "std": 0.0048764344068729475,
+    "runs": [
+      0.6082698585418934,
+      0.6077257889009793,
+      0.5995647442872688
+    ],
+    "best_val_seed": 42,
+    "best_val_seed_acc": 0.6082698585418934,
+    "ci95": [
+      0.5865070729053319,
+      0.6300326441784548
+    ]
+  }
+}

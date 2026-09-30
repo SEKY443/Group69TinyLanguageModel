@@ -3,6 +3,8 @@ import json
 import os
 import random
 import time
+import platform
+import importlib.metadata
 from dataclasses import asdict, dataclass, replace
 
 import numpy as np
@@ -61,6 +63,9 @@ class Config:
     mlm_prob: float = 0.15
     amp: bool = True
     num_workers: int = 2
+    run_seed: int = 42         # model/data-loader RNG; seed above remains the fixed split seed
+    deterministic: bool = False  # historical CUDA runs used fast, nondeterministic kernels
+    symmetric_diff_tags: bool = False  # opt-in NEW protocol; historical results use False
 
     def to_dict(self):
         return asdict(self)
@@ -70,11 +75,30 @@ class Config:
         return replace(self, **kw)
 
 
-def set_seed(seed: int):
+def set_seed(seed: int, deterministic=False):
+    if deterministic:
+        os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
+    torch.use_deterministic_algorithms(deterministic)
+    torch.backends.cudnn.deterministic = deterministic
+    torch.backends.cudnn.benchmark = not deterministic
+
+
+def environment_info(device=None):
+    """Runtime provenance; recorded values describe this run, never the historical run."""
+    versions = {}
+    for package in ("torch", "numpy", "scikit-learn", "scipy", "pandas", "matplotlib", "tokenizers", "transformers"):
+        try:
+            versions[package] = importlib.metadata.version(package)
+        except importlib.metadata.PackageNotFoundError:
+            versions[package] = None
+    return {"python": platform.python_version(), "platform": platform.platform(), "packages": versions,
+            "device": str(device), "cuda": torch.version.cuda,
+            "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
+            "deterministic": torch.are_deterministic_algorithms_enabled()}
 
 
 def get_device():
@@ -82,7 +106,7 @@ def get_device():
         # TF32 matmuls: large speed-up on Ampere+ GPUs (A100 / L4) with negligible accuracy impact
         torch.backends.cuda.matmul.allow_tf32 = True
         torch.backends.cudnn.allow_tf32 = True
-        torch.backends.cudnn.benchmark = True
+        torch.backends.cudnn.benchmark = not torch.are_deterministic_algorithms_enabled()
         return torch.device("cuda")
     if torch.backends.mps.is_available():
         return torch.device("mps")
@@ -108,6 +132,6 @@ class JsonlLogger:
 
     def log(self, **record):
         record = {"time": time.strftime("%Y-%m-%d %H:%M:%S"), **record}
-        with open(self.path, "a") as f:
+        with open(self.path, "a", encoding="utf-8") as f:
             f.write(json.dumps(record) + "\n")
         return record

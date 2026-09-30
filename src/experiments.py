@@ -8,7 +8,7 @@ import torch
 from baselines import BiLSTMAttention  # nb-skip
 from config import Config, get_device, set_seed  # nb-skip
 from data import make_loader, prepare_everything  # nb-skip
-from evaluate import accuracy, bootstrap_ci, summarise_seeds  # nb-skip
+from evaluate import accuracy, bootstrap_ci, summarise_seeds, save_predictions  # nb-skip
 from model import DACT, count_parameters  # nb-skip
 from train import mlm_warmup, predict, train_qa  # nb-skip
 
@@ -26,7 +26,9 @@ def _load_finished(name, cfg, seeds):
         return None
     with open(path) as f:
         res = json.load(f)
-    same = res["config"] == cfg.to_dict() and [r["seed"] for r in res["runs"]] == list(seeds)
+    # run_seed is set per seed inside run_experiment, so it is not part of the experiment's identity
+    strip = lambda c: {k: v for k, v in c.items() if k != "run_seed"}  # noqa: E731
+    same = strip(res["config"]) == strip(cfg.to_dict()) and [r["seed"] for r in res["runs"]] == list(seeds)
     return res if same and all(os.path.isfile(r["ckpt"]) for r in res["runs"]) else None
 
 
@@ -44,7 +46,8 @@ def run_experiment(name, cfg, arch, data, device, seeds, verbose=True, resume=Tr
             return done
     runs = []
     for seed in seeds:
-        set_seed(seed)
+        cfg = cfg.but(run_seed=seed)
+        set_seed(seed, cfg.deterministic)
         run_name = f"{name}_seed{seed}"
         model = build_model(arch, cfg, data["vocab_size"])
         if verbose and seed == seeds[0]:
@@ -54,16 +57,19 @@ def run_experiment(name, cfg, arch, data, device, seeds, verbose=True, resume=Tr
         train_loader = make_loader(data["train_ds"], cfg, True, device)
         val_loader = make_loader(data["val_ds"], cfg, False, device)
         model, history = train_qa(model, train_loader, val_loader, cfg, device, run_name, verbose)
-        val = predict(model, val_loader, device)
+        val = predict(model, val_loader, device, cfg)
+        save_predictions(os.path.join(cfg.out_dir, "predictions", f"{run_name}_val.jsonl"),
+                         data["val_ds"].rows, val, run_name, "val")
         runs.append({"seed": seed, "ckpt": os.path.join(cfg.out_dir, "checkpoints", f"{run_name}.pt"),
-                     "val_acc": accuracy(val["pred"], val["label"]), "epochs": len(history)})
+                     "val_acc": accuracy(val["pred"], val["label"]), "val_loss": val["loss"],
+                     "n_params": count_parameters(model), "epochs": len(history)})
         del model
         if device.type == "cuda":
             torch.cuda.empty_cache()
     res = {"name": name, "arch": arch, "config": cfg.to_dict(), "runs": runs,
            "val": summarise_seeds([r["val_acc"] for r in runs])}
     os.makedirs(os.path.join(cfg.out_dir, "results"), exist_ok=True)
-    with open(os.path.join(cfg.out_dir, "results", f"{name}_val.json"), "w") as f:
+    with open(os.path.join(cfg.out_dir, "results", f"{name}_val.json"), "w", encoding="utf-8") as f:
         json.dump(res, f, indent=2)
     if verbose:
         print(f"==> {name}: val acc {res['val']['mean']:.4f} +- {res['val']['std']:.4f}")
@@ -78,8 +84,10 @@ def test_experiment(res, data, device):
     preds, accs = [], []
     for r in res["runs"]:
         model = build_model(res["arch"], cfg, data["vocab_size"]).to(device)
-        model.load_state_dict(torch.load(r["ckpt"], map_location=device))
-        out = predict(model, test_loader, device)
+        model.load_state_dict(torch.load(r["ckpt"], map_location=device, weights_only=True))
+        out = predict(model, test_loader, device, cfg)
+        save_predictions(os.path.join(cfg.out_dir, "predictions", f"{res['name']}_seed{r['seed']}_test.jsonl"),
+                         data["test_ds"].rows, out, f"{res['name']}_seed{r['seed']}", "test")
         preds.append(out)
         accs.append(accuracy(out["pred"], out["label"]))
         del model
@@ -91,7 +99,7 @@ def test_experiment(res, data, device):
     res["test"]["best_val_seed_acc"] = accs[best]
     res["test"]["ci95"] = [lo, hi]
     res["test_preds"] = preds[best]
-    with open(os.path.join(cfg.out_dir, "results", f"{res['name']}_test.json"), "w") as f:
+    with open(os.path.join(cfg.out_dir, "results", f"{res['name']}_test.json"), "w", encoding="utf-8") as f:
         json.dump({k: v for k, v in res.items() if k != "test_preds"}, f, indent=2)
     return res
 
