@@ -24,14 +24,21 @@ def autocast_ctx(device):
     return torch.autocast("cuda", dtype=dtype) if dtype is not None else nullcontext()
 
 
-def make_optimizer(model, lr, weight_decay):
-    """No weight decay on biases, LayerNorm and embedding tables."""
+def make_optimizer(model, lr, weight_decay, lex_lr=None):
+    """No weight decay on biases, LayerNorm and embedding tables.
+
+    The lexical head (if any) gets its own learning rate: a sparse linear model needs far larger steps than the
+    Transformer to move away from zero within the few epochs before early stopping.
+    """
     emb = {id(m.weight) for m in model.modules() if isinstance(m, torch.nn.Embedding)}
-    params = [p for p in model.parameters() if p.requires_grad]
+    lex = getattr(model, "lex_w", None)
+    params = [p for p in model.parameters() if p.requires_grad and p is not lex]
     decay = [p for p in params if p.ndim >= 2 and id(p) not in emb]
     no_decay = [p for p in params if p.ndim < 2 or id(p) in emb]
-    return torch.optim.AdamW([{"params": decay, "weight_decay": weight_decay},
-                              {"params": no_decay, "weight_decay": 0.0}], lr=lr, betas=(0.9, 0.98))
+    groups = [{"params": decay, "weight_decay": weight_decay}, {"params": no_decay, "weight_decay": 0.0}]
+    if lex is not None:
+        groups.append({"params": [lex], "weight_decay": weight_decay, "lr": lex_lr or lr})
+    return torch.optim.AdamW(groups, lr=lr, betas=(0.9, 0.98))
 
 
 def warmup_cosine(optimizer, total_steps, warmup_ratio):
@@ -77,7 +84,7 @@ def train_qa(model, train_loader, val_loader, cfg: Config, device, run_name, ver
     ckpt = os.path.join(cfg.out_dir, "checkpoints", f"{run_name}.pt")
     os.makedirs(os.path.dirname(ckpt), exist_ok=True)
     model.to(device)
-    opt = make_optimizer(model, cfg.lr, cfg.weight_decay)
+    opt = make_optimizer(model, cfg.lr, cfg.weight_decay, cfg.lex_lr)
     sched = warmup_cosine(opt, cfg.epochs * len(train_loader), cfg.warmup_ratio)
     scaler = torch.amp.GradScaler("cuda", enabled=amp_dtype(device) == torch.float16)
     logger.log(event="start", run=run_name, config=cfg.to_dict(),
