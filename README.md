@@ -12,9 +12,9 @@ CITS4012 group project (Group 69). The dataset is PIQA (Physical Interaction QA)
 | `docs/DEVELOPMENT_LOG.md` | Step-by-step record of everything done on the project |
 
 ## Running
-1. Put the provided data zip at `MyDrive/Group69/PIQA.zip`.
-2. Open `CITS4012_69.ipynb` in Colab and select a GPU runtime.
-3. Run `Runtime → Run all`. This takes about 60 minutes on an A100.
+1. Open `CITS4012_69.ipynb` in Colab and select a GPU runtime.
+2. Run `Runtime → Run all`. This takes about 60 minutes on an A100, or about 1 h 40 min on a free T4. The PIQA files are downloaded automatically from the unit's shared folder; `MyDrive/Group69/PIQA.zip` is used only if that download fails.
+3. At the end, `outputs.zip` (logs, results, figures) is downloaded to your computer.
 
 ## Keeping the notebook and `src/` in sync
 After editing a module in `src/`, run:

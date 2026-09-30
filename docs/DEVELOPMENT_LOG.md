@@ -30,6 +30,7 @@ All times are local (CST, UTC+8) on **2026-09-29**. Times of the Colab run come 
 22. Revision 2: review-driven improvements
 23. Revision 2b: council review and follow-up changes
 24. Re-run attempts with the Colab CLI, and changes for a browser run
+25. Full re-run on a free T4 and updated results
 
 ---
 
@@ -648,3 +649,65 @@ The group member chose to run the notebook in the Colab web UI on a free T4. To 
 1. Open the notebook from the `revision-2` branch in Colab, choose `Runtime → Change runtime type → T4 GPU`, then `Runtime → Run all`. Keep the tab open; it takes about 2.5–3 h.
 2. When it finishes, save the executed notebook (`File → Download → .ipynb`) and keep the downloaded `outputs.zip`.
 3. Claude Code can then merge both into the repository and update the discussion cells from the printed key numbers.
+
+---
+
+## 25. Full re-run on a free T4 and updated results (2026-09-30, ≈17:00–19:30 AWST)
+
+### 25.1 How the run was made (Claude Code, with the group member's authorisation "to do all actions to finish the task")
+- The files the group member reported downloading from their own browser run were not on this computer. Neither `CITS4012_69*.ipynb` nor `outputs*.zip` was found on drives C:, D: or E:, so that run's outputs could not be used.
+- A new free **T4** session (`group69`) was created with the CLI.
+- The VM was set up with `setup_vm.py`: clone of `revision-2` at **`5ef7cda`**, PIQA fetched with gdown, and the `/content/data` symlink.
+- The notebook was executed with `colab exec -f CITS4012_69.ipynb` from the committed local copy, which was byte-identical to `5ef7cda`.
+- **Keeping the VM alive:** the session's `colab url` was opened in the group member's **Brave** browser, where they were already signed in. With a browser tab attached, the VM was *not* reclaimed at 35–40 minutes. That confirms the diagnosis in 24.3.
+- **Local record lost:** after about 60 minutes a periodic `colab ls` check coincided with an access-token refresh. The CLI pruned its *local* record of the session (`sessions.json` became `{}`), although the VM kept running: `colab sessions` still listed it as `[?]`, and output kept streaming.
+  - The record was rebuilt with a 15-line script (`adopt.py`) that calls the CLI's own `State`, `list_assignments()` and `_apply_proxy_info`. Tokens were handled inside the library and never printed.
+  - After that, `colab ls` and `download` worked again.
+  - Later monitoring watched only the local output stream.
+- **Result:** the run finished with `EXIT 0`. The executed notebook has **0 error cells**, and the consistency check printed `OK: 13 result rows, 27 training runs with logs, 37 log files`.
+- Training took 09:30–10:48 UTC (17:30–18:48 AWST). Including data preparation, RoBERTa and Qwen, the whole notebook took about 1 h 40 min.
+- `outputs.zip` (0.9 MB: 37 logs, result JSON/CSV files, 6 figures, tokenizer) was downloaded. **`colab stop -s group69`** was run afterwards, and `colab sessions` then showed no active session. No compute units were used (balance 0.00 throughout).
+
+### 25.2 Files replaced
+- `CITS4012_69.ipynb` is now the executed notebook from this run: all code cells are identical to `5ef7cda` and have outputs.
+- `outputs/` was replaced completely by this run's outputs. The old A100 logs, results and figures (e.g. `confident_wrong_660/708.png`, `uncertain_1433.png`) were removed and remain in git history.
+- A partial notebook from attempt 2 (`CITS4012_69_output.ipynb`, stopped at `hp3`, exit 1) had been written into the repository. It was moved to a scratch folder and is not used.
+
+### 25.3 Results (all numbers printed by the notebook)
+- **Grid (Step 1).** *small* (d = 128, 2 layers, 1.67 M parameters) and *base + MLM* tied at 60.30 % validation. The first maximum, *small* without warm-up, was selected. The A100 run had selected *base + MLM*: grid differences of about 1 point are within seed noise. With no warm-up in the selected config, the *− MLM* ablation does not apply. **Correction:** during the run, an interim status message called `abl6` the "no MLM warm-up" ablation. In this run `abl6` is *diff-bias prior 0*, and `abl5` is the vanilla Transformer.
+- **Main table (val / test, 3 seeds):**
+
+| Model | Val | Test |
+|---|---|---|
+| DACT | 59.4 ± 0.9 | 60.2 ± 0.8 |
+| Vanilla | 58.9 ± 0.2 | 58.7 ± 0.9 |
+| BiLSTM | 59.6 ± 0.8 | 59.0 ± 0.5 |
+| TF-IDF + LR | 59.2 | 61.2 |
+| RoBERTa | 61.5 ± 6.8 | 59.9 ± 8.0 |
+| Qwen zero-shot | 78.2 | 75.1 |
+
+- **RoBERTa seeds.** Validation accuracy was 64.4 / **53.7** / 66.3 %. Seed **43** was a degenerate fine-tuning run: its loss stayed at ≈ 0.694 for all 4 epochs. An interim status message wrongly named seed 42 as the degenerate one; the printed per-seed dictionary shows it was 43. The representative run (seed 44) has a test CI of 62.3–66.5 %.
+- **Ablations:** all single-component changes are within ±0.5 on validation. On test they range from 0 to +1.2. *diff-bias prior 0* is the same as *− diff bias*. Only the vanilla model is lower on both splits (−0.5 / −1.5, McNemar p = 0.054).
+- **Error overlap DACT vs TF-IDF:** 73.5 % agreement; 13.2 % of items only DACT gets right, 13.3 % only TF-IDF; oracle 74.4 %. 243 test items are solved only by DACT.
+- **Attention controls:**
+  - pooling mass on differing tokens: trained **80.9 %**, trained with the bias set to 0 **67.2 %**, untrained 38.9 %, uniform 24.8 %;
+  - the bias moved 1.0 → 1.025, and the shared-token bias 0 → −0.025;
+  - so **the focus is mostly learned in this run**. The worry from the review, that the focus was built in, is not supported.
+  - Wrong predictions put *more* attention on differing tokens: 81.9 % vs 80.2 % (p = 0.007).
+- **H1** is rejected: pooling entropy is 0.55. **H2:** the vanilla probe scores 58.4 % at the embedding layer and at most 61.1 % after the encoder, while DACT scores 100 % at every layer.
+- **Qualitative cases:**
+  - successes: *baby wipes* (804, 280);
+  - failures: *clockwise/counterclockwise* (551; BPE splits the decisive word) and *peppermint spray vs shade tree* (154; no shared words, so the tags carry no information);
+  - uncertain: *outside vs inside glass* (1458, p = 0.50; no goal–solution overlap term);
+  - the cobbler item is not among the two most uncertain items.
+
+### 25.4 Text changes
+- The two ⚠️ "update after re-run" notes were removed. The quantitative and qualitative discussion cells were rewritten from the printed numbers and the saved figures.
+- The Readme cell now describes this run and its runtime.
+- `README.md` has the new run steps.
+- `references.bib` and the References cell now include Dodge et al. (2020), cited for the RoBERTa seed instability.
+
+### 25.5 Still for the group
+- The AI-use disclosure and the coordinator email (section 23.4), and each member understanding the code.
+- The 6-page ACL report. Every number must come from this run (sections 25.3 and the notebook), not from the first A100 run.
+- Merge `revision-2` into `main` when the group agrees.
