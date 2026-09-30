@@ -32,17 +32,22 @@ def main():
     if out.exists():raise FileExistsError('Choose a fresh replication directory')
     out.mkdir(parents=True)
     torch.set_num_threads(4)
-    historical=json.loads((ROOT/'outputs/results/dact_full_test.json').read_text())
-    cfg=Config(**historical['config']).but(data_dir=args.data_dir,out_dir=str(out),num_workers=0)
+    # Merge note (2026-10-01): outputs/ now holds the final lexical-head run; the original A100 evidence
+    # moved to evidence/historical/a100_outputs/. Options added after the A100 run are pinned to their
+    # historical behaviour, because the saved config predates them and the new defaults differ.
+    HIST=ROOT/'evidence/historical/a100_outputs'
+    historical=json.loads((HIST/'results/dact_full_test.json').read_text())
+    legacy={'use_lexical':False,'diff_aware_truncation':False}
+    cfg=Config(**{**legacy,**historical['config']}).but(data_dir=args.data_dir,out_dir=str(out),num_workers=0)
     # Worker count changes scheduling only; documented as a local resource difference.
     device=get_device()
     tr,va,te=load_piqa(cfg)
-    tok=Tokenizer.from_file(str(ROOT/'outputs/tokenizer.json'));tok.save(str(out/'tokenizer.json'))
+    tok=Tokenizer.from_file(str(HIST/'tokenizer.json'));tok.save(str(out/'tokenizer.json'))
     data={'train':tr,'val':va,'test':te,'tok':tok,'vocab_size':tok.get_vocab_size()}
     for name,rows in [('train',tr),('val',va),('test',te)]:data[name+'_ds']=PIQADataset(rows,tok,cfg)
     protocol={'purpose':'fixed configuration replication; no tuning; historical split retained',
               'seeds':args.seeds,'config':cfg.to_dict(),'environment':environment_info(device),
-              'tokenizer_sha256':hashlib.sha256((ROOT/'outputs/tokenizer.json').read_bytes()).hexdigest(),
+              'tokenizer_sha256':hashlib.sha256((HIST/'tokenizer.json').read_bytes()).hexdigest(),
               'known_overlap_test_index':1545,'resource_difference':'num_workers=0 on Windows',
               'MLM_projection':'selected supervised positions only; objective/gradient equivalence checked; finite precision can differ',
               'evaluation_rule':'train every declared seed first; representative seed=max validation accuracy; final test once per seed'}

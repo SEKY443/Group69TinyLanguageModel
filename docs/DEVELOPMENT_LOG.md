@@ -35,6 +35,7 @@ All times are local (CST, UTC+8) on **2026-09-29**. Times of the Colab run come 
 27. Report draft
 28. Merge of the two tracks (`merge-review`)
 29. Report updated with the audit findings
+30. Review note for Salah; replication script fixed
 S1–S3. Parallel track on `main`: evidence audit and replication (Salah Elshafey)
 
 ---
@@ -1110,3 +1111,22 @@ At the group member's request, the report (`report/CITS4012_69.tex`, recompiled 
 - The PDF is 6 pages with no errors or undefined references. The main text ends on page 5; Team Contributions and the references start on page 6.
 - `sync_notebook --check`: in sync.
 - All numbers are unchanged, taken from the final run.
+
+---
+
+## 30. Review note for Salah; replication script fixed (2026-10-01, on `merge-review`)
+
+**The note:** `docs/NOTE_FOR_SALAH.md`, written at the group member's request so that Salah can review `merge-review` and decide whether to merge. It explains:
+- what `revision-2` changed;
+- what happened to his work;
+- which of his tools the merge may affect;
+- what remains before submission;
+- options A/B/C;
+- that AI assistance was used and that the report currently has no AI-use statement.
+
+**Problem found while writing it:** `tools/reproduce_main.py` (audit track) read the "historical" config and tokenizer from `outputs/`. After the merge, `outputs/` holds the final lexical-head run. The saved A100 config also has no `use_lexical` or `diff_aware_truncation` field, so the new defaults (both on) would have applied. Together, these would have made the "replication of the original model" silently train the new model.
+
+**Fix:** the script now reads `evidence/historical/a100_outputs/` (config, tokenizer and its checksum) and pins `use_lexical=False, diff_aware_truncation=False` before applying the saved config.
+- It compiles. The replication was not re-run, because the data is not at `../../PIQA` here.
+
+**Left for Salah to decide, and listed in the note:** `tools/audit_evidence.py`, `tools/verify_model.py` and `tools/append_audit_cells.py` still read `outputs/` as the A100 evidence. `notebooks/CITS4012_69_reproducible.ipynb` is also out of date after the merge.
