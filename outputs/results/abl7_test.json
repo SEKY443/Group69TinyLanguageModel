@@ -1,5 +1,5 @@
 {
-  "name": "abl1",
+  "name": "abl7",
   "arch": "dact",
   "config": {
     "data_folder_url": "https://drive.google.com/drive/folders/1lxEsHLbRsgOHh8rOAd75QHUZds7ybKtT",
@@ -22,9 +22,9 @@
     "attn_dropout": 0.1,
     "max_len": 160,
     "use_diff_tags": true,
-    "use_cross_solution": false,
+    "use_cross_solution": true,
     "pool_mode": "diff_attn",
-    "tag_bias_init": 1.0,
+    "tag_bias_init": 0.0,
     "use_lexical": true,
     "lex_buckets": 262144,
     "lex_lr": 0.01,
@@ -46,30 +46,45 @@
   "runs": [
     {
       "seed": 42,
-      "ckpt": "outputs/checkpoints/abl1_seed42.pt",
-      "val_acc": 0.6048387096774194,
-      "epochs": 15
-    },
-    {
-      "seed": 43,
-      "ckpt": "outputs/checkpoints/abl1_seed43.pt",
-      "val_acc": 0.6166253101736973,
+      "ckpt": "outputs/checkpoints/abl7_seed42.pt",
+      "val_acc": 0.6191066997518611,
       "epochs": 11
     },
     {
+      "seed": 43,
+      "ckpt": "outputs/checkpoints/abl7_seed43.pt",
+      "val_acc": 0.6166253101736973,
+      "epochs": 10
+    },
+    {
       "seed": 44,
-      "ckpt": "outputs/checkpoints/abl1_seed44.pt",
-      "val_acc": 0.609181141439206,
-      "epochs": 12
+      "ckpt": "outputs/checkpoints/abl7_seed44.pt",
+      "val_acc": 0.6060794044665012,
+      "epochs": 11
     }
   ],
   "val": {
-    "mean": 0.6102150537634409,
-    "std": 0.005960932715218997,
+    "mean": 0.6139371381306865,
+    "std": 0.006917174807145481,
     "runs": [
-      0.6048387096774194,
+      0.6191066997518611,
       0.6166253101736973,
-      0.609181141439206
+      0.6060794044665012
+    ]
+  },
+  "test": {
+    "mean": 0.6157054769677185,
+    "std": 0.003497878404422527,
+    "runs": [
+      0.6196953210010882,
+      0.6131664853101197,
+      0.6142546245919478
+    ],
+    "best_val_seed": 42,
+    "best_val_seed_acc": 0.6196953210010882,
+    "ci95": [
+      0.5979325353645266,
+      0.6409276387377584
     ]
   }
 }

@@ -25,6 +25,9 @@
     "use_cross_solution": true,
     "pool_mode": "diff_attn",
     "tag_bias_init": 1.0,
+    "use_lexical": true,
+    "lex_buckets": 262144,
+    "lex_lr": 0.01,
     "objective": "pairwise",
     "mlm_epochs": 0,
     "batch_size": 128,
@@ -44,15 +47,15 @@
     {
       "seed": 42,
       "ckpt": "outputs/checkpoints/hp0_seed42.pt",
-      "val_acc": 0.5924317617866005,
-      "epochs": 9
+      "val_acc": 0.6116625310173698,
+      "epochs": 12
     }
   ],
   "val": {
-    "mean": 0.5924317617866005,
+    "mean": 0.6116625310173698,
     "std": 0.0,
     "runs": [
-      0.5924317617866005
+      0.6116625310173698
     ]
   }
 }

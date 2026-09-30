@@ -24,7 +24,10 @@
     "use_diff_tags": true,
     "use_cross_solution": true,
     "pool_mode": "diff_attn",
-    "tag_bias_init": 0.0,
+    "tag_bias_init": 1.0,
+    "use_lexical": false,
+    "lex_buckets": 262144,
+    "lex_lr": 0.01,
     "objective": "pairwise",
     "mlm_epochs": 0,
     "batch_size": 128,
@@ -44,29 +47,29 @@
     {
       "seed": 42,
       "ckpt": "outputs/checkpoints/abl6_seed42.pt",
-      "val_acc": 0.5942928039702233,
+      "val_acc": 0.6004962779156328,
       "epochs": 9
     },
     {
       "seed": 43,
       "ckpt": "outputs/checkpoints/abl6_seed43.pt",
-      "val_acc": 0.5887096774193549,
-      "epochs": 9
+      "val_acc": 0.5936724565756824,
+      "epochs": 8
     },
     {
       "seed": 44,
       "ckpt": "outputs/checkpoints/abl6_seed44.pt",
-      "val_acc": 0.5856079404466501,
-      "epochs": 10
+      "val_acc": 0.5825062034739454,
+      "epochs": 9
     }
   ],
   "val": {
-    "mean": 0.5895368072787427,
-    "std": 0.004401115933373202,
+    "mean": 0.5922249793217536,
+    "std": 0.00908196495285265,
     "runs": [
-      0.5942928039702233,
-      0.5887096774193549,
-      0.5856079404466501
+      0.6004962779156328,
+      0.5936724565756824,
+      0.5825062034739454
     ]
   }
 }

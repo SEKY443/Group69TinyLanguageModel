@@ -31,6 +31,7 @@ All times are local (CST, UTC+8) on **2026-09-29**. Times of the Colab run come 
 23. Revision 2b: council review and follow-up changes
 24. Re-run attempts with the Colab CLI, and changes for a browser run
 25. Full re-run on a free T4 and updated results
+26. Lexical head: closing the gap to TF-IDF
 
 ---
 
@@ -711,3 +712,83 @@ The group member chose to run the notebook in the Colab web UI on a free T4. To 
 - The AI-use disclosure and the coordinator email (section 23.4), and each member understanding the code.
 - The 6-page ACL report. Every number must come from this run (sections 25.3 and the notebook), not from the first A100 run.
 - Merge `revision-2` into `main` when the group agrees.
+
+---
+
+## 26. Lexical head: closing the gap to TF-IDF (2026-09-30, ≈19:00–22:00 AWST)
+
+### 26.1 Motivation and rule
+- After the run in section 25, DACT was 1 point below TF-IDF + LR on test (60.2 vs 61.2 %). The group member asked to fix this.
+- **Rule followed throughout:** the brief forbids using the test set for design decisions. So the fix was chosen on **validation only**, and the final test result would be reported whatever it turned out to be.
+- **Idea:** the validation evidence showed that word-level cues carry most of the learnable signal (TF-IDF 59.2 vs DACT 59.4 % val), and that the Transformer uses those cues only indirectly. So a **lexical ("wide") head** was added, as in wide & deep models (Cheng et al., 2016): one learned weight per hashed solution BPE unigram and bigram (2^18 buckets, starting at 0, with weight decay), added to each option's score and trained jointly from scratch. Under the pairwise softmax only the difference of the two lexical scores matters.
+
+### 26.2 Implementation (`src/model.py`, `src/train.py`, `src/config.py`)
+- `DACT.lexical_score` hashes the unigrams and bigrams inside the solution span (bucket 0 = padding, always 0). It uses int64-safe multipliers.
+- `Config.use_lexical`, `lex_buckets = 2**18` and `lex_lr = 1e-2`. `make_optimizer` puts the head in its own AdamW group with learning rate `lex_lr`.
+- Local checks passed: sparse weights learn, the padding weight stays at 0, swapping the options still swaps the scores, and the head is weight-decayed.
+
+### 26.3 Validation pilots (`tools/pilot_lexical.py`; free T4 via `colab run`, VMs released automatically; the test split was deleted from memory before training)
+Setup: the small configuration (d = 128, 2 layers, no warm-up), 3 seeds, validation accuracy.
+
+| Variant | Val (3 seeds) |
+|---|---|
+| no head | 59.37 ± 0.81 |
+| head, lr 3e-4 (shared) | 59.47 ± 0.90 |
+| head, lr 3e-4, weight decay 0.01 | 59.45 ± 0.88 |
+| head, lr 3e-3 | 60.48 ± 0.72 |
+| **head, lr 1e-2** | **60.94 ± 0.56** |
+| head, lr 3e-2 | 60.63 ± 0.34 |
+
+- With the shared learning rate the head barely moved from zero before early stopping. That is why a separate `lex_lr` was added after pilot 1.
+- **Decision:** `use_lexical=True`, `lex_lr=1e-2`.
+- A new ablation, *− lexical head*, measures the head's contribution. The *vanilla* ablation now also removes the head.
+- Both pilots ended with a CLI `TimeoutError` while tearing the VM down, after all results had printed. `colab sessions` confirmed no VM was left running.
+
+### 26.4 Full run (commit `538cf5b`, free T4 attached in Brave, 11:50–13:15 UTC training; ≈1 h 50 min total)
+- `EXIT 0`, 0 error cells. The consistency check printed `OK: 14 result rows, 30 training runs with logs, 40 log files`.
+- The session was stopped afterwards, and no compute units were used.
+- **Grid:** *small* was selected (61.4 %), ahead of *base* 61.2 %, *small + MLM* 60.9 %, *base + dropout 0.3* 60.8 % and *base + MLM* 60.8 %.
+- **Main results (val / test):**
+
+| Model | Val | Test |
+|---|---|---|
+| **DACT** | **61.1 ± 0.8** | **61.6 ± 0.7** |
+| − lexical head | 59.2 ± 0.9 | 60.7 ± 0.4 |
+| vanilla | 58.7 ± 0.3 | 58.6 ± 0.8 |
+| BiLSTM | 59.8 ± 0.3 | 58.7 ± 0.9 |
+| TF-IDF + LR | 59.2 | 61.2 |
+| RoBERTa | 69.0 ± 0.5 | 67.9 ± 0.8 (all 3 seeds trained) |
+| Qwen | 78.2 | 75.1 |
+
+- **Outcome:** DACT is now above TF-IDF on both splits (+1.9 val, +0.4 test). The test gap is **not significant** (McNemar p = 0.88), so the report must say "at least as good as, and above on both splits", not "clearly better".
+- **Ablations (Δ val / Δ test):**
+
+| Ablation | Δ val | Δ test |
+|---|---|---|
+| − tags | −1.4 | −1.3 |
+| − lexical head | −1.9 | −0.9 |
+| pointwise | −1.0 | −0.8 |
+| mean pooling | −0.2 | −0.9 |
+| − cross-attention | −0.1 | −0.7 |
+| − diff bias | +0.3 | 0.0 |
+| diff-bias prior 0 | +0.3 | 0.0 |
+| vanilla | −2.4 | −3.0 |
+
+- **Attention:**
+  - pooling mass on differing tokens: trained 84.9 %, trained with bias 0 **73.2 %**, untrained 38.9 %, uniform 24.8 %; the bias moved 1.0 → 1.022;
+  - wrong predictions put more attention on differing tokens than correct ones: 86.7 vs 83.8 % (p < 0.001);
+  - H1: entropy 0.51;
+  - H2: the vanilla probe scores 59.6 → 60.4 %.
+- **Error overlap with TF-IDF:** 78.8 % agreement, oracle 71.9 %, 197 items solved only by DACT.
+- **Qualitative:** all four most-confident cases (p ≥ 0.99) are option pairs that differ in most of their words. This is reported as an over-confidence side effect of the summed lexical score:
+  - successes: camping lantern (993), frying oil (1123);
+  - failures: lotion bars (747), exotic trip (841);
+  - uncertain: *pry pallet apart* (1258, p = 0.50; goal-word overlap not exploited).
+
+### 26.5 Files
+- `CITS4012_69.ipynb` is the executed notebook from this run (its code is identical to `538cf5b`). The discussion cells and the Readme were rewritten from its printed numbers and figures.
+- `outputs/` was replaced by this run's outputs.
+- Added `tools/pilot_lexical.py`, and Cheng et al. (2016) in `references.bib` and the References cell.
+
+### 26.6 Still for the group
+- Unchanged from 23.4 and 25.5: the AI-use disclosure and the coordinator email, understanding the code, and the ACL report. The report must use **this** run's numbers.

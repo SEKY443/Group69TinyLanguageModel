@@ -25,6 +25,9 @@
     "use_cross_solution": true,
     "pool_mode": "diff_attn",
     "tag_bias_init": 1.0,
+    "use_lexical": true,
+    "lex_buckets": 262144,
+    "lex_lr": 0.01,
     "objective": "pairwise",
     "mlm_epochs": 0,
     "batch_size": 128,
@@ -44,29 +47,29 @@
     {
       "seed": 42,
       "ckpt": "outputs/checkpoints/dact_full_seed42.pt",
-      "val_acc": 0.6035980148883374,
-      "epochs": 10
+      "val_acc": 0.6141439205955335,
+      "epochs": 13
     },
     {
       "seed": 43,
       "ckpt": "outputs/checkpoints/dact_full_seed43.pt",
-      "val_acc": 0.5942928039702233,
-      "epochs": 8
+      "val_acc": 0.6166253101736973,
+      "epochs": 10
     },
     {
       "seed": 44,
       "ckpt": "outputs/checkpoints/dact_full_seed44.pt",
-      "val_acc": 0.5856079404466501,
-      "epochs": 8
+      "val_acc": 0.6011166253101737,
+      "epochs": 10
     }
   ],
   "val": {
-    "mean": 0.5944995864350703,
-    "std": 0.008996819651698537,
+    "mean": 0.6106286186931348,
+    "std": 0.00833053642617188,
     "runs": [
-      0.6035980148883374,
-      0.5942928039702233,
-      0.5856079404466501
+      0.6141439205955335,
+      0.6166253101736973,
+      0.6011166253101737
     ]
   }
 }

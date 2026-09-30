@@ -25,6 +25,9 @@
     "use_cross_solution": true,
     "pool_mode": "diff_attn",
     "tag_bias_init": 1.0,
+    "use_lexical": true,
+    "lex_buckets": 262144,
+    "lex_lr": 0.01,
     "objective": "pairwise",
     "mlm_epochs": 0,
     "batch_size": 128,
@@ -44,29 +47,29 @@
     {
       "seed": 42,
       "ckpt": "outputs/checkpoints/b2_bilstm_seed42.pt",
-      "val_acc": 0.5887096774193549,
+      "val_acc": 0.6004962779156328,
       "epochs": 20
     },
     {
       "seed": 43,
       "ckpt": "outputs/checkpoints/b2_bilstm_seed43.pt",
-      "val_acc": 0.5942928039702233,
-      "epochs": 15
+      "val_acc": 0.5986352357320099,
+      "epochs": 16
     },
     {
       "seed": 44,
       "ckpt": "outputs/checkpoints/b2_bilstm_seed44.pt",
-      "val_acc": 0.6035980148883374,
+      "val_acc": 0.5955334987593052,
       "epochs": 15
     }
   ],
   "val": {
-    "mean": 0.5955334987593052,
-    "std": 0.007521312439815183,
+    "mean": 0.5982216708023159,
+    "std": 0.0025071041466051005,
     "runs": [
-      0.5887096774193549,
-      0.5942928039702233,
-      0.6035980148883374
+      0.6004962779156328,
+      0.5986352357320099,
+      0.5955334987593052
     ]
   }
 }
