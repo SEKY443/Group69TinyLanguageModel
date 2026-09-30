@@ -42,7 +42,7 @@ class Config:
     use_cross_solution: bool = True   # sol1 <-> sol2 contrastive cross-attention
     pool_mode: str = "diff_attn"      # "diff_attn" | "attn" | "mean"
     tag_bias_init: float = 1.0        # initial pooling bias for difference-tagged tokens (0.0 = no built-in prior)
-    use_lexical: bool = False         # "wide" head: learned weights of hashed solution unigrams/bigrams added to the score
+    use_lexical: bool = True          # "wide" head: learned weights of hashed solution unigrams/bigrams added to the score
     lex_buckets: int = 2 ** 18        # hash buckets of the lexical head
     lex_lr: float = 1e-2              # learning rate of the lexical head (the rest of the model uses `lr`)
     objective: str = "pairwise"       # "pairwise" (softmax over the two options) | "pointwise" (independent BCE)
