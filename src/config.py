@@ -12,6 +12,8 @@ import torch
 @dataclass
 class Config:
     # ---- paths ----
+    # PIQA sub-folder of the unit's shared A2 dataset folder; on Colab the data is downloaded from here automatically
+    data_folder_url: str = "https://drive.google.com/drive/folders/1lxEsHLbRsgOHh8rOAd75QHUZds7ybKtT"
     drive_zip: str = "/content/drive/MyDrive/Group69/PIQA.zip"  # Colab location of the provided data
     local_zip_glob: str = "*.zip"                               # fallback when running outside Colab
     data_dir: str = "data/piqa"

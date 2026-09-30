@@ -29,6 +29,7 @@ All times are local (CST, UTC+8) on **2026-09-29**. Times of the Colab run come 
 21. Limitations
 22. Revision 2: review-driven improvements
 23. Revision 2b: council review and follow-up changes
+24. Re-run attempts with the Colab CLI, and changes for a browser run
 
 ---
 
@@ -598,3 +599,52 @@ All of these were Claude sub-agents, not people. This revision was also written 
 3. **Commit the predicted outcomes before the re-run.** For example: does *diff-bias prior 0* match the full model? Is *trained, tag bias = 0* near uniform? Does the vanilla probe rise above its embedding row?
 4. **Re-run on Colab (A100).** Then fill the two discussion cells from the printed key numbers and delete the ⚠️ notes.
 5. **Write the 6-page ACL report.** Open with what is claimed and what isn't, and put the AI-use statement where a marker will see it.
+
+---
+
+## 24. Re-run attempts with the Colab CLI, and changes for a browser run (2026-09-29 22:10 – 2026-09-30 11:30, AWST)
+
+### 24.1 Setting up the Colab CLI on Windows (Claude Code, at the group member's request)
+- Google's `google-colab-cli` 0.7.4 (the `googlecolab` GitHub org) was installed with `uv tool install`.
+- It **doesn't run on native Windows**: it imports `termios`, which exists only on Unix. It was therefore installed inside **WSL Ubuntu**, together with the Google Cloud SDK 587.0.0 for sign-in.
+- Sign-in uses Application Default Credentials. The group member ran `~/colab-login.sh` in WSL themselves and signed in with their own account in the browser. Claude Code never saw or handled the credentials.
+- The account has **0 compute units**:
+  - `colab new --gpu A100` was rejected ("no quota or entitlement"), so nothing was charged.
+  - A free **Tesla T4** session was created instead.
+- Data on the VM:
+  - the `revision-2` branch was cloned;
+  - PIQA was fetched with `gdown` from the unit's shared Drive folder, with byte sizes identical to section 14.2;
+  - `/content/data` was symlinked to the checkout, because each `colab exec` starts in `/content`.
+
+### 24.2 Attempt 1 (session `group69`, commit `de3e3da`): VM lost after ≈35 min
+- The run printed `autocast dtype: torch.bfloat16` on the T4. The log stopped at the start of `hp0`, and the session then vanished ("Session 'group69' not found"). No outputs were saved.
+- **Diagnosis:** timing test on a throwaway T4 (`colab run`, released automatically), measuring DACT training steps:
+
+| autocast | ms/step | s/epoch (114 steps) |
+|---|---|---|
+| fp16 | 108 | ≈12 |
+| fp32 | 254 | ≈29 |
+| bf16 | 377 | ≈43 |
+
+- `torch.cuda.is_bf16_supported()` returns True on the T4 (compute capability 7.5) only through **emulation**. Native support is False.
+- **Fix (commit `29fce76`):** `amp_dtype` now uses bf16 only with *native* support (`including_emulation=False`), and fp16 otherwise. A100/L4 behaviour is unchanged.
+
+### 24.3 Attempt 2 (commit `29fce76`): healthy, but the VM was lost again after ≈40 min
+- fp16 worked: 13.8–14.3 s per epoch. `hp0`–`hp3` ran with validation accuracy in line with section 14 (e.g. `hp3` fine-tuning peaked at 59.7 %).
+- During `hp3` the session disappeared again, and `colab sessions` showed nothing.
+- **Conclusion:** free-tier sessions created from the CLI (no browser tab attached) are reclaimed after roughly 35–40 minutes. The full run needs about 2.5–3 h on a T4, so it can't finish on that path. No results from these attempts are used anywhere.
+
+### 24.4 Changes for a browser ("Run all") run (commit after `29fce76`)
+The group member chose to run the notebook in the Colab web UI on a free T4. To make that a one-click run:
+- **Automatic data download** (`download_piqa` in `src/data.py`, `Config.data_folder_url`):
+  - On Colab, if the four files aren't present, they are downloaded from the unit's shared Drive folder with `gdown` (installed only if missing), then moved into `data/piqa/`, and the temporary folder is removed.
+  - Any failure (package, network, Drive quota) falls back to the original `MyDrive/Group69/PIQA.zip` path.
+  - Tested locally with the real folder: the four files have the exact byte sizes above, the split is 14,501 / 1,612 / 1,838, and the temporary folder is cleaned up.
+- **Results downloaded to the browser:** the last cell also packs `outputs/` (logs, results, figures; no checkpoints) into `outputs.zip` and calls `google.colab.files.download`. It still copies to Drive when Drive is mounted.
+- The notebook Readme's "How to run" was rewritten to match: GPU choice (bf16/fp16), automatic data, the zip fallback, and `outputs.zip`.
+- The notebook smoke test (section 23.3 setup) still passes end to end.
+
+### 24.5 Next step (group)
+1. Open the notebook from the `revision-2` branch in Colab, choose `Runtime → Change runtime type → T4 GPU`, then `Runtime → Run all`. Keep the tab open; it takes about 2.5–3 h.
+2. When it finishes, save the executed notebook (`File → Download → .ipynb`) and keep the downloaded `outputs.zip`.
+3. Claude Code can then merge both into the repository and update the discussion cells from the printed key numbers.

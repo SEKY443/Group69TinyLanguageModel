@@ -3,6 +3,9 @@ import difflib
 import glob
 import json
 import os
+import shutil
+import subprocess
+import sys
 import zipfile
 
 import numpy as np
@@ -49,9 +52,35 @@ def _find_zip(cfg: Config):
     raise FileNotFoundError("No zip containing the PIQA files was found.")
 
 
+def download_piqa(cfg: Config):
+    """Downloads the four PIQA files from the unit's shared (public) Google Drive folder; True on success."""
+    tmp = cfg.data_dir + "_download"
+    try:
+        try:
+            import gdown
+        except ImportError:
+            subprocess.run([sys.executable, "-m", "pip", "install", "-q", "gdown"], check=True)
+            import gdown
+        gdown.download_folder(url=cfg.data_folder_url, output=tmp, quiet=True)
+    except Exception as e:  # missing package, network or Drive quota problems: fall back to the zip
+        print(f"Download from the shared folder failed ({e}); falling back to the data zip.")
+        return False
+    found = {os.path.basename(p): p for p in glob.glob(os.path.join(tmp, "**", "*"), recursive=True)}
+    if not set(EXPECTED_FILES) <= set(found):
+        return False
+    os.makedirs(cfg.data_dir, exist_ok=True)
+    for fname in EXPECTED_FILES:
+        shutil.move(found[fname], os.path.join(cfg.data_dir, fname))
+    shutil.rmtree(tmp, ignore_errors=True)
+    print(f"Downloaded {EXPECTED_FILES} from the unit's shared folder -> {cfg.data_dir}")
+    return True
+
+
 def prepare_data(cfg: Config):
-    """Extract only the four expected PIQA files into cfg.data_dir (no arbitrary paths are written)."""
+    """Puts the four PIQA files into cfg.data_dir: existing copy, else (on Colab) the shared folder, else the zip."""
     if all(os.path.isfile(os.path.join(cfg.data_dir, f)) for f in EXPECTED_FILES):
+        return cfg.data_dir
+    if _in_colab() and cfg.data_folder_url and download_piqa(cfg):
         return cfg.data_dir
     zpath = _find_zip(cfg)
     os.makedirs(cfg.data_dir, exist_ok=True)
