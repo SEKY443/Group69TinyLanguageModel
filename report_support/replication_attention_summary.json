@@ -1,0 +1,246 @@
+[
+  {
+    "index": 130,
+    "correct": true,
+    "top_pool_tokens_by_option": [
+      [
+        {
+          "token": "##ject",
+          "weight": 0.15175798535346985,
+          "difference_tag": true
+        },
+        {
+          "token": "beef",
+          "weight": 0.10495752096176147,
+          "difference_tag": true
+        },
+        {
+          "token": "oil",
+          "weight": 0.08261743187904358,
+          "difference_tag": true
+        },
+        {
+          "token": "mash",
+          "weight": 0.07462761551141739,
+          "difference_tag": true
+        },
+        {
+          "token": "ground",
+          "weight": 0.06957905739545822,
+          "difference_tag": true
+        }
+      ],
+      [
+        {
+          "token": "##ty",
+          "weight": 0.2281426191329956,
+          "difference_tag": true
+        },
+        {
+          "token": "meat",
+          "weight": 0.12375381588935852,
+          "difference_tag": true
+        },
+        {
+          "token": "gives",
+          "weight": 0.10830536484718323,
+          "difference_tag": true
+        },
+        {
+          "token": "##ates",
+          "weight": 0.09444471448659897,
+          "difference_tag": true
+        },
+        {
+          "token": "insul",
+          "weight": 0.07463281601667404,
+          "difference_tag": true
+        }
+      ]
+    ],
+    "probability_delta_fp32_vs_saved_amp": 0.00011682510375976562
+  },
+  {
+    "index": 1672,
+    "correct": true,
+    "top_pool_tokens_by_option": [
+      [
+        {
+          "token": "oz",
+          "weight": 0.027696333825588226,
+          "difference_tag": false
+        },
+        {
+          "token": "cans",
+          "weight": 0.026537466794252396,
+          "difference_tag": false
+        },
+        {
+          "token": "8",
+          "weight": 0.0231336522847414,
+          "difference_tag": false
+        },
+        {
+          "token": "teaspoon",
+          "weight": 0.02303226664662361,
+          "difference_tag": false
+        },
+        {
+          "token": "cups",
+          "weight": 0.022796630859375,
+          "difference_tag": false
+        }
+      ],
+      [
+        {
+          "token": "##pen",
+          "weight": 0.15571442246437073,
+          "difference_tag": true
+        },
+        {
+          "token": "j",
+          "weight": 0.14616188406944275,
+          "difference_tag": true
+        },
+        {
+          "token": "juice",
+          "weight": 0.14489887654781342,
+          "difference_tag": true
+        },
+        {
+          "token": "##o",
+          "weight": 0.12876202166080475,
+          "difference_tag": true
+        },
+        {
+          "token": "##ale",
+          "weight": 0.1254735141992569,
+          "difference_tag": true
+        }
+      ]
+    ],
+    "probability_delta_fp32_vs_saved_amp": 3.926269710063934e-05
+  },
+  {
+    "index": 1244,
+    "correct": false,
+    "top_pool_tokens_by_option": [
+      [
+        {
+          "token": "substit",
+          "weight": 0.2794422209262848,
+          "difference_tag": true
+        },
+        {
+          "token": "##ut",
+          "weight": 0.1747855246067047,
+          "difference_tag": true
+        },
+        {
+          "token": "beans",
+          "weight": 0.1541317105293274,
+          "difference_tag": true
+        },
+        {
+          "token": "protein",
+          "weight": 0.12623345851898193,
+          "difference_tag": true
+        },
+        {
+          "token": "##es",
+          "weight": 0.08905072510242462,
+          "difference_tag": true
+        }
+      ],
+      [
+        {
+          "token": "meals",
+          "weight": 0.2501736283302307,
+          "difference_tag": true
+        },
+        {
+          "token": "##bs",
+          "weight": 0.17312276363372803,
+          "difference_tag": true
+        },
+        {
+          "token": "cook",
+          "weight": 0.09541308134794235,
+          "difference_tag": true
+        },
+        {
+          "token": "eat",
+          "weight": 0.08290256559848785,
+          "difference_tag": true
+        },
+        {
+          "token": "car",
+          "weight": 0.0737559050321579,
+          "difference_tag": true
+        }
+      ]
+    ],
+    "probability_delta_fp32_vs_saved_amp": 2.6792287826538086e-05
+  },
+  {
+    "index": 551,
+    "correct": false,
+    "top_pool_tokens_by_option": [
+      [
+        {
+          "token": "clockwise",
+          "weight": 0.33347511291503906,
+          "difference_tag": true
+        },
+        {
+          "token": "of",
+          "weight": 0.04976196214556694,
+          "difference_tag": false
+        },
+        {
+          "token": "of",
+          "weight": 0.03126583248376846,
+          "difference_tag": false
+        },
+        {
+          "token": "of",
+          "weight": 0.02966613695025444,
+          "difference_tag": false
+        },
+        {
+          "token": "index",
+          "weight": 0.02516896463930607,
+          "difference_tag": false
+        }
+      ],
+      [
+        {
+          "token": "##ockwise",
+          "weight": 0.3962814509868622,
+          "difference_tag": true
+        },
+        {
+          "token": "##cl",
+          "weight": 0.35446369647979736,
+          "difference_tag": true
+        },
+        {
+          "token": "counter",
+          "weight": 0.1106850653886795,
+          "difference_tag": true
+        },
+        {
+          "token": "of",
+          "weight": 0.010089107789099216,
+          "difference_tag": false
+        },
+        {
+          "token": "onto",
+          "weight": 0.009287567809224129,
+          "difference_tag": false
+        }
+      ]
+    ],
+    "probability_delta_fp32_vs_saved_amp": 0.00010010600090026855
+  }
+]

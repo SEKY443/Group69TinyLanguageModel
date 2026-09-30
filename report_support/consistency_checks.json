@@ -1,0 +1,185 @@
+{
+  "checks": [
+    {
+      "experiment": "abl0",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl0",
+      "seed": 43,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl0",
+      "seed": 44,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl1",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl1",
+      "seed": 43,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl1",
+      "seed": 44,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl2",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl2",
+      "seed": 43,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl2",
+      "seed": 44,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl3",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl3",
+      "seed": 43,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl3",
+      "seed": 44,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl4",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl4",
+      "seed": 43,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl4",
+      "seed": 44,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl5",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl5",
+      "seed": 43,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl5",
+      "seed": 44,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl6",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl6",
+      "seed": 43,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "abl6",
+      "seed": 44,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "b2_bilstm",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "b2_bilstm",
+      "seed": 43,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "b2_bilstm",
+      "seed": 44,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "dact_full",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "dact_full",
+      "seed": 43,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "dact_full",
+      "seed": 44,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "hp0",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "hp1",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "hp2",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "hp3",
+      "seed": 42,
+      "validation_matches_log": true
+    },
+    {
+      "experiment": "hp4",
+      "seed": 42,
+      "validation_matches_log": true
+    }
+  ],
+  "aggregate_arithmetic": "PASS",
+  "parameter_counts": "PASS",
+  "historical_prediction_recomputation": "UNAVAILABLE: predictions and checkpoints absent",
+  "environment": {
+    "python": "3.13.12",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "torch": "2.11.0+cu128",
+      "numpy": "2.5.3",
+      "scikit-learn": "1.9.1",
+      "scipy": "1.18.1",
+      "pandas": "3.0.6",
+      "matplotlib": "3.11.2",
+      "tokenizers": "0.23.2",
+      "transformers": null
+    },
+    "device": "audit",
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 2070 with Max-Q Design",
+    "deterministic": false
+  }
+}

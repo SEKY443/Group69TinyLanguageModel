@@ -8,6 +8,7 @@ B4  zero-shot open LLM (Qwen2.5), length-normalised log-likelihood of each solut
 """
 import copy
 import time
+import os
 
 import numpy as np
 import torch
@@ -17,7 +18,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from scipy.sparse import vstack
 
-from config import Config, JsonlLogger, amp_dtype  # nb-skip
+from config import Config, JsonlLogger, amp_dtype, set_seed, environment_info  # nb-skip
 from data import PAD  # nb-skip
 from train import autocast_ctx  # nb-skip
 
@@ -29,7 +30,7 @@ def majority_baseline(train_rows, rows):
 
 
 # ---------------------------------------------------------------- B1
-def tfidf_lr_baseline(train_rows, val_rows, test_rows, Cs=(0.03, 0.1, 0.3, 1.0, 3.0, 10.0)):
+def tfidf_lr_baseline(train_rows, val_rows, test_rows=None, Cs=(0.03, 0.1, 0.3, 1.0, 3.0, 10.0)):
     """Feature vector = tfidf(sol2) - tfidf(sol1); trained on both option orders; C picked on validation."""
     vec = TfidfVectorizer(ngram_range=(1, 2), min_df=2, sublinear_tf=True, lowercase=True)
     vec.fit([r[k] for r in train_rows for k in ("goal", "sol1", "sol2")])
@@ -48,7 +49,16 @@ def tfidf_lr_baseline(train_rows, val_rows, test_rows, Cs=(0.03, 0.1, 0.3, 1.0, 
         if best is None or acc > best[0]:
             best = (acc, C, clf)
     _, C, clf = best
-    return {"C": C, "val_pred": clf.predict(Xva), "test_pred": clf.predict(feats(test_rows))}
+    result = {"C": C, "val_pred": clf.predict(Xva), "vectorizer": vec, "classifier": clf}
+    if test_rows is not None:
+        result["test_pred"] = clf.predict(feats(test_rows))
+    return result
+
+
+def tfidf_lr_predict(fitted, rows):
+    vec = fitted["vectorizer"]
+    x = vec.transform([r["sol2"] for r in rows]) - vec.transform([r["sol1"] for r in rows])
+    return fitted["classifier"].predict(x)
 
 
 # ---------------------------------------------------------------- B2
@@ -83,14 +93,20 @@ class BiLSTMAttention(nn.Module):
 
 # ---------------------------------------------------------------- B3
 def finetune_pretrained(model_name, train_rows, val_rows, test_rows, device, out_dir, epochs=4, lr=1e-5,
-                        batch_size=16, max_len=128, seed=42, verbose=True):
+                        batch_size=16, max_len=128, seed=42, verbose=True, revision=None):
     """Fine-tunes a pretrained encoder with a multiple-choice head; model selection on validation only."""
     from transformers import AutoModelForMultipleChoice, AutoTokenizer, get_linear_schedule_with_warmup
 
-    torch.manual_seed(seed)
-    tok = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForMultipleChoice.from_pretrained(model_name).to(device)
+    set_seed(seed)
+    tok = AutoTokenizer.from_pretrained(model_name, revision=revision)
+    model = AutoModelForMultipleChoice.from_pretrained(model_name, revision=revision).to(device)
     logger = JsonlLogger(f"{out_dir}/logs/B3_{model_name.split('/')[-1]}_seed{seed}.jsonl")
+    if os.path.exists(logger.path):
+        raise FileExistsError(logger.path)
+    logger.log(event="start", model=model_name, requested_revision=revision,
+               resolved_revision=getattr(model.config, "_commit_hash", None), seed=seed,
+               epochs=epochs, lr=lr, batch_size=batch_size, max_len=max_len,
+               n_params=sum(p.numel() for p in model.parameters()), environment=environment_info(device))
 
     def encode(rows):
         goals = [r["goal"] for r in rows for _ in range(2)]
@@ -116,7 +132,6 @@ def finetune_pretrained(model_name, train_rows, val_rows, test_rows, device, out
 
     tr, ytr = encode(train_rows)
     va, yva = encode(val_rows)
-    te, yte = encode(test_rows)
     opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.01)
     steps = epochs * ((len(ytr) + batch_size - 1) // batch_size)
     sched = get_linear_schedule_with_warmup(opt, int(0.06 * steps), steps)
@@ -144,21 +159,51 @@ def finetune_pretrained(model_name, train_rows, val_rows, test_rows, device, out
         if val_acc > best_acc:
             best_acc, best_state = val_acc, copy.deepcopy({k: v.cpu() for k, v in model.state_dict().items()})
     model.load_state_dict(best_state)
-    out = {"val_pred": predict(va, yva), "test_pred": predict(te, yte), "best_val_acc": best_acc}
+    checkpoint = f"{out_dir}/checkpoints/B3_{model_name.split('/')[-1]}_seed{seed}"
+    model.save_pretrained(checkpoint)
+    tok.save_pretrained(checkpoint)
+    out = {"val_pred": predict(va, yva), "best_val_acc": best_acc, "checkpoint": checkpoint,
+           "max_len": max_len, "batch_size": batch_size}
+    if test_rows is not None:
+        te, yte = encode(test_rows)
+        out["test_pred"] = predict(te, yte)
     logger.log(event="end", best_val_acc=best_acc)
     del model
     return out
 
 
+@torch.no_grad()
+def pretrained_predict(fitted, rows, device):
+    """Separate final evaluation of the locally saved validation-selected checkpoint."""
+    from transformers import AutoModelForMultipleChoice, AutoTokenizer
+    tok = AutoTokenizer.from_pretrained(fitted["checkpoint"])
+    model = AutoModelForMultipleChoice.from_pretrained(fitted["checkpoint"]).to(device).eval()
+    predictions = []
+    for start in range(0, len(rows), fitted["batch_size"]):
+        chunk = rows[start:start + fitted["batch_size"]]
+        goals = [r["goal"] for r in chunk for _ in range(2)]
+        sols = [r[k] for r in chunk for k in ("sol1", "sol2")]
+        enc = tok(goals, sols, truncation=True, max_length=fitted["max_len"], padding="max_length", return_tensors="pt")
+        enc = {k:v.view(len(chunk),2,-1).to(device) for k,v in enc.items()}
+        with autocast_ctx(device):
+            predictions.append(model(**enc).logits.argmax(-1).cpu())
+    return torch.cat(predictions).numpy()
+
+
 # ---------------------------------------------------------------- B4
 @torch.no_grad()
-def llm_zero_shot(model_name, rows, device, batch_size=32, verbose=True):
+def llm_zero_shot(model_name, rows, device, batch_size=32, verbose=True, revision=None, out_dir=None):
     """Chooses the solution with the higher mean token log-probability given a goal prompt (no training)."""
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    tok = AutoTokenizer.from_pretrained(model_name)
+    tok = AutoTokenizer.from_pretrained(model_name, revision=revision)
     dtype = amp_dtype(device) or torch.float32
-    model = AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype).to(device).eval()
+    model = AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype, revision=revision).to(device).eval()
+    if out_dir is not None:
+        JsonlLogger(f"{out_dir}/logs/B4_zero_shot.jsonl").log(event="inference", model=model_name,
+            requested_revision=revision, resolved_revision=getattr(model.config, "_commit_hash", None),
+            n_items=len(rows), batch_size=batch_size, continuation_limit=128,
+            environment=environment_info(device))
     pad_id = tok.pad_token_id if tok.pad_token_id is not None else tok.eos_token_id
 
     seqs = []  # (input ids, number of continuation tokens)

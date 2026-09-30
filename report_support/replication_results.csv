@@ -1,0 +1,11 @@
+model,split,n,correct,accuracy,source
+seed42,val,1612,952,0.5905707196029777,experiments\completed\outputs_replication_efficient\predictions\dact_replication_seed42_val.jsonl
+seed43,val,1612,967,0.5998759305210918,experiments\completed\outputs_replication_efficient\predictions\dact_replication_seed43_val.jsonl
+seed44,val,1612,965,0.5986352357320099,experiments\completed\outputs_replication_efficient\predictions\dact_replication_seed44_val.jsonl
+B0,val,1612,806,0.5,experiments\completed\outputs_replication_baselines\predictions\B0_val.jsonl
+B1,val,1612,951,0.5899503722084367,experiments\completed\outputs_replication_baselines\predictions\B1_val.jsonl
+seed42,test,1838,1145,0.6229597388465724,experiments\completed\outputs_replication_efficient\predictions\dact_replication_seed42_test.jsonl
+seed43,test,1838,1150,0.6256800870511425,experiments\completed\outputs_replication_efficient\predictions\dact_replication_seed43_test.jsonl
+seed44,test,1838,1155,0.6284004352557128,experiments\completed\outputs_replication_efficient\predictions\dact_replication_seed44_test.jsonl
+B0,test,1838,928,0.5048966267682263,experiments\completed\outputs_replication_baselines\predictions\B0_test.jsonl
+B1,test,1838,1119,0.6088139281828074,experiments\completed\outputs_replication_baselines\predictions\B1_test.jsonl

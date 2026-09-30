@@ -1,0 +1,6 @@
+group,n,correct,accuracy
+all,1838,1150,0.6256800870511425
+truncated,32,24,0.75
+not truncated,1806,1126,0.6234772978959026
+identical retained option tokens,2,0,0.0
+confidence >= .8,420,308,0.7333333333333333

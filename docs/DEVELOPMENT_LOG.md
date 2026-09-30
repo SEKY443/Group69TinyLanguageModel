@@ -440,3 +440,200 @@ colab stop -s group69                                        # always stop: sess
 - The **Google Drive loading path** was not exercised in the CLI run (the files were uploaded directly). It is standard `google.colab.drive` code, but it was not tested end-to-end.
 - Results come from **one Colab run with 3 seeds**. With about ±1 point seed std and a ±2.3-point test CI, differences under about 2 points are not conclusive.
 - Pretrained models were used only as baselines, as required. The gap to B3/B4 suggests that pairing this architecture with pretrained representations would be the natural next step outside the assignment constraints.
+
+## 22. Evidence audit and refinement — 30 September 2026
+
+This section records a new audit and local replication. Sections 1–21 describe the earlier A100 work;
+the corrections here supersede their interpretations where noted. No original A100 result file was
+overwritten. No remote commit or push was made in this audit. The user explicitly requested continued
+refinement and maintenance of this log. The official six-page project brief and actual supplied files
+were reviewed before changing implementation. `PROJECT_AUDIT.md` records the pre-change inventory,
+requirements comparison, findings and priorities. `evidence/historical/` preserves the original notebook,
+eight source modules and builder; its SHA-256 manifest records the original evidence.
+
+### 22.1 Findings that affect report claims
+
+- The supplied training file has 16,113 items. The unchanged stratified split (seed 42) gives 14,501
+  training and 1,612 validation items; the supplied test has 1,838 items. Labels index sol1/sol2 as 0/1.
+  No missing/malformed fields were found. The 8,000-entry BPE was learned from training text only.
+- One normalised exact test item (index 1545, vodka and soda) occurs twice in training. This is a
+  supplied-data overlap, so an unqualified claim of strict example disjointness is incorrect. The
+  historical split and scores remain intact; duplicate-excluded evaluation is a sensitivity check.
+- Historical raw candidate swapping can change SequenceMatcher's directional alignment tags:
+  755 training, 83 validation and 103 test items. Encoded-pair network equivariance is valid, but it
+  does not establish raw-pipeline invariance. An optional canonical alignment was implemented and
+  tested; it stays OFF in historical-protocol replication and has no benchmark score claimed.
+- The original length table measured already-truncated inputs. New raw length tables document the
+  40/96-token caps and 58 of 3,676 test solutions exceeding 96 tokens. Truncation erases the tokenised
+  distinction for two test pairs. A difference-centred truncation strategy is only future work; it
+  is not established that it would solve reasoning errors, and it was not test-tuned here.
+- Pooling starts with a positive difference-token bias of +1. High mass on differing words therefore
+  is not evidence that training independently discovered them, nor proof of causal reasoning.
+- The no-pooling-bias historical comparison has raw p=.01696 and post-hoc Holm-adjusted p=.15267
+  across 12 comparisons. Overlapping CIs do not establish that every observed change is noise.
+  Historical CIs refer to the best-validation single seed, not the three-seed mean.
+- B1/B3 historically generated test predictions before the final reporting stage. Inspection found
+  no test-based checkpoint/hyperparameter selection, but the earlier claim of no test inference
+  before that stage was too strong. The new notebook defers this inference.
+- Original weights and per-item predictions are absent locally. Original metrics remain supported
+  by saved notebook outputs, result files and logs; they cannot all be independently recomputed.
+  New checkpoints/predictions do not retroactively recover those original arrays.
+
+### 22.2 Implemented improvements
+
+Preserved the DACT architecture, scratch initialisation, objective, historical split, length caps,
+default alignment and selected hyperparameters. Added strict UTF-8/schema validation, separate run
+and split seed records, environment/data/split provenance, validation loss, parameter counts, finite
+loss checks, safe checkpoint metadata, per-item prediction export and overwrite protection. AMP now
+honours the configuration flag. B3 retention and pretrained revision logging were added for future
+full runs. The modified pretrained paths have not yet been executed locally.
+
+MLM now projects only supervised positions through the vocabulary head, keeping the same mathematical
+objective while reducing memory. Attention figures use adaptive sizing, 300 dpi, comparable pooling
+scales, explicit predicted/gold labels and numeric sidecars. The architecture diagram is available
+as SVG and PNG. `report_support/changes.md` documents each file, old/new behaviour and marking relevance.
+
+The notebook builder defaults to `CITS4012_69_reproducible.ipynb` and refuses to overwrite executed
+notebooks even with `--force`. The submission candidate retains all 27 original code/output pairs,
+corrected prose and two genuinely executed audit cells. The separate current-source notebook avoids
+presenting historical results as outputs of modified code. Report-support tables, equations, verified
+primary references/BibTeX, architecture, training curves, experiment controls and limitations were created.
+
+### 22.3 Checks actually executed
+
+- Historical audit reconciled 32 scratch training runs with logs/results and checked three-seed
+  arithmetic and model parameter counts (`report_support/consistency_checks.json`).
+- Full-model checks passed: padding keys masked, normalisation, padding invariance, encoded swaps,
+  gradient flow through encoder/cross/pooling attention and checkpoint reload/overwrite protection.
+  Explicit versus fused attention maximum error was 1.68e-8. Altering pooling changed logits by .02761.
+- Full versus selected-position MLM loss error was 0; maximum gradient discrepancy was 6.71e-8.
+- A reduced diagnostic DACT reached 100% accuracy on 16 training items by step 10; final step-20
+  loss was 5.36e-6. This is an overfit check, not a generalisation result.
+- On 128 training items, original alignment failed raw-swap tag consistency for 7; canonical alignment
+  failed for 0. Optional canonical model raw-swap checks passed.
+- Fresh-kernel development notebook execution completed without errors. Latest evidence:
+  `evidence/CITS4012_69_development_smoke_20260930_132631.ipynb`. Its current code matches the generated
+  notebook and all eight source modules. Smoke skips pretrained downloads and uses validation-derived
+  diagnostic data in place of official test data. It does not establish full clean-Colab compatibility.
+
+### 22.4 Completed local fixed-recipe replication
+
+The first attempt in `outputs_replication/` was interrupted for excessive GPU memory before a complete
+model was produced; its logs are retained and it contributes no result. After the tested MLM projection
+optimisation, the fresh `outputs_replication_efficient/` run completed at approximately 14:01 Perth time
+on 30 September. Completion was verified from all logs, three saved checkpoints, six prediction files,
+result JSON and four attention figures; the old interactive process handle was no longer available.
+
+Protocol was saved before training. Seeds 42/43/44 used the historical validation-selected recipe and
+saved training-only tokenizer, with no new search. All seeds trained before final test inference.
+Local hardware: RTX 2070 Max-Q 8 GB, fp16, zero data-loader workers; Python 3.13.12, torch 2.11.0+cu128,
+NumPy 2.5.3, sklearn 1.9.1, tokenizers 0.23.2. These differ from the nondeterministic historical A100
+environment, so the run is an independent replication, not a controlled ablation or exact replay.
+
+| Seed | QA epochs completed | Best validation accuracy (%) | Final test accuracy (%) |
+|---|---:|---:|---:|
+| 42 | 8 | 59.0571 | 62.2960 |
+| 43 | 9 | 59.9876 | 62.5680 |
+| 44 | 8 | 59.8635 | 62.8400 |
+| Mean ± sample SD | — | 59.6361 ± 0.5052 | 62.5680 ± 0.2720 |
+
+All three runs completed ten MLM epochs. The representative model is seed 43, selected by validation
+accuracy before test evaluation. Its item-bootstrap 95% CI is [60.3917, 64.6368]%, a single-model CI.
+Excluding the pre-identified duplicate yields 62.5476% on 1,837 items; this is sensitivity only.
+Separate local lexical runs in `outputs_replication_baselines/` produced B0 test 50.4897% and B1 test
+60.8814% (validation 58.9950%, C=3.0). Keep all these local results separate from the A100 table.
+
+The historical main result remains validation 60.0910 ± 0.6575%, test 60.3736 ± 1.1736%. A higher local
+replication score is not evidence that logging or MLM memory optimisation improves the model.
+
+### 22.5 Submission status
+
+The implementation and report evidence are substantially stronger. The complete historical study,
+local replication and development tests have distinct provenance. Full revised B3/B4 execution and
+the Drive/clean-Colab route remain unverified. No final ACL report PDF or invented team contribution
+statement has been created. The required final filenames remain `CITS4012_69.ipynb` and
+`CITS4012_69.pdf`; report notes are supporting evidence, not the finished six-page report.
+
+## 23. Completed replication analysis and final handover — 30 September 2026
+
+`tools/analyse_replication.py` independently verified all ten local prediction files, **17,250 rows**,
+against the supplied validation/test text and labels. Stored correctness, probabilities, argmax labels,
+per-run accuracy, seed aggregates, validation maxima and representative-seed CI all reconciled.
+All three checkpoint/metadata pairs exist. The completed main/B0/B1 evidence has **38 file hashes**
+in `report_support/replication_manifest.json`, including model weights and fitted lexical predictor.
+
+Exploratory paired analysis used 10,000 same-item bootstrap resamples (seed 20260930) and exact McNemar
+tests, with a declared two-comparison family (validation-selected local DACT seed 43 versus B0/B1).
+DACT minus B1 = +1.6866 percentage points, paired CI [-.7617,4.0805], p=.18953 before/after Holm.
+DACT minus B0 = +12.0783 points, CI [8.8683,15.1795], Holm p=3.20e-13. Thus the local lexical advantage
+is uncertain. These tests are post-run exploratory evidence, not a preregistered confirmatory study.
+
+The 688 local seed-43 failures now have structural analysis and a deterministic random sample of 12
+with explicitly post-hoc, single-reviewer categories. Two identical retained-token pairs both fail;
+24/32 items with some truncation are correct, so the analysis does not claim all truncated examples
+perform worse. Among 420 predictions with confidence at least .8, 112 are wrong. Validation loss rises
+while training loss falls. `report_support/replication.md` records exact examples, counts and caveats.
+
+All four new full attention figures were visually inspected and their metadata reconciled with saved
+predictions. Long heatmaps require zooming; compact report-ready SVG/PNG pooling plots were generated
+from numeric sidecars, showing the six largest weights plus the omitted-weight sum without renormalising.
+Success #1672 and failure #551 illustrate that focus on differing words can accompany either outcome.
+The confidence-selected weight-loss case #1244 is treated as dataset-label disagreement, not validated
+medical truth. Figure fp32 versus saved AMP inference differs by at most .000117 probability, with the
+same labels. The compact attention figure and new training curves were visually checked.
+
+`evidence/CITS4012_69_replication_verification.ipynb` was executed in a fresh kernel, reading actual
+training logs, rerunning metric/error checks and displaying actual figures. It clearly states that it
+verifies an already-completed training run, rather than claiming training executed in those cells.
+`REFINEMENT_SUMMARY.md` supplies all 20 requested sections, full configurations/results, before/after
+compliance and a candid readiness checklist. `report_support/files_changed.md` lists individual files.
+
+Final consistency checks passed: **10 archived originals verified; 88 original output files unchanged;
+27 original notebook code/output pairs preserved; five current/evidence notebooks schema-valid with
+no error outputs; eight generated modules match source; latest fresh-kernel smoke code matches current
+generated code; 38 replication artifact hashes verified; Python compilation and Git whitespace checks
+passed.** A first version of the final source comparison mistakenly included module-only command-line
+smoke sections omitted by the notebook builder; the checker was corrected to use the builder's exact
+embedding transformation and then passed. This was a verification-script issue, not a source/notebook
+mismatch. Windows line-ending notices and local kernel transport/event-loop notices were informational.
+
+Remaining work is explicit: complete the final six-page ACL PDF with truthful contributions, verify the
+full revised clean-Colab/Drive/B3/B4 workflow before promoting the new notebook, and preserve/backup
+the Git-ignored new experiment artifacts. Historical missing weights/revisions cannot be retroactively
+recovered by the new run. No external dataset, test-driven retuning, invented result, remote push or
+unrequested final report was introduced.
+
+## 24. Project folder organisation — 30 September 2026
+
+At the user's request, reorganised project files for easier navigation. Kept the executed submission
+notebook, README and dependency files at the repository root. Moved the audit and refinement handover
+to `docs/`, the official template to `templates/`, and the current-source reproduction notebook to
+`notebooks/`. Completed local runs now live under `experiments/completed/`; smoke/functional-test and
+interrupted runs live under `experiments/development/`. The original `outputs/` A100 evidence and
+`evidence/historical/` snapshots retain their existing locations. The supplied dataset and brief remain
+outside the repository in the assignment directory. Added an assignment-level README pointing to the
+project, a root folder map, and `docs/PROJECT_STRUCTURE.md` explaining artifact roles.
+
+Before relocation, checked all source/destination paths were inside the intended project and confirmed
+no relevant Python training process was running. Recorded the path mapping in `docs/path_relocations.json`
+and pre-move SHA-256 hashes in `docs/organisation_manifest.json`. **Eleven entries containing 258 files
+were relocated and verified byte-for-byte immediately after moving.** Nothing was deleted.
+
+Updated active build, smoke, experiment, figure, analysis and inventory scripts to use the new locations.
+`tools/project_paths.py` resolves old relative checkpoint paths from saved metadata without rewriting
+the original experimental JSON/logs. Future generated notebook runs now go to completed/development
+folders according to execution mode. Updated current README/report-support/handover path references;
+chronological history and original snapshots deliberately retain their historical path descriptions.
+
+Archived the previous executed replication-verification notebook unchanged in `evidence/archive/`,
+then genuinely executed a new verification notebook with the new paths at its normal evidence location.
+Regenerated the separate unexecuted reproduction notebook and ran a fresh smoke notebook:
+`evidence/CITS4012_69_development_smoke_20260930_234421.ipynb`, **zero errors**. This checks the layout
+change without rerunning full training or pretending that smoke metrics are benchmark results.
+
+Final consistency checks passed after reorganisation: all 88 original output hashes and 27 original
+code/output pairs preserved; all 38 completed local artifact hashes verified; generated source matches
+the latest executed smoke; seven current/archive evidence notebooks validate with no error outputs;
+Python compilation and Git whitespace checks pass. The new verification again reconciled 17,250
+prediction rows. The folder changes do not alter model settings or benchmark scores. Git-ignored run
+artifacts remain locally retained, not remotely backed up. No commit or push was performed.

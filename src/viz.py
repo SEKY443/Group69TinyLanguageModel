@@ -2,6 +2,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+import json
+import textwrap
 from matplotlib.gridspec import GridSpec
 
 from data import TAG_DIFF, collate, encode_example, token_strings  # nb-skip
@@ -16,7 +18,10 @@ def attention_for_example(model, row, tok, cfg, device):
     batch = to_device(collate([(enc, row["label"], 0)]), device)
     out = model(batch, return_attn=True)
     probs = out["logits"].softmax(-1)[0].cpu().numpy()
-    info = {"probs": probs, "pred": int(probs.argmax()), "label": row["label"], "options": []}
+    info = {"probs": probs, "pred": int(probs.argmax()), "label": row["label"],
+            "goal": row["goal"], "candidate_1": row["sol1"], "candidate_2": row["sol2"],
+            "attention_note": "Head-averaged slices; goal slice excludes other keys; cross slice omits CLS sink; rows need not sum to one.",
+            "options": []}
     for k in range(2):
         ids, seg, tags, sol = enc[k]
         sol_pos = [i for i, m in enumerate(sol) if m]
@@ -54,11 +59,14 @@ def plot_attention_case(model, row, tok, cfg, device, title="", save_path=None):
     info = attention_for_example(model, row, tok, cfg, device)
     o1, o2 = info["options"]
     goal_tokens = [o1["tokens"][i] for i in o1["goal_pos"]]
-    fig = plt.figure(figsize=(15, 10))
+    longest = max(len(o1["sol_pos"]), len(o2["sol_pos"]))
+    fig = plt.figure(figsize=(max(15, min(28, longest * .32)), max(10, min(26, longest * .27))))
     gs = GridSpec(3, 2, height_ratios=[0.35, 1, 1], figure=fig, hspace=0.9, wspace=0.3)
     for k, o in enumerate((o1, o2)):
         ax = fig.add_subplot(gs[0, k])
-        ax.imshow(o["pool"][None], aspect="auto", cmap="viridis")
+        im = ax.imshow(o["pool"][None], aspect="auto", cmap="viridis", vmin=0,
+                       vmax=max(float(o1["pool"].max()), float(o2["pool"].max()), 1e-8))
+        fig.colorbar(im, ax=ax, fraction=.025)
         _label_ticks(ax, [o["tokens"][i] for i in o["sol_pos"]], o["diff"], "x")
         ax.set_yticks([])
         tag = " (gold)" if info["label"] == k else ""
@@ -78,9 +86,12 @@ def plot_attention_case(model, row, tok, cfg, device, title="", save_path=None):
         ax.set_title(f"Option {k + 1}: last-layer attention to goal tokens", fontsize=10)
         fig.colorbar(im, ax=ax, fraction=0.03)
     verdict = "CORRECT" if info["pred"] == info["label"] else "WRONG"
-    fig.suptitle(f"{title} [{verdict}] Goal: {row['goal']}", fontsize=12)
+    fig.suptitle(textwrap.fill(f"{title} [{verdict}] Gold: option {info['label']+1}; predicted: option {info['pred']+1}. Goal: {row['goal']}", 130), fontsize=12)
     if save_path:
-        fig.savefig(save_path, dpi=120, bbox_inches="tight")
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+        with open(str(save_path) + ".json", "w", encoding="utf-8") as stream:
+            json.dump(info, stream, indent=2, ensure_ascii=False,
+                      default=lambda x: x.tolist() if hasattr(x, "tolist") else x)
     plt.show()
     return info
 

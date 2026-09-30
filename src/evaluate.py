@@ -1,7 +1,35 @@
 """Evaluation metrics: accuracy, bootstrap confidence intervals, McNemar's exact test, seed aggregation."""
 import math
+import json
+import os
 
 import numpy as np
+
+
+def save_predictions(path, rows, prediction, run, split):
+    """Persist only executed predictions; probabilities are omitted if unavailable (e.g. B0)."""
+    if len(rows) != len(prediction["pred"]):
+        raise ValueError("Prediction count differs from dataset size")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "x", encoding="utf-8") as stream:
+        for i, (row, pred) in enumerate(zip(rows, prediction["pred"])):
+            rec = {"run": run, "split": split, "index": i, "goal": row["goal"],
+                   "candidate_1": row["sol1"], "candidate_2": row["sol2"],
+                   "gold_label": row["label"], "predicted_label": int(pred),
+                   "correct": int(pred) == row["label"]}
+            if "prob" in prediction:
+                p = float(prediction["prob"][i])
+                rec.update(probability_candidate_1=1-p, probability_candidate_2=p)
+            stream.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+
+def holm_adjust(pvalues):
+    """Holm family-wise correction; call on an explicitly declared comparison family."""
+    p = np.asarray(pvalues, dtype=float)
+    order = np.argsort(p)
+    adjusted = np.empty_like(p)
+    adjusted[order] = np.minimum(1, np.maximum.accumulate((len(p) - np.arange(len(p))) * p[order]))
+    return adjusted
 
 
 def accuracy(pred, label):

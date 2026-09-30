@@ -1,0 +1,77 @@
+{
+  "prediction_files_verified": [
+    "experiments\\completed\\outputs_replication_efficient\\predictions\\dact_replication_seed42_val.jsonl",
+    "experiments\\completed\\outputs_replication_efficient\\predictions\\dact_replication_seed43_val.jsonl",
+    "experiments\\completed\\outputs_replication_efficient\\predictions\\dact_replication_seed44_val.jsonl",
+    "experiments\\completed\\outputs_replication_baselines\\predictions\\B0_val.jsonl",
+    "experiments\\completed\\outputs_replication_baselines\\predictions\\B1_val.jsonl",
+    "experiments\\completed\\outputs_replication_efficient\\predictions\\dact_replication_seed42_test.jsonl",
+    "experiments\\completed\\outputs_replication_efficient\\predictions\\dact_replication_seed43_test.jsonl",
+    "experiments\\completed\\outputs_replication_efficient\\predictions\\dact_replication_seed44_test.jsonl",
+    "experiments\\completed\\outputs_replication_baselines\\predictions\\B0_test.jsonl",
+    "experiments\\completed\\outputs_replication_baselines\\predictions\\B1_test.jsonl"
+  ],
+  "prediction_rows_verified": 17250,
+  "prediction_text_labels_match_supplied_data": true,
+  "metrics_match": true,
+  "seed_aggregate_matches": true,
+  "validation_checkpoint_selection_matches": true,
+  "representative_seed": 43,
+  "bootstrap_CI_matches": true,
+  "attention_metadata_matches": true,
+  "comparisons": [
+    {
+      "comparison": "DACT seed 43 minus B0",
+      "accuracy_difference_pp": 12.078346028291621,
+      "paired_bootstrap_low_pp": 8.868335146898804,
+      "paired_bootstrap_high_pp": 15.179542981501632,
+      "DACT_only_correct": 564,
+      "baseline_only_correct": 342,
+      "exact_McNemar_p": 1.5977752596839122e-13,
+      "Holm_p_two_comparisons": 3.1955505193678244e-13
+    },
+    {
+      "comparison": "DACT seed 43 minus B1",
+      "accuracy_difference_pp": 1.6866158868335146,
+      "paired_bootstrap_low_pp": -0.7616974972796519,
+      "paired_bootstrap_high_pp": 4.080522306855277,
+      "DACT_only_correct": 277,
+      "baseline_only_correct": 246,
+      "exact_McNemar_p": 0.18953404576190055,
+      "Holm_p_two_comparisons": 0.18953404576190055
+    }
+  ],
+  "error_strata": [
+    {
+      "group": "all",
+      "n": 1838,
+      "correct": 1150,
+      "accuracy": 0.6256800870511425
+    },
+    {
+      "group": "truncated",
+      "n": 32,
+      "correct": 24,
+      "accuracy": 0.75
+    },
+    {
+      "group": "not truncated",
+      "n": 1806,
+      "correct": 1126,
+      "accuracy": 0.6234772978959026
+    },
+    {
+      "group": "identical retained option tokens",
+      "n": 2,
+      "correct": 0,
+      "accuracy": 0.0
+    },
+    {
+      "group": "confidence >= .8",
+      "n": 420,
+      "correct": 308,
+      "accuracy": 0.7333333333333333
+    }
+  ],
+  "note": "Exploratory post-run comparisons; local environment; no model selection from test."
+}

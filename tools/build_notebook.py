@@ -7,14 +7,16 @@ exist so the modules can import each other outside the notebook, are dropped).
 import json
 import os
 import re
+import argparse
+from refinement_notes import QUANTITATIVE, QUALITATIVE, refined_cells
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEMPLATE = os.path.join(ROOT, "Copy_of_CITS4012_YourGroupID.ipynb")
-OUT = os.path.join(ROOT, "CITS4012_69.ipynb")
+TEMPLATE = os.path.join(ROOT, "templates/Copy_of_CITS4012_YourGroupID.ipynb")
+OUT = os.path.join(ROOT, "notebooks/CITS4012_69_reproducible.ipynb")
 
 
 def module(name):
-    src = open(os.path.join(ROOT, "src", f"{name}.py")).read()
+    src = open(os.path.join(ROOT, "src", f"{name}.py"), encoding="utf-8").read()
     src = src.split('\nif __name__ == "__main__":')[0]
     lines = [ln for ln in src.splitlines() if not ln.rstrip().endswith("# nb-skip")]
     return re.sub(r"\n{3,}", "\n\n\n", "\n".join(lines)).strip() + "\n"
@@ -466,8 +468,19 @@ print(sorted(os.listdir(os.path.join(CFG.out_dir, "logs")))[:10], "...")
 """
 
 
+globals().update(refined_cells(globals()))
+
+
 def main():
-    nb = json.load(open(TEMPLATE))
+    parser = argparse.ArgumentParser(description="Build a separate unexecuted notebook; never silently erase saved outputs.")
+    parser.add_argument("--output", default=OUT)
+    parser.add_argument("--force", action="store_true", help="Explicitly overwrite an unexecuted generated notebook only")
+    args = parser.parse_args()
+    if os.path.exists(args.output):
+        old = json.load(open(args.output, encoding="utf-8"))
+        if any(c.get("outputs") for c in old["cells"]) or not args.force:
+            raise FileExistsError("Output exists. Executed notebooks are protected; choose another --output.")
+    nb = json.load(open(TEMPLATE, encoding="utf-8"))
     t = nb["cells"]
     title, readme, sec1, sec2, sec3 = (c for c in t if c["cell_type"] == "markdown")
     cells = [title, md(README),
@@ -484,10 +497,13 @@ def main():
     for c in cells:
         c["source"] = c["source"] if isinstance(c["source"], str) else "".join(c["source"])
     nb["cells"] = cells
+    nb["nbformat_minor"] = max(5, nb.get("nbformat_minor", 0))
     nb["metadata"]["accelerator"] = "GPU"
     nb["metadata"]["colab"]["gpuType"] = "A100"
-    json.dump(nb, open(OUT, "w"), indent=1, ensure_ascii=False)
-    print("wrote", OUT, "with", len(cells), "cells")
+    for i,c in enumerate(nb["cells"]):
+        c.setdefault("id", f"group69-{i:03d}")
+    json.dump(nb, open(args.output, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+    print("wrote", args.output, "with", len(cells), "cells; full execution is pending")
 
 
 if __name__ == "__main__":
