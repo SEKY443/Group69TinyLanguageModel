@@ -34,6 +34,7 @@ All times are local (CST, UTC+8) on **2026-09-29**. Times of the Colab run come 
 26. Lexical head: closing the gap to TF-IDF
 27. Report draft
 28. Merge of the two tracks (`merge-review`)
+29. Report updated with the audit findings
 S1–S3. Parallel track on `main`: evidence audit and replication (Salah Elshafey)
 
 ---
@@ -1081,3 +1082,31 @@ The group member asked to merge `revision-2` into `main` "after checking and con
 2. **One fresh Colab run of the merged notebook.** Its saved outputs come from the revision-2 code, and the merged code adds records and checks. The defaults don't change the model, but the submitted outputs should come from exactly the submitted code.
 3. Add the audit's duplicate-test-item finding and the directional-alignment note to the report's limitations.
 4. Re-run or update main's audit tools for the new default model, if the group keeps them.
+
+---
+
+## 29. Report updated with the audit findings (2026-10-01, on `merge-review`)
+
+At the group member's request, the report (`report/CITS4012_69.tex`, recompiled PDF) was updated with the findings of the audit track (section S1, `docs/PROJECT_AUDIT.md`).
+
+**Report changes:**
+- **Figure 1 caption:** equivariance is now qualified. The network is equivariant for already-encoded inputs, but the full pipeline is not, because the `difflib` alignment depends on option order.
+- **Data paragraph:**
+  - Test labels are used only in the final step. However, the test file is loaded and tokenised at the start, and B1/B3 compute their test predictions early without inspecting them. This replaces "used only in the final evaluation".
+  - Disclosed: one test item also appears in the training file, and there are six duplicate training rows. They were kept so all runs use the same split.
+- **New paragraph, "Independent evidence audit",** in "What Worked and What Did Not":
+  - the overlap and duplicates;
+  - the order-dependent alignment (103 test items change tags when the raw options are swapped, in the original pipeline);
+  - the early test loading;
+  - the lost checkpoints and predictions of the original run;
+  - the code the audit added (opt-in canonical alignment, prediction export, provenance, validation loss, finite-loss checks);
+  - its replication of the original model, kept separate from the report's tables.
+- **Evidence paragraph:** now mentions `evidence/historical/`.
+- **Limitations:** now also list the overlap, the order-dependent tags, and the changed parameter counts in module-removal ablations.
+
+**Notebook:** in the protocol cell (3.1), the false claim "Steps 1-4 never touch the test split" was replaced with the accurate description and the duplicate disclosure. This is a markdown change only.
+
+**Checks:**
+- The PDF is 6 pages with no errors or undefined references. The main text ends on page 5; Team Contributions and the references start on page 6.
+- `sync_notebook --check`: in sync.
+- All numbers are unchanged, taken from the final run.
