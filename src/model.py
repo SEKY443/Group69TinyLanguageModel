@@ -142,6 +142,9 @@ class DACT(nn.Module):
         self.mlm_transform = nn.Sequential(nn.Linear(d, d), nn.GELU(), nn.LayerNorm(d))
         self.mlm_bias = nn.Parameter(torch.zeros(vocab_size))
         self.apply(self._init)
+        # lexical ("wide") head: one learned weight per hashed solution unigram/bigram, starting at zero. A plain
+        # parameter (not an nn.Embedding) so that AdamW weight decay regularises it like a logistic regression.
+        self.lex_w = nn.Parameter(torch.zeros(cfg.lex_buckets, 1)) if cfg.use_lexical else None
 
     @staticmethod
     def _init(m):
@@ -187,11 +190,26 @@ class DACT(nn.Module):
         hf = h.reshape(N, L, -1)
         pooled, pool_w = self.pool(hf, sol_mask.view(N, L), tags.view(N, L))
         feats = torch.cat([pooled, hf[:, 0]], dim=-1)            # pooled solution summary + [CLS]
-        out["logits"] = self.scorer(feats).view(B, 2).float()
+        logits = self.scorer(feats).view(B, 2).float()
+        if self.lex_w is not None:
+            # under the pairwise softmax only the difference of the two lexical scores matters, so shared n-grams
+            # cancel and the head learns which words make a solution more plausible (cf. baseline B1)
+            out["lexical"] = self.lexical_score(ids.view(N, L), sol_mask.view(N, L)).view(B, 2)
+            logits = logits + out["lexical"]
+        out["logits"] = logits
         out["pool"] = pool_w.view(B, 2, L)
         if return_attn:
             out["self_attn"] = [w.view(B, 2, *w.shape[1:]) for w in self_attn]
         return out
+
+    def lexical_score(self, ids, sol_mask):
+        """Sum of learned weights of the hashed BPE unigrams and bigrams of each solution: [N, L] -> [N]."""
+        H = self.lex_w.size(0) - 1                               # bucket 0 = padding, always weight 0
+        uni = torch.where(sol_mask, 1 + (ids * 40503) % H, 0)
+        pair = sol_mask[:, :-1] & sol_mask[:, 1:]
+        bi = torch.where(pair, 1 + ((ids[:, :-1] * 8191 + ids[:, 1:]) * 40503 + 7919) % H, 0)
+        w = F.embedding(torch.cat([uni, bi], dim=1), self.lex_w, padding_idx=0)
+        return w.float().sum((1, 2))
 
     def mlm_logits(self, ids, seg, tags, attn_mask):
         h, _ = self.encode(ids, seg, tags, attn_mask)
