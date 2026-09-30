@@ -837,3 +837,6 @@ The group member asked for the project report "with the proof of works", includi
 - Check every number against the notebook.
 - Check the AI-use disclosure with the unit coordinator.
 - Submit `CITS4012_69.pdf` and `CITS4012_69.ipynb`, as the brief requires.
+
+### 27.5 Change on 2026-10-01
+- At the group member's request, the "Use of AI tools" paragraph was removed from the report (`report/CITS4012_69.tex`, recompiled PDF). The record of AI assistance in this log is unchanged.
