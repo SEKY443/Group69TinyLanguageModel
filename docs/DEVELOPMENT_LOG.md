@@ -32,6 +32,7 @@ All times are local (CST, UTC+8) on **2026-09-29**. Times of the Colab run come 
 24. Re-run attempts with the Colab CLI, and changes for a browser run
 25. Full re-run on a free T4 and updated results
 26. Lexical head: closing the gap to TF-IDF
+27. Report draft
 
 ---
 
@@ -792,3 +793,47 @@ Setup: the small configuration (d = 128, 2 layers, no warm-up), 3 seeds, validat
 
 ### 26.6 Still for the group
 - Unchanged from 23.4 and 25.5: the AI-use disclosure and the coordinator email, understanding the code, and the ACL report. The report must use **this** run's numbers.
+
+---
+
+## 27. Report draft (2026-10-01, Claude Code at the group member's request)
+
+The group member asked for the project report "with the proof of works", including what failed as well as what worked. Claude Code wrote a complete **draft**, which the group must review, correct and complete.
+
+### 27.1 Files (`report/`)
+- `CITS4012_69.tex`: the report, using the official ACL style with `\usepackage[final]{acl}` and `\author{Group 69}`.
+- `CITS4012_69.pdf`: the compiled report, 6 pages including the references.
+- `acl.sty` and `acl_natbib.bst`: downloaded from github.com/acl-org/acl-style-files.
+- `references.bib`: a copy of the repository's bibliography.
+- `make_figures.py` builds `figures/` from `outputs/`:
+  - the architecture diagram;
+  - the attention-control bar chart;
+  - pooling strips cropped from the saved figures for test items 747 and 1258.
+- Compiled with Tectonic 0.17.0, installed in WSL. There are no LaTeX errors and no undefined citations or references.
+
+### 27.2 Content
+- **Sections:** Introduction; Methodology (equations for the tag embedding, cross-solution attention with ESIM fusion, difference-guided pooling, the lexical head and the objective; own contributions separated from adapted components); Experimental Setup (data, training and hyper-parameters, baselines B0–B4, metrics); Results and Analysis (main table, ablation table, error overlap, attention controls, H1/H2, qualitative cases); **What Worked and What Did Not**; Conclusion with Limitations; Team Contributions; Use of AI tools; References.
+- **Numbers:** all taken from the final run (commit `538cf5b`, `outputs/results/*`, printed notebook outputs). Earlier runs appear only in the development-history section.
+- **"What Worked and What Did Not" covers:**
+  - run 1: DACT below TF-IDF, noisy ablations, the attention confound, the truncation defect;
+  - the fixes that worked: difference-aware truncation, attention controls, 3 RoBERTa seeds (and one degenerate seed in run 2);
+  - the engineering failures: bf16 emulation on the T4, free-tier VMs reclaimed;
+  - the lexical-head pilots, including the failed shared-learning-rate version;
+  - a **protocol note:** the decision to explore a lexical component was made after test results had been seen, so the small test gap to TF-IDF is treated as indicative.
+- **"Proof of work":** the evidence paragraph (executed notebook, 30 training runs, 40 JSON-lines logs, the consistency-check cell, this log) and the three-run history.
+- **Fact-check before compiling:**
+  - "four full runs" was corrected to "three complete runs (and two aborted ones)";
+  - the *baby wipes* success was labelled as coming from an earlier run, and the final run's own success (camping lantern) was added;
+  - the truncation claim now says it was checked on synthetic data.
+- **Notebook:** the protocol wording in the quantitative discussion was changed to match the report (the head was "selected on validation only", with the protocol note). This is a markdown-only change, so no outputs changed.
+- **References:** Loshchilov & Hutter (2019) (AdamW) was added to `references.bib`.
+
+### 27.3 Placeholders the group must fill in
+- **Team Contributions:** each member's actual contribution.
+- **Use of AI tools:** the draft statement says Claude Code was used extensively, including for drafting the report. The group must confirm and complete it according to the unit's AI-use policy.
+
+### 27.4 Before submission
+- Read the whole report, and rewrite it in your own words where the unit requires.
+- Check every number against the notebook.
+- Check the AI-use disclosure with the unit coordinator.
+- Submit `CITS4012_69.pdf` and `CITS4012_69.ipynb`, as the brief requires.

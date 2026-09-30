@@ -9,6 +9,7 @@ CITS4012 group project (Group 69). The dataset is PIQA (Physical Interaction QA)
 | `tools/sync_notebook.py` | Copies `src/` into the notebook; `--check` reports cells that are out of date |
 | `outputs/` | JSON-lines training logs, result files and figures of the Colab runs |
 | `references.bib` | BibTeX for the report |
+| `report/` | ACL-format report draft: `CITS4012_69.tex`, compiled `CITS4012_69.pdf`, figures and `make_figures.py` |
 | `docs/DEVELOPMENT_LOG.md` | Step-by-step record of everything done on the project |
 
 ## Running
