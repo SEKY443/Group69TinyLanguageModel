@@ -12,7 +12,7 @@ This repository combines two tracks of work (merged on 2026-10-01, see `docs/DEV
 
 ```text
 Group69TinyLanguageModel/
-├── CITS4012_69.ipynb        # submission candidate: executed run of the final model (free T4, 2026-09-30)
+├── CITS4012_69.ipynb        # submission candidate: executed run of the final model (A100, 2026-10-01)
 ├── report/                  # ACL report draft: CITS4012_69.tex, CITS4012_69.pdf, figures, make_figures.py
 ├── outputs/                 # logs, results and figures of that final run
 ├── src/                     # model, data, training and evaluation (merged code of both tracks)
@@ -23,20 +23,22 @@ Group69TinyLanguageModel/
 │   └── a100_outputs/        #   and the original A100 logs, results and figures
 ├── report_support/          # audit notes, tables and figures about the ORIGINAL model
 ├── notebooks/               # current-source reproduction candidate from the audit track
-├── experiments/             # local replications of the original model (audit track)
+├── experiments/             # archived runs: T4 run of the final model, A100 runs of 2026-10-01 incl. Salah's version
 ├── templates/               # original course notebook template
 └── requirements*.txt        # local and historical environments
 ```
 
 | Artifact | Meaning |
 |---|---|
-| `CITS4012_69.ipynb` | **Final executed notebook** (commit `538cf5b` code): DACT 61.1 / 61.6 % val / test, all baselines, 8 ablations, attention analysis, consistency check |
+| `CITS4012_69.ipynb` | **Final executed notebook** (commit `0d70cdc` code, Colab Pro A100): DACT 61.2 / 61.6 % val / test, all baselines, 8 ablations, attention analysis, consistency check |
 | `report/CITS4012_69.pdf` | Report draft built from that run; Team Contributions still to be written by the group |
-| `outputs/` | Logs, results and figures of the final run (40 JSON-lines logs) |
+| `outputs/` | Logs, results, figures and per-item predictions (gzip) of the final run (40 JSON-lines logs) |
+| `experiments/a100_runs_20261001/` | Both A100 runs of 2026-10-01 compared (`COMPARISON.md`): current version vs Salah's version |
+| `experiments/t4_run_538cf5b/` | Outputs of the earlier free-T4 run of the final model (61.1 / 61.6 %) |
 | `evidence/historical/CITS4012_69.ipynb` | Exact original A100 notebook (run 1) |
 | `evidence/historical/CITS4012_69_audited_A100.ipynb` | Original A100 notebook with the audit track's corrected narrative and appended audit cells |
 | `evidence/historical/a100_outputs/` | Original A100 logs, results, tokenizer and attention figures, unchanged |
-| `report_support/`, `experiments/`, `notebooks/` | Audit-track material; describes the **original** model (without the lexical head) |
+| `report_support/`, `notebooks/` | Audit-track material; describes the **original** model (without the lexical head) |
 
 ## Findings of the audit track that apply to every run
 - One normalised test item also appears twice in the training data.
@@ -45,7 +47,7 @@ Group69TinyLanguageModel/
 
 ## Running the final notebook (Google Colab)
 1. Open `CITS4012_69.ipynb` in Colab and select a GPU runtime.
-2. Run `Runtime → Run all`. It takes about 60–70 minutes on an A100, or about 1 h 50 min on a free T4.
+2. Run `Runtime → Run all`. It takes about 30–35 minutes on an A100, or about 1 h 50 min on a free T4.
    - The PIQA files are downloaded automatically from the unit's shared folder.
    - `MyDrive/Group69/PIQA.zip` is used only if that download fails.
    - Every run directory must be new, because the code refuses to overwrite existing logs or checkpoints.
