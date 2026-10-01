@@ -41,14 +41,19 @@
     "mlm_lr": 0.0005,
     "mlm_prob": 0.15,
     "amp": true,
-    "num_workers": 2
+    "num_workers": 2,
+    "run_seed": 42,
+    "deterministic": false,
+    "symmetric_diff_tags": false
   },
   "runs": [
     {
       "seed": 42,
       "ckpt": "outputs/checkpoints/hp0_seed42.pt",
       "val_acc": 0.6116625310173698,
-      "epochs": 12
+      "val_loss": 0.7295500040054321,
+      "n_params": 6376772,
+      "epochs": 11
     }
   ],
   "val": {

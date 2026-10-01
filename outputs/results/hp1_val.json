@@ -41,21 +41,26 @@
     "mlm_lr": 0.0005,
     "mlm_prob": 0.15,
     "amp": true,
-    "num_workers": 2
+    "num_workers": 2,
+    "run_seed": 42,
+    "deterministic": false,
+    "symmetric_diff_tags": false
   },
   "runs": [
     {
       "seed": 42,
       "ckpt": "outputs/checkpoints/hp1_seed42.pt",
-      "val_acc": 0.6141439205955335,
-      "epochs": 13
+      "val_acc": 0.6147642679900744,
+      "val_loss": 0.7330118417739868,
+      "n_params": 1927492,
+      "epochs": 11
     }
   ],
   "val": {
-    "mean": 0.6141439205955335,
+    "mean": 0.6147642679900744,
     "std": 0.0,
     "runs": [
-      0.6141439205955335
+      0.6147642679900744
     ]
   }
 }

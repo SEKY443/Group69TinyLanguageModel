@@ -41,35 +41,44 @@
     "mlm_lr": 0.0005,
     "mlm_prob": 0.15,
     "amp": true,
-    "num_workers": 2
+    "num_workers": 2,
+    "run_seed": 44,
+    "deterministic": false,
+    "symmetric_diff_tags": false
   },
   "runs": [
     {
       "seed": 42,
       "ckpt": "outputs/checkpoints/abl0_seed42.pt",
-      "val_acc": 0.6004962779156328,
-      "epochs": 11
+      "val_acc": 0.5930521091811415,
+      "val_loss": 0.6948527693748474,
+      "n_params": 1927108,
+      "epochs": 9
     },
     {
       "seed": 43,
       "ckpt": "outputs/checkpoints/abl0_seed43.pt",
-      "val_acc": 0.5961538461538461,
+      "val_acc": 0.6017369727047146,
+      "val_loss": 0.7165665626525879,
+      "n_params": 1927108,
       "epochs": 10
     },
     {
       "seed": 44,
       "ckpt": "outputs/checkpoints/abl0_seed44.pt",
-      "val_acc": 0.5949131513647643,
+      "val_acc": 0.6017369727047146,
+      "val_loss": 0.7752287983894348,
+      "n_params": 1927108,
       "epochs": 12
     }
   ],
   "val": {
-    "mean": 0.597187758478081,
-    "std": 0.0029316474108266708,
+    "mean": 0.5988420181968569,
+    "std": 0.0050142082932101,
     "runs": [
-      0.6004962779156328,
-      0.5961538461538461,
-      0.5949131513647643
+      0.5930521091811415,
+      0.6017369727047146,
+      0.6017369727047146
     ]
   }
 }

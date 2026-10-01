@@ -1,0 +1,5 @@
+{"time": "2026-09-30 12:56:07", "event": "epoch", "epoch": 1, "train_loss": 0.6945241167156707, "val_acc": 0.6153846153846154, "seconds": 159.7}
+{"time": "2026-09-30 12:58:46", "event": "epoch", "epoch": 2, "train_loss": 0.6690354859907721, "val_acc": 0.6594292803970223, "seconds": 159.4}
+{"time": "2026-09-30 13:01:26", "event": "epoch", "epoch": 3, "train_loss": 0.5997211350874754, "val_acc": 0.6805210918114144, "seconds": 159.6}
+{"time": "2026-09-30 13:04:06", "event": "epoch", "epoch": 4, "train_loss": 0.5440814392025776, "val_acc": 0.68424317617866, "seconds": 159.7}
+{"time": "2026-09-30 13:04:17", "event": "end", "best_val_acc": 0.68424317617866}

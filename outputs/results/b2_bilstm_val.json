@@ -41,35 +41,44 @@
     "mlm_lr": 0.0005,
     "mlm_prob": 0.15,
     "amp": true,
-    "num_workers": 2
+    "num_workers": 2,
+    "run_seed": 44,
+    "deterministic": false,
+    "symmetric_diff_tags": false
   },
   "runs": [
     {
       "seed": 42,
       "ckpt": "outputs/checkpoints/b2_bilstm_seed42.pt",
-      "val_acc": 0.6004962779156328,
-      "epochs": 20
+      "val_acc": 0.5862282878411911,
+      "val_loss": 0.735309898853302,
+      "n_params": 5072385,
+      "epochs": 17
     },
     {
       "seed": 43,
       "ckpt": "outputs/checkpoints/b2_bilstm_seed43.pt",
-      "val_acc": 0.5986352357320099,
-      "epochs": 16
+      "val_acc": 0.5899503722084367,
+      "val_loss": 0.6764294505119324,
+      "n_params": 5072385,
+      "epochs": 10
     },
     {
       "seed": 44,
       "ckpt": "outputs/checkpoints/b2_bilstm_seed44.pt",
-      "val_acc": 0.5955334987593052,
-      "epochs": 15
+      "val_acc": 0.608560794044665,
+      "val_loss": 0.7830744981765747,
+      "n_params": 5072385,
+      "epochs": 20
     }
   ],
   "val": {
-    "mean": 0.5982216708023159,
-    "std": 0.0025071041466051005,
+    "mean": 0.5949131513647643,
+    "std": 0.01196482724688952,
     "runs": [
-      0.6004962779156328,
-      0.5986352357320099,
-      0.5955334987593052
+      0.5862282878411911,
+      0.5899503722084367,
+      0.608560794044665
     ]
   }
 }

@@ -41,35 +41,44 @@
     "mlm_lr": 0.0005,
     "mlm_prob": 0.15,
     "amp": true,
-    "num_workers": 2
+    "num_workers": 2,
+    "run_seed": 44,
+    "deterministic": false,
+    "symmetric_diff_tags": false
   },
   "runs": [
     {
       "seed": 42,
       "ckpt": "outputs/checkpoints/abl4_seed42.pt",
-      "val_acc": 0.6042183622828784,
-      "epochs": 10
+      "val_acc": 0.6073200992555832,
+      "val_loss": 0.7980918288230896,
+      "n_params": 1927492,
+      "epochs": 11
     },
     {
       "seed": 43,
       "ckpt": "outputs/checkpoints/abl4_seed43.pt",
       "val_acc": 0.6017369727047146,
+      "val_loss": 0.7508596181869507,
+      "n_params": 1927492,
       "epochs": 10
     },
     {
       "seed": 44,
       "ckpt": "outputs/checkpoints/abl4_seed44.pt",
-      "val_acc": 0.597394540942928,
+      "val_acc": 0.6060794044665012,
+      "val_loss": 0.768822968006134,
+      "n_params": 1927492,
       "epochs": 10
     }
   ],
   "val": {
-    "mean": 0.6011166253101737,
-    "std": 0.0034539481158995353,
+    "mean": 0.6050454921422663,
+    "std": 0.0029316474108267137,
     "runs": [
-      0.6042183622828784,
+      0.6073200992555832,
       0.6017369727047146,
-      0.597394540942928
+      0.6060794044665012
     ]
   }
 }

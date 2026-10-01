@@ -41,35 +41,44 @@
     "mlm_lr": 0.0005,
     "mlm_prob": 0.15,
     "amp": true,
-    "num_workers": 2
+    "num_workers": 2,
+    "run_seed": 44,
+    "deterministic": false,
+    "symmetric_diff_tags": false
   },
   "runs": [
     {
       "seed": 42,
       "ckpt": "outputs/checkpoints/abl7_seed42.pt",
-      "val_acc": 0.6191066997518611,
-      "epochs": 11
+      "val_acc": 0.6178660049627791,
+      "val_loss": 0.7060499787330627,
+      "n_params": 1927492,
+      "epochs": 10
     },
     {
       "seed": 43,
       "ckpt": "outputs/checkpoints/abl7_seed43.pt",
-      "val_acc": 0.6166253101736973,
+      "val_acc": 0.6129032258064516,
+      "val_loss": 0.7015072703361511,
+      "n_params": 1927492,
       "epochs": 10
     },
     {
       "seed": 44,
       "ckpt": "outputs/checkpoints/abl7_seed44.pt",
-      "val_acc": 0.6060794044665012,
-      "epochs": 11
+      "val_acc": 0.6184863523573201,
+      "val_loss": 0.7073824405670166,
+      "n_params": 1927492,
+      "epochs": 10
     }
   ],
   "val": {
-    "mean": 0.6139371381306865,
-    "std": 0.006917174807145481,
+    "mean": 0.6164185277088503,
+    "std": 0.0030601010312135274,
     "runs": [
-      0.6191066997518611,
-      0.6166253101736973,
-      0.6060794044665012
+      0.6178660049627791,
+      0.6129032258064516,
+      0.6184863523573201
     ]
   }
 }

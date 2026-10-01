@@ -1,5 +1,6 @@
-{"time": "2026-09-30 13:07:07", "event": "epoch", "epoch": 1, "train_loss": 0.6901238715596136, "val_acc": 0.6557071960297767, "seconds": 159.8}
-{"time": "2026-09-30 13:09:47", "event": "epoch", "epoch": 2, "train_loss": 0.647876130326729, "val_acc": 0.673697270471464, "seconds": 159.4}
-{"time": "2026-09-30 13:12:27", "event": "epoch", "epoch": 3, "train_loss": 0.5892936888639098, "val_acc": 0.68424317617866, "seconds": 159.6}
-{"time": "2026-09-30 13:15:07", "event": "epoch", "epoch": 4, "train_loss": 0.5338781849534501, "val_acc": 0.6935483870967742, "seconds": 159.5}
-{"time": "2026-09-30 13:15:17", "event": "end", "best_val_acc": 0.6935483870967742}
+{"time": "2026-10-01 16:09:21", "event": "start", "model": "FacebookAI/roberta-base", "requested_revision": null, "resolved_revision": "e2da8e2f811d1448a5b465c236feacd80ffbac7b", "seed": 44, "epochs": 4, "lr": 2e-05, "batch_size": 32, "max_len": 128, "n_params": 124646401, "environment": {"python": "3.13.15", "platform": "Linux-6.6.122+-x86_64-with-glibc2.39", "packages": {"torch": "2.11.0+cu128", "numpy": "2.1.3", "scikit-learn": "1.6.1", "scipy": "1.16.3", "pandas": "2.2.3", "matplotlib": "3.10.0", "tokenizers": "0.23.1", "transformers": "5.16.1"}, "device": "cuda", "cuda": "12.8", "gpu": "NVIDIA A100-SXM4-40GB", "deterministic": false}}
+{"time": "2026-10-01 16:09:52", "event": "epoch", "epoch": 1, "train_loss": 0.6933947017802016, "val_acc": 0.5601736972704715, "seconds": 27.3}
+{"time": "2026-10-01 16:10:20", "event": "epoch", "epoch": 2, "train_loss": 0.6719332358385498, "val_acc": 0.6668734491315137, "seconds": 27.3}
+{"time": "2026-10-01 16:10:47", "event": "epoch", "epoch": 3, "train_loss": 0.6011775028337991, "val_acc": 0.6898263027295285, "seconds": 27.5}
+{"time": "2026-10-01 16:11:15", "event": "epoch", "epoch": 4, "train_loss": 0.5380296569957607, "val_acc": 0.6910669975186104, "seconds": 27.4}
+{"time": "2026-10-01 16:11:18", "event": "end", "best_val_acc": 0.6910669975186104}
