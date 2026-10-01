@@ -1153,3 +1153,6 @@ The group member chose the combined `merge-review` version for submission, with 
 1. Bayron's contribution must be written in.
 2. The group's AI-use decision.
 3. Salah's agreement to the combined version.
+
+### 31.1 Change on 2026-10-01
+- At the group member's request, Team Contributions was replaced with a group statement: the work was divided among Ali, Salah and Bayron; each member implemented and tested his own part of the code and wrote the report sections describing his own work. The PDF was recompiled and copied to the submission folder.

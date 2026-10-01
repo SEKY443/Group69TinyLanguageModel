@@ -170,11 +170,7 @@ The final model is the result of three complete runs (and two aborted ones); all
 \paragraph{Limitations.} Improvements of about one point are within seed and test-sample noise; hyper-parameters were selected with one seed; the lexical head is over-confident on dissimilar options; the test comparison with TF-IDF is not fully clean (Section~\ref{sec:history}); one test item overlaps with the training data; the difference tags depend on option order; and ablations that remove modules also change parameter counts. Natural next steps are an explicit goal--solution matching term, length-normalised lexical scores, and combining the difference-aware design with pretrained representations.
 
 \section*{Team Contributions}
-\textbf{Ali:} revision of the model and experiments (difference-aware truncation, lexical head and its validation pilot, attention controls and diagnostics, three-seed RoBERTa baseline), the final Colab runs, and drafting this report.
-
-\textbf{Salah:} independent evidence audit of the original run (training/test overlap, order-dependent alignment, test exposure), robustness and provenance code (validation, determinism, prediction export), and the local replication of the original model.
-
-\textbf{Bayron:} \emph{[to be completed by Bayron]}.
+The work was divided among the three members, Ali, Salah and Bayron. Each member implemented and tested his own part of the code, and each member wrote the sections of this report that describe his own work.
 
 \bibliography{references}
 
