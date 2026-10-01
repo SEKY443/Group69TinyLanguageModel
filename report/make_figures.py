@@ -52,7 +52,7 @@ plt.close(fig)
 
 # ---------------------------------------------------------------- 2. attention controls
 labels = ["uniform\n(reference)", "untrained\n(init. bias)", "trained,\ntag bias = 0", "trained\n(full)"]
-values = [24.8, 38.9, 73.2, 84.9]   # printed by the notebook (Section 3.3) in the final run
+values = [24.8, 38.9, 75.1, 85.9]   # printed by the notebook (Section 3.3) in the final run
 fig, ax = plt.subplots(figsize=(3.1, 1.55))
 bars = ax.bar(range(4), values, color=["#bbbbbb", "#9ecae1", "#fdae6b", "#e6550d"], width=0.62)
 for b, v in zip(bars, values):
@@ -77,10 +77,10 @@ def crop_top(src, dst):
 
 
 crop_top("outputs/figures/confident_wrong_747.png", f"{OUT}/case_747_pooling.png")
-crop_top("outputs/figures/uncertain_1258.png", f"{OUT}/case_1258_pooling.png")
+crop_top("outputs/figures/uncertain_1724.png", f"{OUT}/case_1724_pooling.png")
 
 # sanity: the numbers used above must match the saved result files
 with open("outputs/results/final_results.csv", encoding="utf-8") as f:
     rows = {r["model"]: r for r in csv.DictReader(f)}
-assert abs(float(rows["DACT (full)"]["test acc"]) - 0.6159) < 1e-3
+assert abs(float(rows["DACT (full)"]["test acc"]) - 0.6157) < 1e-3
 print("figures written to", OUT, sorted(os.listdir(OUT)))
