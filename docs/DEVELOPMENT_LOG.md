@@ -36,6 +36,7 @@ All times are local (CST, UTC+8) on **2026-09-29**. Times of the Colab run come 
 28. Merge of the two tracks (`merge-review`)
 29. Report updated with the audit findings
 30. Review note for Salah; replication script fixed
+31. Submission files prepared from `merge-review`
 S1–S3. Parallel track on `main`: evidence audit and replication (Salah Elshafey)
 
 ---
@@ -1130,3 +1131,25 @@ At the group member's request, the report (`report/CITS4012_69.tex`, recompiled 
 - It compiles. The replication was not re-run, because the data is not at `../../PIQA` here.
 
 **Left for Salah to decide, and listed in the note:** `tools/audit_evidence.py`, `tools/verify_model.py` and `tools/append_audit_cells.py` still read `outputs/` as the A100 evidence. `notebooks/CITS4012_69_reproducible.ipynb` is also out of date after the merge.
+
+---
+
+## 31. Submission files prepared from `merge-review` (2026-10-01)
+
+The group member chose the combined `merge-review` version for submission, with **files only**: `main` was not changed, pending Salah's agreement. The upload to the LMS is done by the group, and only one member submits.
+
+**Changes:**
+- **Report, Team Contributions:** Ali and Salah are filled in from the repository record (this log; Salah's commit `e08e80c`). Bayron's entry is a marked placeholder, `[to be completed by Bayron]`, because his contribution cannot be determined from the repository.
+- **Notebook Readme cell:** a new bullet, "Code version of the saved outputs". It states that:
+  - the saved outputs come from commit `538cf5b`;
+  - the code cells include the audit track's additions, which are off or record-only by default and do not change the model;
+  - the merged re-run was stopped by the free Colab GPU limit, so the outputs were not regenerated.
+
+**Files:** the folder `CITS4012_69_submission` next to the repository (in `D:/Alarms/semester 2/NLP/`) contains exactly the two files the brief requires:
+- `CITS4012_69.ipynb`: 57 cells, 23 of 32 code cells with outputs, 0 error cells.
+- `CITS4012_69.pdf`: 6 pages; the main text ends on page 5.
+
+**Before uploading:**
+1. Bayron's contribution must be written in.
+2. The group's AI-use decision.
+3. Salah's agreement to the combined version.
