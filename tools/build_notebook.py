@@ -49,7 +49,7 @@ README = r"""
 3. `Runtime → Run all`. No extra installation is needed: every package used (`torch`, `tokenizers`, `transformers`, `scikit-learn`, `scipy`, `pandas`, `matplotlib`) is pre-installed on Colab; the first code cell prints their versions. The pretrained baselines (B3/B4) download `FacebookAI/roberta-base` and `Qwen/Qwen2.5-1.5B` from the Hugging Face Hub.
 
 ### Notes for the marker
-* **Data usage.** No external data. The official PIQA training file is split 90/10 (stratified, seed 42) into *train* / *validation*. **All design decisions, hyper-parameter selection, early stopping and ablation comparisons use the validation split only.** The *test* split is touched only in the clearly marked *Final test evaluation* part of Section 3.
+* **Data usage.** No external data. The official PIQA training file is split 90/10 (stratified, seed 42) into *train* / *validation*. Hyper-parameter selection, early stopping and ablation comparisons use the validation split only, and test labels are used only in the clearly marked *Final test evaluation* part of Section 3. Two caveats, also stated in the report: the test file is loaded and tokenised at the start (B1/B3 compute their test predictions in Step 4 and keep them unseen until Step 5), and the decision to explore the lexical head was taken after the test results of earlier runs had been seen; its configuration was then selected on validation only. One test item also appears in the training file (disclosed, not removed).
 * **From scratch.** DACT and the BiLSTM baseline start from random initialisation; their BPE tokenizer is learned from the training split only. The optional masked-LM warm-up also uses only training-split text. Pretrained models appear only as baselines (B3, B4), and every baseline number is produced by the code in this notebook.
 * **Logs.** Every run writes a JSON-lines log (`outputs/logs/*.jsonl`) with the full config and per-epoch metrics, and result summaries to `outputs/results/*.json|csv`. When Google Drive is mounted, the last cell copies `outputs/` (without checkpoints) to `MyDrive/Group69/outputs/`. The outputs saved in this notebook come from one clean top-to-bottom run on a Colab Pro A100 (2026-09-29), executed with the Colab CLI. In that run the four data files were uploaded directly to `/content/data/piqa/`, so the Drive step was skipped. The saved logs, result tables and figures of that run are submitted with this notebook in `outputs/`.
 * **Code organisation.** Model classes (`nn.Module`s) are in Section 2 (*Model Implementation*) because the notebook must run top-to-bottom; all remaining code is plain functions. The same code also exists as modules in our repository (`src/`), from which this notebook is generated.
@@ -195,7 +195,7 @@ S3_PROTOCOL = r"""
 ## 3.1 Experimental protocol
 * **Metric: accuracy** (official PIQA metric; the labels are balanced and each item has exactly one correct option, so accuracy is also the expected 0/1 forced-choice score). For every from-scratch model we report **mean ± std over 3 seeds**. For the test split we also report a **95 % bootstrap CI** and an **exact McNemar test** against DACT, both computed on the seed with the best *validation* accuracy.
 * **Selection:** hyper-parameters are chosen on validation (Step 1). The ablations (Step 3) change one component of the selected configuration at a time, with 3 seeds each.
-* **Test:** Steps 1-4 never touch the test split. Step 5 loads the saved checkpoints and evaluates every model on the test split once.
+* **Test:** test labels are used only in Step 5, which loads the saved checkpoints and evaluates every model once. The test file is loaded and tokenised at the start, and B1/B3 compute their test predictions in Step 4 (held unseen until Step 5); no selection uses test data. An audit found one test item that also appears in the training file (see `docs/PROJECT_AUDIT.md`); it is disclosed, not removed, so that all runs share the same split.
 """
 
 S3_SETUP = r"""
@@ -297,7 +297,7 @@ for k, v in BASE.items():
 """
 
 S3_TEST_MD = r"""
-## 3.2 Step 5: final test evaluation (the only use of the test split)
+## 3.2 Step 5: final test evaluation (the only use of test labels)
 """
 
 S3_TEST = r"""
