@@ -101,7 +101,7 @@ B4 Qwen2.5-1.5B, zero-shot & 78.2 & 75.1 \\
 \label{tab:main}
 \end{table}
 
-\paragraph{Overall comparison.} \dact{} is the best from-scratch model on both splits (Table~\ref{tab:main}): +1.3 / +2.9 points over the BiLSTM (McNemar $p{=}0.021$ on test) and +1.9 / +0.4 over TF-IDF. The test gap to TF-IDF is small and not significant ($p{=}0.88$), so our claim is that \dact{} is at least as good as the lexical baseline, not that it clearly beats it. Pretraining dominates: RoBERTa is 6.3 and the zero-shot LLM 13.5 points above \dact{} on test, in line with PIQA being designed to test knowledge rather than reading skill \citep{bisk2020piqa}.
+\paragraph{Overall comparison.} \dact{} is the best from-scratch model on both splits (Table~\ref{tab:main}): +1.2 / +2.9 points over the BiLSTM (McNemar $p{=}0.021$ on test) and +1.8 / +0.4 over TF-IDF. The test gap to TF-IDF is small and not significant ($p{=}0.88$), so our claim is that \dact{} is at least as good as the lexical baseline, not that it clearly beats it. Pretraining dominates: RoBERTa is 6.3 and the zero-shot LLM 13.5 points above \dact{} on test, in line with PIQA being designed to test knowledge rather than reading skill \citep{bisk2020piqa}.
 
 \begin{table}[t]
 \centering\small
@@ -109,22 +109,22 @@ B4 Qwen2.5-1.5B, zero-shot & 78.2 & 75.1 \\
 \toprule
 Ablation (vs.\ full \dact{}) & $\Delta$ Val & $\Delta$ Test \\
 \midrule
-$-$ difference tags & $-$1.4 & $-$1.3 \\
-$-$ lexical head & $-$1.9 & $-$0.9 \\
+$-$ difference tags & $-$1.3 & $-$1.3 \\
+$-$ lexical head & $-$1.8 & $-$0.9 \\
 pointwise (independent BCE) objective & $-$1.0 & $-$0.8 \\
 mean instead of attention pooling & $-$0.2 & $-$0.9 \\
-$-$ cross-solution attention & $-$0.1 & $-$0.7 \\
-$-$ tag bias in pooling & +0.3 & 0.0 \\
+$-$ cross-solution attention & 0.0 & $-$0.7 \\
+$-$ tag bias in pooling & +0.4 & 0.0 \\
 tag bias initialised at 0 & +0.3 & 0.0 \\
 \midrule
-vanilla (all of the above removed) & $-$2.4 & $-$3.0 \\
+vanilla (all of the above removed) & $-$2.3 & $-$3.0 \\
 \bottomrule
 \end{tabular}
 \caption{Ablations, 3 seeds each, one change at a time on the selected configuration; mean accuracy differences in points (seed std $\approx$ 0.3--0.9).}
 \label{tab:abl}
 \end{table}
 
-\paragraph{Ablations.} Each ablation tests one hypothesis about a design choice (Table~\ref{tab:abl}); everything else, including seeds, data and budget, is fixed. \emph{Marking the difference helps}: removing the tags costs 1.4 / 1.3 points. \emph{Direct lexical evidence helps}: removing the lexical head costs 1.9 / 0.9. \emph{The forced-choice objective helps}: independent binary scoring costs 1.0 / 0.8. Removing everything costs 2.4 / 3.0 points, the largest drop. Cross-solution attention and attention pooling make no difference on validation and small ones on test, and the tag bias, including its initial value, makes none: these components overlap with the tags, which already tell the model where the options differ. Differences below one seed std are not conclusive, and with seven comparisons single p-values should not be over-read \citep{dror2018hitchhiker}.
+\paragraph{Ablations.} Each ablation tests one hypothesis about a design choice (Table~\ref{tab:abl}); everything else, including seeds, data and budget, is fixed. \emph{Marking the difference helps}: removing the tags costs 1.3 / 1.3 points. \emph{Direct lexical evidence helps}: removing the lexical head costs 1.8 / 0.9. \emph{The forced-choice objective helps}: independent binary scoring costs 1.0 / 0.8. Removing everything costs 2.3 / 3.0 points, the largest drop. Cross-solution attention and attention pooling make no difference on validation and small ones on test, and the tag bias, including its initial value, makes no consistent difference (removing it gives +0.4 / 0.0): these components overlap with the tags, which already tell the model where the options differ. Differences below one seed std are not conclusive, and with seven comparisons single p-values should not be over-read \citep{dror2018hitchhiker}.
 
 \paragraph{Complementary errors.} \dact{} and TF-IDF agree on 78.8\% of test items; each solves about 10.6\% the other misses (197 items only \dact{}), for an oracle accuracy of 71.9\%. The items only \dact{} solves typically have a one-word difference inside long shared text (\emph{water} vs.\ \emph{soda}; the typo \emph{sparrow bottle} vs.\ \emph{spray bottle}), where a bag-of-words difference vector has almost nothing to work with. Against RoBERTa the oracle rises to 83.0\%.
 
@@ -165,7 +165,7 @@ The final model is the result of three complete runs (and two aborted ones); all
 \paragraph{Evidence.} The submitted notebook contains the complete execution of the final code (commit \texttt{538cf5b}, 57 cells, no errors) with the training logs of all 30 runs; \texttt{outputs/} holds 40 JSON-lines logs, the result tables and figures; a final notebook cell asserts that tables, result files and logs agree; the original run's notebook and outputs are preserved in \texttt{evidence/historical/}; and \texttt{docs/DEVELOPMENT\_LOG.md} records every step, including the failed attempts above.
 
 \section{Conclusion}
-\dact{} shows that task-specific structure pays off even when training from scratch: making the difference between two near-identical solutions explicit and adding direct lexical evidence yield the best from-scratch model, and every major component is supported by a controlled ablation. Its attention demonstrably learns to focus on the decisive words. The analysis equally shows the limit of this approach: the model finds \emph{where} the options differ but judges \emph{which} is right with word statistics from 14.5\,k items, leaving it 6--14 points behind pretrained models.
+\dact{} shows that task-specific structure pays off even when training from scratch: making the difference between two near-identical solutions explicit and adding direct lexical evidence yield the best from-scratch model; controlled ablations support the difference tags, the lexical head and the pairwise objective, while cross-solution attention and attention pooling add little once the tags are present. Its attention demonstrably learns to focus on the decisive words. The analysis equally shows the limit of this approach: the model finds \emph{where} the options differ but judges \emph{which} is right with word statistics from 14.5\,k items, leaving it 6--14 points behind pretrained models.
 
 \paragraph{Limitations.} Improvements of about one point are within seed and test-sample noise; hyper-parameters were selected with one seed; the lexical head is over-confident on dissimilar options; the test comparison with TF-IDF is not fully clean (Section~\ref{sec:history}); one test item overlaps with the training data; the difference tags depend on option order; and ablations that remove modules also change parameter counts. Natural next steps are an explicit goal--solution matching term, length-normalised lexical scores, and combining the difference-aware design with pretrained representations.
 
