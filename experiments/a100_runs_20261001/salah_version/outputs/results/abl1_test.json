@@ -1,0 +1,93 @@
+{
+  "name": "abl1",
+  "arch": "dact",
+  "config": {
+    "drive_zip": "/content/drive/MyDrive/Group69/PIQA.zip",
+    "local_zip_glob": "*.zip",
+    "data_dir": "data/piqa",
+    "out_dir": "experiments/completed/outputs_reproduction_20261001_161337",
+    "seed": 42,
+    "val_frac": 0.1,
+    "vocab_size": 8000,
+    "min_frequency": 2,
+    "max_goal_len": 40,
+    "max_sol_len": 96,
+    "d_model": 128,
+    "n_heads": 4,
+    "n_layers": 2,
+    "d_ff": 512,
+    "dropout": 0.2,
+    "attn_dropout": 0.1,
+    "max_len": 160,
+    "use_diff_tags": true,
+    "use_cross_solution": false,
+    "pool_mode": "diff_attn",
+    "objective": "pairwise",
+    "mlm_epochs": 0,
+    "batch_size": 128,
+    "lr": 0.0003,
+    "weight_decay": 0.05,
+    "epochs": 20,
+    "warmup_ratio": 0.06,
+    "label_smoothing": 0.1,
+    "patience": 6,
+    "grad_clip": 1.0,
+    "mlm_lr": 0.0005,
+    "mlm_prob": 0.15,
+    "amp": true,
+    "num_workers": 2,
+    "run_seed": 44,
+    "deterministic": false,
+    "symmetric_diff_tags": false
+  },
+  "runs": [
+    {
+      "seed": 42,
+      "ckpt": "experiments/completed/outputs_reproduction_20261001_161337/checkpoints/abl1_seed42.pt",
+      "val_acc": 0.5887096774193549,
+      "val_loss": 0.7372035384178162,
+      "n_params": 1516612,
+      "epochs": 9
+    },
+    {
+      "seed": 43,
+      "ckpt": "experiments/completed/outputs_reproduction_20261001_161337/checkpoints/abl1_seed43.pt",
+      "val_acc": 0.5899503722084367,
+      "val_loss": 0.7114689350128174,
+      "n_params": 1516612,
+      "epochs": 9
+    },
+    {
+      "seed": 44,
+      "ckpt": "experiments/completed/outputs_reproduction_20261001_161337/checkpoints/abl1_seed44.pt",
+      "val_acc": 0.5818858560794045,
+      "val_loss": 0.7339693307876587,
+      "n_params": 1516612,
+      "epochs": 10
+    }
+  ],
+  "val": {
+    "mean": 0.5868486352357319,
+    "std": 0.004342431761786606,
+    "runs": [
+      0.5887096774193549,
+      0.5899503722084367,
+      0.5818858560794045
+    ]
+  },
+  "test": {
+    "mean": 0.6051867972433805,
+    "std": 0.007965248914036216,
+    "runs": [
+      0.5979325353645266,
+      0.6039173014145811,
+      0.6137105549510338
+    ],
+    "best_val_seed": 43,
+    "best_val_seed_acc": 0.6039173014145811,
+    "ci95": [
+      0.5810663764961915,
+      0.6267818280739934
+    ]
+  }
+}

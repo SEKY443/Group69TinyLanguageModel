@@ -1,0 +1,11 @@
+{"time": "2026-10-01 16:17:07", "event": "start", "run": "hp4_seed42", "seed": 42, "config": {"drive_zip": "/content/drive/MyDrive/Group69/PIQA.zip", "local_zip_glob": "*.zip", "data_dir": "data/piqa", "out_dir": "experiments/completed/outputs_reproduction_20261001_161337", "seed": 42, "val_frac": 0.1, "vocab_size": 8000, "min_frequency": 2, "max_goal_len": 40, "max_sol_len": 96, "d_model": 128, "n_heads": 4, "n_layers": 2, "d_ff": 512, "dropout": 0.2, "attn_dropout": 0.1, "max_len": 160, "use_diff_tags": true, "use_cross_solution": true, "pool_mode": "diff_attn", "objective": "pairwise", "mlm_epochs": 10, "batch_size": 128, "lr": 0.0003, "weight_decay": 0.05, "epochs": 20, "warmup_ratio": 0.06, "label_smoothing": 0.1, "patience": 6, "grad_clip": 1.0, "mlm_lr": 0.0005, "mlm_prob": 0.15, "amp": true, "num_workers": 2, "run_seed": 42, "deterministic": false, "symmetric_diff_tags": false}, "environment": {"python": "3.13.15", "platform": "Linux-6.6.122+-x86_64-with-glibc2.39", "packages": {"torch": "2.11.0+cu128", "numpy": "2.1.3", "scikit-learn": "1.6.1", "scipy": "1.16.3", "pandas": "2.2.3", "matplotlib": "3.10.0", "tokenizers": "0.23.1", "transformers": "5.16.1"}, "device": "cuda", "cuda": "12.8", "gpu": "NVIDIA A100-SXM4-40GB", "deterministic": false}}
+{"time": "2026-10-01 16:17:11", "event": "mlm_epoch", "epoch": 1, "loss": 7.580381707141274, "seconds": 3.09}
+{"time": "2026-10-01 16:17:14", "event": "mlm_epoch", "epoch": 2, "loss": 6.253475791529605, "seconds": 3.14}
+{"time": "2026-10-01 16:17:17", "event": "mlm_epoch", "epoch": 3, "loss": 6.065423919443498, "seconds": 3.16}
+{"time": "2026-10-01 16:17:20", "event": "mlm_epoch", "epoch": 4, "loss": 5.9109243091784025, "seconds": 3.23}
+{"time": "2026-10-01 16:17:23", "event": "mlm_epoch", "epoch": 5, "loss": 5.797533717071801, "seconds": 3.22}
+{"time": "2026-10-01 16:17:27", "event": "mlm_epoch", "epoch": 6, "loss": 5.725151451010453, "seconds": 3.19}
+{"time": "2026-10-01 16:17:30", "event": "mlm_epoch", "epoch": 7, "loss": 5.673325291851111, "seconds": 3.13}
+{"time": "2026-10-01 16:17:33", "event": "mlm_epoch", "epoch": 8, "loss": 5.63459094783716, "seconds": 3.28}
+{"time": "2026-10-01 16:17:36", "event": "mlm_epoch", "epoch": 9, "loss": 5.6147645900124, "seconds": 3.17}
+{"time": "2026-10-01 16:17:39", "event": "mlm_epoch", "epoch": 10, "loss": 5.616802207210608, "seconds": 3.2}

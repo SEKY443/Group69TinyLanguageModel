@@ -1,0 +1,629 @@
+
+[colab] A new version of Colab CLI is available: 0.7.4 (current: 0.7.1.dev1+gddf8e3fcf)
+[colab] Run 'colab update' to update.
+[colab] To silence this check, set "enable_update_check": false in ~/.config/colab-cli/settings.json
+
+[colab] Parsing notebook 'CITS4012_69.ipynb'...
+[colab] Executing cell 1/32 - f6b34d63-6667-49ed-be1a-2283901da5a4...
+torch         2.11.0+cu128
+numpy         2.1.3
+sklearn       1.6.1
+scipy         1.16.3
+pandas        2.2.3
+matplotlib    3.10.0
+tokenizers    0.23.1
+transformers  5.16.1
+python        3.13.15
+GPU           NVIDIA A100-SXM4-40GB
+[colab] Executing cell 2/32 - 6bb5061d-b247-4b6a-90e3-9f0363afb95c...
+[colab] Executing cell 3/32 - 109751df-ab8a-4f4a-8bfc-d243d992a934...
+device: cuda | autocast dtype: torch.bfloat16
+[colab] Executing cell 4/32 - b0085868-c6b6-4333-bae1-87c7eaa67a72...
+[colab] Executing cell 5/32 - 860c6394-7a73-4f3a-9727-4c5e9ecc475f...
+Downloaded ('train.jsonl', 'train-labels.lst', 'test.jsonl', 'test-labels.lst') from the unit's shared folder -> data/piqa
+{'train': 14501, 'val': 1612, 'test': 1838} | vocab size: 8000
+example: {'goal': 'how do you scissor something?', 'sol1': 'cut it open.', 'sol2': 'close it.', 'label': 0}
+[('[CLS]', 0), ('how', 0), ('do', 0), ('you', 0), ('scissor', 0), ('something', 0), ('?', 0), ('[SEP]', 0), ('cut', 2), ('it', 1), ('open', 2), ('.', 1), ('[SEP]', 0)]
+[colab] Executing cell 6/32 - 4ccb7f69-1d32-49bb-9e77-2f8741899d55...
+| split | items | label=1 share | goal BPE len (mean) | solution BPE len (mean) 
+| solution BPE len (p99) | differing-token share (median)                       
+---|---|---|---|---|---|---|---                                                 
+0 | train | 14501 | 0.500 | 8.299 | 21.670 | 96.0 | 0.150                       
+1 | val | 1612 | 0.500 | 8.525 | 22.043 | 96.0 | 0.143                          
+2 | test | 1838 | 0.505 | 8.465 | 21.821 | 96.0 | 0.154                         
+<Figure size 1500x320 with 3 Axes>
+
+[colab] Executing cell 7/32 - 7afcf1be-b52c-41b9-933b-a19eccc29b90...
+[colab] Executing cell 8/32 - 4cd4c506-208d-4c4e-b5a6-583e399b4b67...
+[colab] Executing cell 9/32 - c3fee480-357e-4ac2-8af6-62ebec57ddd7...
+[colab] Executing cell 10/32 - 644858c2-c43b-4774-a83b-dac2a3fa0060...
+[colab] Executing cell 11/32 - d0a957ad-77cd-4e5f-85e7-7fdba86af32d...
+DACT parameters: 6.38M | BiLSTM baseline: 5.07M
+logits: (8, 2) | pooling: (8, 2, 46) | self-attn per layer: (8, 2, 4, 46, 46)
+swap option order -> scores swap: True
+[colab] Executing cell 12/32 - fb770eab-f32d-4bcb-8e51-d18bde840778...
+[colab] Executing cell 13/32 - c73cb054-0960-41d3-8deb-cf0364f38a75...
+[colab] Executing cell 14/32 - 8e7237cd-1b0a-4a17-8fa9-4815a4490b36...
+[colab] Executing cell 15/32 - 71a127db-3a43-449f-8913-04696c5edaac...
+hp0: 6.38M trainable parameters
+[hp0_seed42] ep 01 loss 0.6837 train_acc 0.5613 val_acc 0.5900 (5.12s)
+[hp0_seed42] ep 02 loss 0.5823 train_acc 0.7383 val_acc 0.5999 (4.1s)
+[hp0_seed42] ep 03 loss 0.4683 train_acc 0.8457 val_acc 0.5974 (4.23s)
+[hp0_seed42] ep 04 loss 0.4053 train_acc 0.8908 val_acc 0.6030 (4.35s)
+[hp0_seed42] ep 05 loss 0.3614 train_acc 0.9186 val_acc 0.6104 (4.13s)
+[hp0_seed42] ep 06 loss 0.3296 train_acc 0.9403 val_acc 0.6036 (4.45s)
+[hp0_seed42] ep 07 loss 0.3058 train_acc 0.9523 val_acc 0.5968 (4.07s)
+[hp0_seed42] ep 08 loss 0.2876 train_acc 0.9652 val_acc 0.6098 (4.03s)
+[hp0_seed42] ep 09 loss 0.2723 train_acc 0.9722 val_acc 0.6079 (4.05s)
+[hp0_seed42] ep 10 loss 0.2597 train_acc 0.9785 val_acc 0.5918 (4.1s)
+[hp0_seed42] ep 11 loss 0.2491 train_acc 0.9828 val_acc 0.5769 (4.37s)
+[hp0_seed42] best val_acc 0.6104 at epoch 5
+==> hp0: val acc 0.6104 +- 0.0000
+hp1: 1.93M trainable parameters
+[hp1_seed42] ep 01 loss 0.6858 train_acc 0.5631 val_acc 0.6011 (2.91s)
+[hp1_seed42] ep 02 loss 0.5845 train_acc 0.7529 val_acc 0.5918 (2.98s)
+[hp1_seed42] ep 03 loss 0.4693 train_acc 0.8440 val_acc 0.5949 (2.91s)
+[hp1_seed42] ep 04 loss 0.4063 train_acc 0.8886 val_acc 0.6030 (2.91s)
+[hp1_seed42] ep 05 loss 0.3630 train_acc 0.9172 val_acc 0.6123 (2.87s)
+[hp1_seed42] ep 06 loss 0.3337 train_acc 0.9368 val_acc 0.6098 (2.98s)
+[hp1_seed42] ep 07 loss 0.3104 train_acc 0.9498 val_acc 0.6129 (2.89s)
+[hp1_seed42] ep 08 loss 0.2935 train_acc 0.9600 val_acc 0.5937 (3.26s)
+[hp1_seed42] ep 09 loss 0.2791 train_acc 0.9670 val_acc 0.6036 (2.89s)
+[hp1_seed42] ep 10 loss 0.2686 train_acc 0.9738 val_acc 0.5968 (2.98s)
+[hp1_seed42] ep 11 loss 0.2602 train_acc 0.9774 val_acc 0.5955 (3.15s)
+[hp1_seed42] ep 12 loss 0.2524 train_acc 0.9817 val_acc 0.5986 (3.23s)
+[hp1_seed42] ep 13 loss 0.2468 train_acc 0.9841 val_acc 0.5986 (2.99s)
+[hp1_seed42] best val_acc 0.6129 at epoch 7
+==> hp1: val acc 0.6129 +- 0.0000
+hp2: 6.38M trainable parameters
+[hp2_seed42] ep 01 loss 0.6850 train_acc 0.5511 val_acc 0.5937 (4.16s)
+[hp2_seed42] ep 02 loss 0.5848 train_acc 0.7399 val_acc 0.5986 (4.05s)
+[hp2_seed42] ep 03 loss 0.4707 train_acc 0.8442 val_acc 0.5968 (4.33s)
+[hp2_seed42] ep 04 loss 0.4090 train_acc 0.8888 val_acc 0.5993 (4.17s)
+[hp2_seed42] ep 05 loss 0.3677 train_acc 0.9152 val_acc 0.5980 (4.03s)
+[hp2_seed42] ep 06 loss 0.3373 train_acc 0.9340 val_acc 0.6005 (4.06s)
+[hp2_seed42] ep 07 loss 0.3147 train_acc 0.9482 val_acc 0.6048 (4.03s)
+[hp2_seed42] ep 08 loss 0.2970 train_acc 0.9588 val_acc 0.6086 (4.37s)
+[hp2_seed42] ep 09 loss 0.2833 train_acc 0.9677 val_acc 0.6005 (4.25s)
+[hp2_seed42] ep 10 loss 0.2718 train_acc 0.9723 val_acc 0.6042 (4.29s)
+[hp2_seed42] ep 11 loss 0.2612 train_acc 0.9765 val_acc 0.5974 (4.12s)
+[hp2_seed42] ep 12 loss 0.2537 train_acc 0.9832 val_acc 0.5955 (4.04s)
+[hp2_seed42] ep 13 loss 0.2473 train_acc 0.9837 val_acc 0.5937 (4.02s)
+[hp2_seed42] ep 14 loss 0.2426 train_acc 0.9869 val_acc 0.5850 (4.07s)
+[hp2_seed42] best val_acc 0.6086 at epoch 8
+==> hp2: val acc 0.6086 +- 0.0000
+hp3: 6.38M trainable parameters
+[hp3_seed42 MLM] ep 01 loss 7.169944073024549 (4.16s)
+[hp3_seed42 MLM] ep 02 loss 6.002646287282308 (4.11s)
+[hp3_seed42 MLM] ep 03 loss 5.7185648993441935 (4.11s)
+[hp3_seed42 MLM] ep 04 loss 5.536891452053137 (4.1s)
+[hp3_seed42 MLM] ep 05 loss 5.390553926166735 (4.1s)
+[hp3_seed42 MLM] ep 06 loss 5.248405707509894 (4.12s)
+[hp3_seed42 MLM] ep 07 loss 5.15273556374667 (4.1s)
+[hp3_seed42 MLM] ep 08 loss 5.094797234786184 (4.1s)
+[hp3_seed42 MLM] ep 09 loss 5.048344980206406 (4.1s)
+[hp3_seed42 MLM] ep 10 loss 5.040562131948638 (4.08s)
+[hp3_seed42] ep 01 loss 0.6855 train_acc 0.5551 val_acc 0.6017 (4.02s)
+[hp3_seed42] ep 02 loss 0.5813 train_acc 0.7406 val_acc 0.6086 (4.05s)
+[hp3_seed42] ep 03 loss 0.4610 train_acc 0.8486 val_acc 0.5993 (3.98s)
+[hp3_seed42] ep 04 loss 0.3872 train_acc 0.8972 val_acc 0.6005 (4.4s)
+[hp3_seed42] ep 05 loss 0.3383 train_acc 0.9315 val_acc 0.5974 (4.03s)
+[hp3_seed42] ep 06 loss 0.3064 train_acc 0.9510 val_acc 0.6042 (4.3s)
+[hp3_seed42] ep 07 loss 0.2795 train_acc 0.9664 val_acc 0.5986 (4.23s)
+[hp3_seed42] ep 08 loss 0.2622 train_acc 0.9741 val_acc 0.5986 (4.2s)
+[hp3_seed42] best val_acc 0.6086 at epoch 2
+==> hp3: val acc 0.6086 +- 0.0000
+hp4: 1.93M trainable parameters
+[hp4_seed42 MLM] ep 01 loss 7.578621927060579 (2.94s)
+[hp4_seed42 MLM] ep 02 loss 6.251882850078115 (2.98s)
+[hp4_seed42 MLM] ep 03 loss 6.063705862614146 (2.96s)
+[hp4_seed42 MLM] ep 04 loss 5.9100801902904845 (2.95s)
+[hp4_seed42 MLM] ep 05 loss 5.801449679491813 (2.95s)
+[hp4_seed42 MLM] ep 06 loss 5.729070044400399 (2.96s)
+[hp4_seed42 MLM] ep 07 loss 5.677607352273506 (2.95s)
+[hp4_seed42 MLM] ep 08 loss 5.637989324435853 (2.95s)
+[hp4_seed42 MLM] ep 09 loss 5.615890172489903 (2.94s)
+[hp4_seed42 MLM] ep 10 loss 5.618174067714758 (2.97s)
+[hp4_seed42] ep 01 loss 0.6865 train_acc 0.5607 val_acc 0.5931 (3.06s)
+[hp4_seed42] ep 02 loss 0.5882 train_acc 0.7636 val_acc 0.5918 (2.9s)
+[hp4_seed42] ep 03 loss 0.4707 train_acc 0.8436 val_acc 0.6011 (2.89s)
+[hp4_seed42] ep 04 loss 0.4035 train_acc 0.8888 val_acc 0.5962 (2.97s)
+[hp4_seed42] ep 05 loss 0.3602 train_acc 0.9217 val_acc 0.6098 (2.84s)
+[hp4_seed42] ep 06 loss 0.3292 train_acc 0.9400 val_acc 0.6042 (3.32s)
+[hp4_seed42] ep 07 loss 0.3052 train_acc 0.9540 val_acc 0.5906 (3.07s)
+[hp4_seed42] ep 08 loss 0.2872 train_acc 0.9639 val_acc 0.5955 (3.0s)
+[hp4_seed42] ep 09 loss 0.2736 train_acc 0.9717 val_acc 0.5980 (2.87s)
+[hp4_seed42] ep 10 loss 0.2623 train_acc 0.9779 val_acc 0.5881 (2.91s)
+[hp4_seed42] ep 11 loss 0.2549 train_acc 0.9804 val_acc 0.5893 (2.9s)
+[hp4_seed42] best val_acc 0.6098 at epoch 5
+==> hp4: val acc 0.6098 +- 0.0000
+| config | val acc | epochs run                                                 
+---|---|---|---                                                                 
+0 | base (d=256, L=4, drop=0.2) | 0.6104 | 11                                   
+1 | small (d=128, L=2) | 0.6129 | 13                                            
+2 | base, dropout 0.3 | 0.6086 | 14                                             
+3 | base + MLM warm-up (10 ep) | 0.6086 | 8                                     
+4 | small + MLM warm-up (10 ep) | 0.6098 | 11                                   
+selected on validation: small (d=128, L=2)
+[colab] Executing cell 16/32 - 24eaa332-5470-46b1-9e2c-b15e4cc7d55b...
+dact_full: 1.93M trainable parameters
+[dact_full_seed42] ep 01 loss 0.6858 train_acc 0.5627 val_acc 0.5999 (2.95s)
+[dact_full_seed42] ep 02 loss 0.5845 train_acc 0.7529 val_acc 0.5918 (3.03s)
+[dact_full_seed42] ep 03 loss 0.4693 train_acc 0.8439 val_acc 0.5949 (3.07s)
+[dact_full_seed42] ep 04 loss 0.4063 train_acc 0.8887 val_acc 0.6030 (3.01s)
+[dact_full_seed42] ep 05 loss 0.3630 train_acc 0.9169 val_acc 0.6123 (2.91s)
+[dact_full_seed42] ep 06 loss 0.3337 train_acc 0.9370 val_acc 0.6104 (2.92s)
+[dact_full_seed42] ep 07 loss 0.3104 train_acc 0.9497 val_acc 0.6129 (3.03s)
+[dact_full_seed42] ep 08 loss 0.2935 train_acc 0.9603 val_acc 0.5943 (3.14s)
+[dact_full_seed42] ep 09 loss 0.2791 train_acc 0.9670 val_acc 0.6030 (2.88s)
+[dact_full_seed42] ep 10 loss 0.2686 train_acc 0.9739 val_acc 0.5968 (2.86s)
+[dact_full_seed42] ep 11 loss 0.2602 train_acc 0.9776 val_acc 0.5955 (2.96s)
+[dact_full_seed42] ep 12 loss 0.2523 train_acc 0.9817 val_acc 0.5999 (3.21s)
+[dact_full_seed42] ep 13 loss 0.2468 train_acc 0.9842 val_acc 0.5986 (3.06s)
+[dact_full_seed42] best val_acc 0.6129 at epoch 7
+[dact_full_seed43] ep 01 loss 0.6866 train_acc 0.5542 val_acc 0.5850 (2.87s)
+[dact_full_seed43] ep 02 loss 0.5868 train_acc 0.7626 val_acc 0.5968 (2.86s)
+[dact_full_seed43] ep 03 loss 0.4697 train_acc 0.8437 val_acc 0.6042 (3.05s)
+[dact_full_seed43] ep 04 loss 0.4064 train_acc 0.8905 val_acc 0.6141 (2.87s)
+[dact_full_seed43] ep 05 loss 0.3629 train_acc 0.9196 val_acc 0.6061 (3.09s)
+[dact_full_seed43] ep 06 loss 0.3315 train_acc 0.9392 val_acc 0.5999 (2.96s)
+[dact_full_seed43] ep 07 loss 0.3093 train_acc 0.9513 val_acc 0.6030 (3.15s)
+[dact_full_seed43] ep 08 loss 0.2900 train_acc 0.9637 val_acc 0.6005 (2.89s)
+[dact_full_seed43] ep 09 loss 0.2772 train_acc 0.9697 val_acc 0.6005 (2.86s)
+[dact_full_seed43] ep 10 loss 0.2658 train_acc 0.9766 val_acc 0.5931 (2.89s)
+[dact_full_seed43] best val_acc 0.6141 at epoch 4
+[dact_full_seed44] ep 01 loss 0.6863 train_acc 0.5608 val_acc 0.5955 (3.0s)
+[dact_full_seed44] ep 02 loss 0.5857 train_acc 0.7562 val_acc 0.5937 (2.98s)
+[dact_full_seed44] ep 03 loss 0.4687 train_acc 0.8476 val_acc 0.5980 (3.16s)
+[dact_full_seed44] ep 04 loss 0.4046 train_acc 0.8897 val_acc 0.6005 (3.0s)
+[dact_full_seed44] ep 05 loss 0.3610 train_acc 0.9186 val_acc 0.6117 (2.95s)
+[dact_full_seed44] ep 06 loss 0.3297 train_acc 0.9383 val_acc 0.6055 (2.95s)
+[dact_full_seed44] ep 07 loss 0.3067 train_acc 0.9522 val_acc 0.5937 (3.31s)
+[dact_full_seed44] ep 08 loss 0.2895 train_acc 0.9626 val_acc 0.6061 (3.11s)
+[dact_full_seed44] ep 09 loss 0.2750 train_acc 0.9704 val_acc 0.5918 (3.25s)
+[dact_full_seed44] ep 10 loss 0.2646 train_acc 0.9748 val_acc 0.5968 (2.96s)
+[dact_full_seed44] ep 11 loss 0.2556 train_acc 0.9806 val_acc 0.6011 (2.9s)
+[dact_full_seed44] best val_acc 0.6117 at epoch 5
+==> dact_full: val acc 0.6129 +- 0.0012
+[colab] Executing cell 17/32 - 52ef2a02-92d2-4940-a8fb-799576668f9a...
+abl0: 1.93M trainable parameters
+[abl0_seed42] ep 01 loss 0.6863 train_acc 0.5580 val_acc 0.5682 (2.96s)
+[abl0_seed42] ep 02 loss 0.5907 train_acc 0.7681 val_acc 0.5875 (2.88s)
+[abl0_seed42] ep 03 loss 0.4768 train_acc 0.8546 val_acc 0.5931 (2.94s)
+[abl0_seed42] ep 04 loss 0.4108 train_acc 0.8973 val_acc 0.5900 (2.91s)
+[abl0_seed42] ep 05 loss 0.3675 train_acc 0.9248 val_acc 0.5881 (2.93s)
+[abl0_seed42] ep 06 loss 0.3360 train_acc 0.9403 val_acc 0.5856 (2.84s)
+[abl0_seed42] ep 07 loss 0.3141 train_acc 0.9517 val_acc 0.5881 (2.85s)
+[abl0_seed42] ep 08 loss 0.2966 train_acc 0.9628 val_acc 0.5850 (2.97s)
+[abl0_seed42] ep 09 loss 0.2827 train_acc 0.9703 val_acc 0.5744 (3.35s)
+[abl0_seed42] best val_acc 0.5931 at epoch 3
+[abl0_seed43] ep 01 loss 0.6868 train_acc 0.5491 val_acc 0.5856 (3.02s)
+[abl0_seed43] ep 02 loss 0.5910 train_acc 0.7651 val_acc 0.5974 (2.88s)
+[abl0_seed43] ep 03 loss 0.4763 train_acc 0.8546 val_acc 0.5856 (3.06s)
+[abl0_seed43] ep 04 loss 0.4108 train_acc 0.8964 val_acc 0.5986 (2.89s)
+[abl0_seed43] ep 05 loss 0.3673 train_acc 0.9219 val_acc 0.5937 (3.08s)
+[abl0_seed43] ep 06 loss 0.3360 train_acc 0.9410 val_acc 0.5974 (2.82s)
+[abl0_seed43] ep 07 loss 0.3135 train_acc 0.9515 val_acc 0.5900 (2.94s)
+[abl0_seed43] ep 08 loss 0.2955 train_acc 0.9615 val_acc 0.5893 (3.2s)
+[abl0_seed43] ep 09 loss 0.2826 train_acc 0.9685 val_acc 0.5844 (2.84s)
+[abl0_seed43] ep 10 loss 0.2730 train_acc 0.9736 val_acc 0.5850 (2.84s)
+[abl0_seed43] best val_acc 0.5986 at epoch 4
+[abl0_seed44] ep 01 loss 0.6865 train_acc 0.5554 val_acc 0.5800 (3.04s)
+[abl0_seed44] ep 02 loss 0.5911 train_acc 0.7742 val_acc 0.5937 (2.85s)
+[abl0_seed44] ep 03 loss 0.4771 train_acc 0.8567 val_acc 0.5974 (2.88s)
+[abl0_seed44] ep 04 loss 0.4115 train_acc 0.8957 val_acc 0.5931 (3.23s)
+[abl0_seed44] ep 05 loss 0.3675 train_acc 0.9218 val_acc 0.5949 (3.0s)
+[abl0_seed44] ep 06 loss 0.3352 train_acc 0.9430 val_acc 0.5962 (2.9s)
+[abl0_seed44] ep 07 loss 0.3128 train_acc 0.9534 val_acc 0.5949 (2.91s)
+[abl0_seed44] ep 08 loss 0.2943 train_acc 0.9638 val_acc 0.5844 (2.97s)
+[abl0_seed44] ep 09 loss 0.2813 train_acc 0.9698 val_acc 0.5924 (2.92s)
+[abl0_seed44] best val_acc 0.5974 at epoch 3
+==> abl0: val acc 0.5964 +- 0.0029
+abl1: 1.78M trainable parameters
+[abl1_seed42] ep 01 loss 0.6860 train_acc 0.5604 val_acc 0.5856 (2.4s)
+[abl1_seed42] ep 02 loss 0.5864 train_acc 0.7550 val_acc 0.5875 (2.25s)
+[abl1_seed42] ep 03 loss 0.4695 train_acc 0.8459 val_acc 0.6005 (2.12s)
+[abl1_seed42] ep 04 loss 0.4044 train_acc 0.8915 val_acc 0.5980 (2.2s)
+[abl1_seed42] ep 05 loss 0.3629 train_acc 0.9175 val_acc 0.5931 (2.31s)
+[abl1_seed42] ep 06 loss 0.3318 train_acc 0.9369 val_acc 0.5980 (2.13s)
+[abl1_seed42] ep 07 loss 0.3095 train_acc 0.9503 val_acc 0.5887 (2.18s)
+[abl1_seed42] ep 08 loss 0.2921 train_acc 0.9612 val_acc 0.5918 (2.31s)
+[abl1_seed42] ep 09 loss 0.2782 train_acc 0.9677 val_acc 0.5862 (2.21s)
+[abl1_seed42] best val_acc 0.6005 at epoch 3
+[abl1_seed43] ep 01 loss 0.6862 train_acc 0.5598 val_acc 0.6011 (2.2s)
+[abl1_seed43] ep 02 loss 0.5858 train_acc 0.7531 val_acc 0.5968 (2.25s)
+[abl1_seed43] ep 03 loss 0.4699 train_acc 0.8468 val_acc 0.6104 (2.22s)
+[abl1_seed43] ep 04 loss 0.4063 train_acc 0.8904 val_acc 0.6092 (2.14s)
+[abl1_seed43] ep 05 loss 0.3621 train_acc 0.9184 val_acc 0.6104 (2.23s)
+[abl1_seed43] ep 06 loss 0.3314 train_acc 0.9386 val_acc 0.6086 (2.17s)
+[abl1_seed43] ep 07 loss 0.3078 train_acc 0.9510 val_acc 0.6079 (2.19s)
+[abl1_seed43] ep 08 loss 0.2915 train_acc 0.9614 val_acc 0.5931 (2.29s)
+[abl1_seed43] ep 09 loss 0.2774 train_acc 0.9697 val_acc 0.5912 (2.14s)
+[abl1_seed43] best val_acc 0.6104 at epoch 3
+[abl1_seed44] ep 01 loss 0.6866 train_acc 0.5519 val_acc 0.5794 (2.2s)
+[abl1_seed44] ep 02 loss 0.5870 train_acc 0.7581 val_acc 0.6011 (2.26s)
+[abl1_seed44] ep 03 loss 0.4686 train_acc 0.8492 val_acc 0.5943 (2.23s)
+[abl1_seed44] ep 04 loss 0.4039 train_acc 0.8915 val_acc 0.5986 (2.13s)
+[abl1_seed44] ep 05 loss 0.3615 train_acc 0.9183 val_acc 0.6024 (2.2s)
+[abl1_seed44] ep 06 loss 0.3318 train_acc 0.9377 val_acc 0.5949 (2.19s)
+[abl1_seed44] ep 07 loss 0.3093 train_acc 0.9497 val_acc 0.5986 (2.21s)
+[abl1_seed44] ep 08 loss 0.2919 train_acc 0.9620 val_acc 0.6098 (2.21s)
+[abl1_seed44] ep 09 loss 0.2796 train_acc 0.9663 val_acc 0.5986 (2.12s)
+[abl1_seed44] ep 10 loss 0.2681 train_acc 0.9732 val_acc 0.5943 (2.13s)
+[abl1_seed44] ep 11 loss 0.2608 train_acc 0.9782 val_acc 0.5999 (2.15s)
+[abl1_seed44] ep 12 loss 0.2532 train_acc 0.9828 val_acc 0.5931 (2.22s)
+[abl1_seed44] ep 13 loss 0.2475 train_acc 0.9842 val_acc 0.5887 (2.13s)
+[abl1_seed44] ep 14 loss 0.2431 train_acc 0.9873 val_acc 0.5856 (2.2s)
+[abl1_seed44] best val_acc 0.6098 at epoch 8
+==> abl1: val acc 0.6069 +- 0.0056
+abl2: 1.93M trainable parameters
+[abl2_seed42] ep 01 loss 0.6861 train_acc 0.5615 val_acc 0.5862 (2.98s)
+[abl2_seed42] ep 02 loss 0.5880 train_acc 0.7641 val_acc 0.5949 (2.96s)
+[abl2_seed42] ep 03 loss 0.4717 train_acc 0.8440 val_acc 0.6055 (2.94s)
+[abl2_seed42] ep 04 loss 0.4059 train_acc 0.8890 val_acc 0.6179 (2.81s)
+[abl2_seed42] ep 05 loss 0.3617 train_acc 0.9186 val_acc 0.6172 (2.93s)
+[abl2_seed42] ep 06 loss 0.3325 train_acc 0.9366 val_acc 0.6098 (2.86s)
+[abl2_seed42] ep 07 loss 0.3093 train_acc 0.9499 val_acc 0.6030 (3.04s)
+[abl2_seed42] ep 08 loss 0.2923 train_acc 0.9607 val_acc 0.5949 (2.82s)
+[abl2_seed42] ep 09 loss 0.2790 train_acc 0.9670 val_acc 0.6048 (2.85s)
+[abl2_seed42] ep 10 loss 0.2681 train_acc 0.9729 val_acc 0.5968 (2.92s)
+[abl2_seed42] best val_acc 0.6179 at epoch 4
+[abl2_seed43] ep 01 loss 0.6867 train_acc 0.5522 val_acc 0.5751 (2.77s)
+[abl2_seed43] ep 02 loss 0.5906 train_acc 0.7719 val_acc 0.6024 (2.89s)
+[abl2_seed43] ep 03 loss 0.4738 train_acc 0.8441 val_acc 0.6073 (2.79s)
+[abl2_seed43] ep 04 loss 0.4072 train_acc 0.8893 val_acc 0.6160 (3.05s)
+[abl2_seed43] ep 05 loss 0.3624 train_acc 0.9203 val_acc 0.6123 (3.03s)
+[abl2_seed43] ep 06 loss 0.3308 train_acc 0.9397 val_acc 0.6030 (2.94s)
+[abl2_seed43] ep 07 loss 0.3080 train_acc 0.9515 val_acc 0.6036 (2.95s)
+[abl2_seed43] ep 08 loss 0.2900 train_acc 0.9617 val_acc 0.6048 (2.94s)
+[abl2_seed43] ep 09 loss 0.2768 train_acc 0.9679 val_acc 0.5986 (2.87s)
+[abl2_seed43] ep 10 loss 0.2666 train_acc 0.9751 val_acc 0.6036 (2.93s)
+[abl2_seed43] best val_acc 0.6160 at epoch 4
+[abl2_seed44] ep 01 loss 0.6865 train_acc 0.5567 val_acc 0.5906 (3.03s)
+[abl2_seed44] ep 02 loss 0.5896 train_acc 0.7633 val_acc 0.6005 (3.02s)
+[abl2_seed44] ep 03 loss 0.4729 train_acc 0.8488 val_acc 0.5993 (2.96s)
+[abl2_seed44] ep 04 loss 0.4062 train_acc 0.8892 val_acc 0.6135 (3.01s)
+[abl2_seed44] ep 05 loss 0.3619 train_acc 0.9201 val_acc 0.6055 (2.81s)
+[abl2_seed44] ep 06 loss 0.3309 train_acc 0.9366 val_acc 0.6055 (2.88s)
+[abl2_seed44] ep 07 loss 0.3081 train_acc 0.9514 val_acc 0.5918 (2.84s)
+[abl2_seed44] ep 08 loss 0.2906 train_acc 0.9615 val_acc 0.5980 (2.97s)
+[abl2_seed44] ep 09 loss 0.2762 train_acc 0.9688 val_acc 0.5955 (2.88s)
+[abl2_seed44] ep 10 loss 0.2652 train_acc 0.9749 val_acc 0.5906 (2.91s)
+[abl2_seed44] best val_acc 0.6135 at epoch 4
+==> abl2: val acc 0.6158 +- 0.0022
+abl3: 1.93M trainable parameters
+[abl3_seed42] ep 01 loss 0.6861 train_acc 0.5623 val_acc 0.5862 (2.69s)
+[abl3_seed42] ep 02 loss 0.5910 train_acc 0.7684 val_acc 0.5924 (2.78s)
+[abl3_seed42] ep 03 loss 0.4799 train_acc 0.8576 val_acc 0.6055 (3.01s)
+[abl3_seed42] ep 04 loss 0.4114 train_acc 0.8901 val_acc 0.6104 (3.04s)
+[abl3_seed42] ep 05 loss 0.3661 train_acc 0.9167 val_acc 0.6042 (2.75s)
+[abl3_seed42] ep 06 loss 0.3348 train_acc 0.9360 val_acc 0.6011 (2.68s)
+[abl3_seed42] ep 07 loss 0.3110 train_acc 0.9479 val_acc 0.6092 (2.76s)
+[abl3_seed42] ep 08 loss 0.2931 train_acc 0.9595 val_acc 0.5943 (3.06s)
+[abl3_seed42] ep 09 loss 0.2793 train_acc 0.9660 val_acc 0.5912 (2.74s)
+[abl3_seed42] ep 10 loss 0.2697 train_acc 0.9711 val_acc 0.5974 (2.71s)
+[abl3_seed42] best val_acc 0.6104 at epoch 4
+[abl3_seed43] ep 01 loss 0.6867 train_acc 0.5517 val_acc 0.5751 (3.06s)
+[abl3_seed43] ep 02 loss 0.5920 train_acc 0.7736 val_acc 0.5931 (3.1s)
+[abl3_seed43] ep 03 loss 0.4799 train_acc 0.8568 val_acc 0.6092 (3.26s)
+[abl3_seed43] ep 04 loss 0.4128 train_acc 0.8926 val_acc 0.6117 (2.8s)
+[abl3_seed43] ep 05 loss 0.3678 train_acc 0.9187 val_acc 0.6123 (2.95s)
+[abl3_seed43] ep 06 loss 0.3348 train_acc 0.9359 val_acc 0.6042 (2.73s)
+[abl3_seed43] ep 07 loss 0.3114 train_acc 0.9512 val_acc 0.6061 (2.77s)
+[abl3_seed43] ep 08 loss 0.2927 train_acc 0.9588 val_acc 0.6005 (2.67s)
+[abl3_seed43] ep 09 loss 0.2799 train_acc 0.9650 val_acc 0.5943 (2.96s)
+[abl3_seed43] ep 10 loss 0.2688 train_acc 0.9731 val_acc 0.5955 (2.93s)
+[abl3_seed43] ep 11 loss 0.2600 train_acc 0.9775 val_acc 0.5900 (2.78s)
+[abl3_seed43] best val_acc 0.6123 at epoch 5
+[abl3_seed44] ep 01 loss 0.6865 train_acc 0.5567 val_acc 0.5912 (3.09s)
+[abl3_seed44] ep 02 loss 0.5919 train_acc 0.7680 val_acc 0.5993 (3.03s)
+[abl3_seed44] ep 03 loss 0.4800 train_acc 0.8577 val_acc 0.6030 (2.85s)
+[abl3_seed44] ep 04 loss 0.4094 train_acc 0.8890 val_acc 0.6098 (2.7s)
+[abl3_seed44] ep 05 loss 0.3638 train_acc 0.9181 val_acc 0.6036 (2.71s)
+[abl3_seed44] ep 06 loss 0.3314 train_acc 0.9361 val_acc 0.6129 (2.92s)
+[abl3_seed44] ep 07 loss 0.3085 train_acc 0.9494 val_acc 0.5943 (2.85s)
+[abl3_seed44] ep 08 loss 0.2909 train_acc 0.9590 val_acc 0.6042 (3.03s)
+[abl3_seed44] ep 09 loss 0.2761 train_acc 0.9671 val_acc 0.5924 (2.81s)
+[abl3_seed44] ep 10 loss 0.2645 train_acc 0.9751 val_acc 0.5993 (2.78s)
+[abl3_seed44] ep 11 loss 0.2581 train_acc 0.9778 val_acc 0.5900 (2.76s)
+[abl3_seed44] ep 12 loss 0.2490 train_acc 0.9819 val_acc 0.5931 (2.93s)
+[abl3_seed44] best val_acc 0.6129 at epoch 6
+==> abl3: val acc 0.6119 +- 0.0013
+abl4: 1.93M trainable parameters
+[abl4_seed42] ep 01 loss 0.6927 train_acc 0.5553 val_acc 0.5645 (3.13s)
+[abl4_seed42] ep 02 loss 0.6591 train_acc 0.7306 val_acc 0.5794 (3.04s)
+[abl4_seed42] ep 03 loss 0.5904 train_acc 0.7669 val_acc 0.6042 (2.92s)
+[abl4_seed42] ep 04 loss 0.5270 train_acc 0.8086 val_acc 0.5980 (3.25s)
+[abl4_seed42] ep 05 loss 0.4828 train_acc 0.8381 val_acc 0.6017 (2.98s)
+[abl4_seed42] ep 06 loss 0.4484 train_acc 0.8610 val_acc 0.5980 (3.23s)
+[abl4_seed42] ep 07 loss 0.4195 train_acc 0.8777 val_acc 0.5912 (3.22s)
+[abl4_seed42] ep 08 loss 0.3949 train_acc 0.8946 val_acc 0.5931 (2.82s)
+[abl4_seed42] ep 09 loss 0.3741 train_acc 0.9053 val_acc 0.5887 (2.82s)
+[abl4_seed42] best val_acc 0.6042 at epoch 3
+[abl4_seed43] ep 01 loss 0.6930 train_acc 0.5472 val_acc 0.5775 (2.91s)
+[abl4_seed43] ep 02 loss 0.6606 train_acc 0.7461 val_acc 0.5862 (3.22s)
+[abl4_seed43] ep 03 loss 0.5944 train_acc 0.7687 val_acc 0.5893 (2.86s)
+[abl4_seed43] ep 04 loss 0.5287 train_acc 0.8066 val_acc 0.6067 (3.25s)
+[abl4_seed43] ep 05 loss 0.4833 train_acc 0.8381 val_acc 0.5937 (3.11s)
+[abl4_seed43] ep 06 loss 0.4496 train_acc 0.8604 val_acc 0.5924 (2.96s)
+[abl4_seed43] ep 07 loss 0.4220 train_acc 0.8761 val_acc 0.5968 (2.9s)
+[abl4_seed43] ep 08 loss 0.3973 train_acc 0.8915 val_acc 0.5993 (3.25s)
+[abl4_seed43] ep 09 loss 0.3761 train_acc 0.9046 val_acc 0.5931 (2.91s)
+[abl4_seed43] ep 10 loss 0.3591 train_acc 0.9150 val_acc 0.5968 (2.97s)
+[abl4_seed43] best val_acc 0.6067 at epoch 4
+[abl4_seed44] ep 01 loss 0.6929 train_acc 0.5538 val_acc 0.5670 (2.9s)
+[abl4_seed44] ep 02 loss 0.6594 train_acc 0.7359 val_acc 0.5924 (3.03s)
+[abl4_seed44] ep 03 loss 0.5913 train_acc 0.7691 val_acc 0.5931 (2.94s)
+[abl4_seed44] ep 04 loss 0.5258 train_acc 0.8124 val_acc 0.6067 (2.97s)
+[abl4_seed44] ep 05 loss 0.4805 train_acc 0.8393 val_acc 0.5825 (2.88s)
+[abl4_seed44] ep 06 loss 0.4477 train_acc 0.8644 val_acc 0.5862 (3.12s)
+[abl4_seed44] ep 07 loss 0.4191 train_acc 0.8787 val_acc 0.5831 (3.22s)
+[abl4_seed44] ep 08 loss 0.3940 train_acc 0.8932 val_acc 0.5819 (2.98s)
+[abl4_seed44] ep 09 loss 0.3746 train_acc 0.9037 val_acc 0.5844 (2.97s)
+[abl4_seed44] ep 10 loss 0.3557 train_acc 0.9167 val_acc 0.5763 (3.07s)
+[abl4_seed44] best val_acc 0.6067 at epoch 4
+==> abl4: val acc 0.6059 +- 0.0014
+abl5: 1.52M trainable parameters
+[abl5_seed42] ep 01 loss 0.6931 train_acc 0.5025 val_acc 0.5217 (1.9s)
+[abl5_seed42] ep 02 loss 0.6899 train_acc 0.5263 val_acc 0.5651 (2.15s)
+[abl5_seed42] ep 03 loss 0.6528 train_acc 0.6214 val_acc 0.5726 (2.08s)
+[abl5_seed42] ep 04 loss 0.6149 train_acc 0.6722 val_acc 0.5788 (2.04s)
+[abl5_seed42] ep 05 loss 0.5885 train_acc 0.7033 val_acc 0.5676 (2.16s)
+[abl5_seed42] ep 06 loss 0.5601 train_acc 0.7255 val_acc 0.5676 (2.05s)
+[abl5_seed42] ep 07 loss 0.5369 train_acc 0.7494 val_acc 0.5651 (2.09s)
+[abl5_seed42] ep 08 loss 0.5143 train_acc 0.7675 val_acc 0.5571 (2.09s)
+[abl5_seed42] ep 09 loss 0.4951 train_acc 0.7877 val_acc 0.5583 (2.1s)
+[abl5_seed42] ep 10 loss 0.4788 train_acc 0.8004 val_acc 0.5527 (2.13s)
+[abl5_seed42] best val_acc 0.5788 at epoch 4
+[abl5_seed43] ep 01 loss 0.6930 train_acc 0.5076 val_acc 0.5403 (1.96s)
+[abl5_seed43] ep 02 loss 0.6892 train_acc 0.5369 val_acc 0.5682 (1.96s)
+[abl5_seed43] ep 03 loss 0.6477 train_acc 0.6301 val_acc 0.5819 (1.94s)
+[abl5_seed43] ep 04 loss 0.6152 train_acc 0.6742 val_acc 0.5819 (2.03s)
+[abl5_seed43] ep 05 loss 0.5904 train_acc 0.7004 val_acc 0.5757 (1.99s)
+[abl5_seed43] ep 06 loss 0.5646 train_acc 0.7246 val_acc 0.5633 (2.12s)
+[abl5_seed43] ep 07 loss 0.5399 train_acc 0.7439 val_acc 0.5552 (1.93s)
+[abl5_seed43] ep 08 loss 0.5174 train_acc 0.7664 val_acc 0.5546 (1.91s)
+[abl5_seed43] ep 09 loss 0.4955 train_acc 0.7846 val_acc 0.5540 (2.0s)
+[abl5_seed43] best val_acc 0.5819 at epoch 3
+[abl5_seed44] ep 01 loss 0.6929 train_acc 0.5085 val_acc 0.5440 (1.95s)
+[abl5_seed44] ep 02 loss 0.6900 train_acc 0.5279 val_acc 0.5670 (2.03s)
+[abl5_seed44] ep 03 loss 0.6498 train_acc 0.6292 val_acc 0.5924 (2.09s)
+[abl5_seed44] ep 04 loss 0.6146 train_acc 0.6726 val_acc 0.5955 (1.98s)
+[abl5_seed44] ep 05 loss 0.5826 train_acc 0.7068 val_acc 0.5732 (1.96s)
+[abl5_seed44] ep 06 loss 0.5591 train_acc 0.7293 val_acc 0.5651 (2.0s)
+[abl5_seed44] ep 07 loss 0.5337 train_acc 0.7506 val_acc 0.5670 (1.91s)
+[abl5_seed44] ep 08 loss 0.5161 train_acc 0.7693 val_acc 0.5602 (2.0s)
+[abl5_seed44] ep 09 loss 0.4961 train_acc 0.7834 val_acc 0.5589 (1.97s)
+[abl5_seed44] ep 10 loss 0.4825 train_acc 0.7922 val_acc 0.5502 (1.94s)
+[abl5_seed44] best val_acc 0.5955 at epoch 4
+==> abl5: val acc 0.5854 +- 0.0089
+abl6: 1.67M trainable parameters
+[abl6_seed42] ep 01 loss 0.6927 train_acc 0.5154 val_acc 0.5515 (3.2s)
+[abl6_seed42] ep 02 loss 0.6698 train_acc 0.6044 val_acc 0.5943 (2.86s)
+[abl6_seed42] ep 03 loss 0.6196 train_acc 0.6792 val_acc 0.5955 (2.85s)
+[abl6_seed42] ep 04 loss 0.5780 train_acc 0.7217 val_acc 0.5943 (3.17s)
+[abl6_seed42] ep 05 loss 0.5424 train_acc 0.7543 val_acc 0.6030 (3.16s)
+[abl6_seed42] ep 06 loss 0.5147 train_acc 0.7750 val_acc 0.5862 (2.87s)
+[abl6_seed42] ep 07 loss 0.4887 train_acc 0.7920 val_acc 0.5868 (3.12s)
+[abl6_seed42] ep 08 loss 0.4668 train_acc 0.8101 val_acc 0.5825 (2.92s)
+[abl6_seed42] ep 09 loss 0.4445 train_acc 0.8262 val_acc 0.5782 (3.07s)
+[abl6_seed42] ep 10 loss 0.4287 train_acc 0.8391 val_acc 0.5831 (3.19s)
+[abl6_seed42] ep 11 loss 0.4127 train_acc 0.8530 val_acc 0.5763 (3.2s)
+[abl6_seed42] best val_acc 0.6030 at epoch 5
+[abl6_seed43] ep 01 loss 0.6933 train_acc 0.5012 val_acc 0.5682 (2.97s)
+[abl6_seed43] ep 02 loss 0.6748 train_acc 0.5915 val_acc 0.5918 (2.84s)
+[abl6_seed43] ep 03 loss 0.6231 train_acc 0.6766 val_acc 0.5856 (3.06s)
+[abl6_seed43] ep 04 loss 0.5823 train_acc 0.7168 val_acc 0.5831 (3.15s)
+[abl6_seed43] ep 05 loss 0.5451 train_acc 0.7484 val_acc 0.5931 (2.79s)
+[abl6_seed43] ep 06 loss 0.5149 train_acc 0.7724 val_acc 0.5868 (3.17s)
+[abl6_seed43] ep 07 loss 0.4910 train_acc 0.7941 val_acc 0.5906 (3.13s)
+[abl6_seed43] ep 08 loss 0.4647 train_acc 0.8137 val_acc 0.5844 (2.81s)
+[abl6_seed43] ep 09 loss 0.4450 train_acc 0.8279 val_acc 0.5800 (2.77s)
+[abl6_seed43] ep 10 loss 0.4269 train_acc 0.8415 val_acc 0.5738 (3.23s)
+[abl6_seed43] ep 11 loss 0.4056 train_acc 0.8577 val_acc 0.5769 (3.26s)
+[abl6_seed43] best val_acc 0.5931 at epoch 5
+[abl6_seed44] ep 01 loss 0.6929 train_acc 0.5104 val_acc 0.5292 (3.45s)
+[abl6_seed44] ep 02 loss 0.6719 train_acc 0.5971 val_acc 0.5788 (3.33s)
+[abl6_seed44] ep 03 loss 0.6202 train_acc 0.6822 val_acc 0.5868 (2.87s)
+[abl6_seed44] ep 04 loss 0.5752 train_acc 0.7259 val_acc 0.5887 (2.74s)
+[abl6_seed44] ep 05 loss 0.5396 train_acc 0.7546 val_acc 0.5782 (2.95s)
+[abl6_seed44] ep 06 loss 0.5097 train_acc 0.7762 val_acc 0.5658 (2.9s)
+[abl6_seed44] ep 07 loss 0.4821 train_acc 0.8002 val_acc 0.5769 (2.91s)
+[abl6_seed44] ep 08 loss 0.4623 train_acc 0.8173 val_acc 0.5720 (3.25s)
+[abl6_seed44] ep 09 loss 0.4392 train_acc 0.8333 val_acc 0.5602 (2.76s)
+[abl6_seed44] ep 10 loss 0.4214 train_acc 0.8459 val_acc 0.5583 (3.0s)
+[abl6_seed44] best val_acc 0.5887 at epoch 4
+==> abl6: val acc 0.5949 +- 0.0073
+abl7: 1.93M trainable parameters
+[abl7_seed42] ep 01 loss 0.6861 train_acc 0.5615 val_acc 0.5868 (3.02s)
+[abl7_seed42] ep 02 loss 0.5880 train_acc 0.7642 val_acc 0.5949 (3.08s)
+[abl7_seed42] ep 03 loss 0.4717 train_acc 0.8442 val_acc 0.6055 (2.93s)
+[abl7_seed42] ep 04 loss 0.4059 train_acc 0.8889 val_acc 0.6179 (2.87s)
+[abl7_seed42] ep 05 loss 0.3617 train_acc 0.9184 val_acc 0.6166 (3.09s)
+[abl7_seed42] ep 06 loss 0.3325 train_acc 0.9366 val_acc 0.6110 (2.94s)
+[abl7_seed42] ep 07 loss 0.3092 train_acc 0.9501 val_acc 0.6030 (2.93s)
+[abl7_seed42] ep 08 loss 0.2923 train_acc 0.9607 val_acc 0.5955 (3.06s)
+[abl7_seed42] ep 09 loss 0.2790 train_acc 0.9670 val_acc 0.6030 (3.04s)
+[abl7_seed42] ep 10 loss 0.2681 train_acc 0.9729 val_acc 0.5962 (2.88s)
+[abl7_seed42] best val_acc 0.6179 at epoch 4
+[abl7_seed43] ep 01 loss 0.6867 train_acc 0.5518 val_acc 0.5751 (2.93s)
+[abl7_seed43] ep 02 loss 0.5906 train_acc 0.7720 val_acc 0.6017 (3.03s)
+[abl7_seed43] ep 03 loss 0.4737 train_acc 0.8437 val_acc 0.6073 (2.99s)
+[abl7_seed43] ep 04 loss 0.4071 train_acc 0.8895 val_acc 0.6148 (3.27s)
+[abl7_seed43] ep 05 loss 0.3624 train_acc 0.9200 val_acc 0.6129 (2.92s)
+[abl7_seed43] ep 06 loss 0.3308 train_acc 0.9399 val_acc 0.6024 (3.09s)
+[abl7_seed43] ep 07 loss 0.3080 train_acc 0.9515 val_acc 0.6048 (2.97s)
+[abl7_seed43] ep 08 loss 0.2900 train_acc 0.9613 val_acc 0.6048 (2.9s)
+[abl7_seed43] ep 09 loss 0.2768 train_acc 0.9678 val_acc 0.5974 (3.06s)
+[abl7_seed43] ep 10 loss 0.2666 train_acc 0.9749 val_acc 0.6036 (3.14s)
+[abl7_seed43] best val_acc 0.6148 at epoch 4
+[abl7_seed44] ep 01 loss 0.6865 train_acc 0.5569 val_acc 0.5900 (2.9s)
+[abl7_seed44] ep 02 loss 0.5896 train_acc 0.7630 val_acc 0.5993 (2.9s)
+[abl7_seed44] ep 03 loss 0.4729 train_acc 0.8491 val_acc 0.5993 (3.01s)
+[abl7_seed44] ep 04 loss 0.4062 train_acc 0.8895 val_acc 0.6135 (3.07s)
+[abl7_seed44] ep 05 loss 0.3619 train_acc 0.9197 val_acc 0.6055 (3.2s)
+[abl7_seed44] ep 06 loss 0.3309 train_acc 0.9365 val_acc 0.6067 (3.11s)
+[abl7_seed44] ep 07 loss 0.3081 train_acc 0.9515 val_acc 0.5924 (3.07s)
+[abl7_seed44] ep 08 loss 0.2906 train_acc 0.9616 val_acc 0.5968 (3.28s)
+[abl7_seed44] ep 09 loss 0.2762 train_acc 0.9686 val_acc 0.5955 (2.92s)
+[abl7_seed44] ep 10 loss 0.2652 train_acc 0.9745 val_acc 0.5906 (2.92s)
+[abl7_seed44] best val_acc 0.6135 at epoch 4
+==> abl7: val acc 0.6154 +- 0.0022
+[colab] Executing cell 18/32 - 959adde7-45ca-4b96-a069-b44813ba8003...
+B1 selected C on validation: 3.0
+b2_bilstm: 5.07M trainable parameters
+[b2_bilstm_seed42] ep 01 loss 0.6930 train_acc 0.5006 val_acc 0.5261 (5.41s)
+[b2_bilstm_seed42] ep 02 loss 0.6917 train_acc 0.5211 val_acc 0.5285 (5.01s)
+[b2_bilstm_seed42] ep 03 loss 0.6855 train_acc 0.5547 val_acc 0.5372 (5.13s)
+[b2_bilstm_seed42] ep 04 loss 0.6762 train_acc 0.5723 val_acc 0.5428 (4.99s)
+[b2_bilstm_seed42] ep 05 loss 0.6611 train_acc 0.6044 val_acc 0.5664 (5.2s)
+[b2_bilstm_seed42] ep 06 loss 0.6432 train_acc 0.6341 val_acc 0.5726 (5.04s)
+[b2_bilstm_seed42] ep 07 loss 0.6212 train_acc 0.6613 val_acc 0.5670 (4.92s)
+[b2_bilstm_seed42] ep 08 loss 0.6029 train_acc 0.6798 val_acc 0.5695 (5.33s)
+[b2_bilstm_seed42] ep 09 loss 0.5761 train_acc 0.7082 val_acc 0.5794 (5.12s)
+[b2_bilstm_seed42] ep 10 loss 0.5528 train_acc 0.7304 val_acc 0.5720 (5.03s)
+[b2_bilstm_seed42] ep 11 loss 0.5372 train_acc 0.7436 val_acc 0.5664 (4.89s)
+[b2_bilstm_seed42] ep 12 loss 0.5191 train_acc 0.7604 val_acc 0.5813 (5.17s)
+[b2_bilstm_seed42] ep 13 loss 0.5037 train_acc 0.7773 val_acc 0.5769 (4.98s)
+[b2_bilstm_seed42] ep 14 loss 0.4941 train_acc 0.7853 val_acc 0.5782 (5.02s)
+[b2_bilstm_seed42] ep 15 loss 0.4825 train_acc 0.7995 val_acc 0.5769 (5.25s)
+[b2_bilstm_seed42] ep 16 loss 0.4751 train_acc 0.8028 val_acc 0.5763 (5.31s)
+[b2_bilstm_seed42] ep 17 loss 0.4721 train_acc 0.8052 val_acc 0.5751 (5.18s)
+[b2_bilstm_seed42] ep 18 loss 0.4639 train_acc 0.8154 val_acc 0.5732 (5.01s)
+[b2_bilstm_seed42] best val_acc 0.5813 at epoch 12
+[b2_bilstm_seed43] ep 01 loss 0.6931 train_acc 0.5078 val_acc 0.5230 (5.26s)
+[b2_bilstm_seed43] ep 02 loss 0.6914 train_acc 0.5220 val_acc 0.5645 (4.96s)
+[b2_bilstm_seed43] ep 03 loss 0.6846 train_acc 0.5555 val_acc 0.5751 (5.22s)
+[b2_bilstm_seed43] ep 04 loss 0.6780 train_acc 0.5727 val_acc 0.5850 (4.93s)
+[b2_bilstm_seed43] ep 05 loss 0.6602 train_acc 0.6052 val_acc 0.5596 (5.36s)
+[b2_bilstm_seed43] ep 06 loss 0.6447 train_acc 0.6303 val_acc 0.5775 (5.41s)
+[b2_bilstm_seed43] ep 07 loss 0.6238 train_acc 0.6517 val_acc 0.5707 (5.43s)
+[b2_bilstm_seed43] ep 08 loss 0.5996 train_acc 0.6869 val_acc 0.5931 (5.45s)
+[b2_bilstm_seed43] ep 09 loss 0.5786 train_acc 0.7050 val_acc 0.5955 (4.95s)
+[b2_bilstm_seed43] ep 10 loss 0.5583 train_acc 0.7293 val_acc 0.5918 (5.12s)
+[b2_bilstm_seed43] ep 11 loss 0.5400 train_acc 0.7399 val_acc 0.5968 (5.21s)
+[b2_bilstm_seed43] ep 12 loss 0.5219 train_acc 0.7609 val_acc 0.5993 (5.04s)
+[b2_bilstm_seed43] ep 13 loss 0.5017 train_acc 0.7786 val_acc 0.6123 (4.9s)
+[b2_bilstm_seed43] ep 14 loss 0.4932 train_acc 0.7886 val_acc 0.6011 (5.22s)
+[b2_bilstm_seed43] ep 15 loss 0.4807 train_acc 0.8000 val_acc 0.6092 (5.09s)
+[b2_bilstm_seed43] ep 16 loss 0.4783 train_acc 0.7985 val_acc 0.6154 (5.36s)
+[b2_bilstm_seed43] ep 17 loss 0.4718 train_acc 0.8081 val_acc 0.6092 (5.11s)
+[b2_bilstm_seed43] ep 18 loss 0.4681 train_acc 0.8104 val_acc 0.6117 (5.39s)
+[b2_bilstm_seed43] ep 19 loss 0.4620 train_acc 0.8130 val_acc 0.6104 (4.92s)
+[b2_bilstm_seed43] ep 20 loss 0.4600 train_acc 0.8161 val_acc 0.6104 (4.83s)
+[b2_bilstm_seed43] best val_acc 0.6154 at epoch 16
+[b2_bilstm_seed44] ep 01 loss 0.6931 train_acc 0.5049 val_acc 0.5217 (5.25s)
+[b2_bilstm_seed44] ep 02 loss 0.6917 train_acc 0.5189 val_acc 0.5471 (4.98s)
+[b2_bilstm_seed44] ep 03 loss 0.6842 train_acc 0.5554 val_acc 0.5533 (5.09s)
+[b2_bilstm_seed44] ep 04 loss 0.6724 train_acc 0.5854 val_acc 0.5645 (5.47s)
+[b2_bilstm_seed44] ep 05 loss 0.6586 train_acc 0.6100 val_acc 0.5751 (5.07s)
+[b2_bilstm_seed44] ep 06 loss 0.6394 train_acc 0.6313 val_acc 0.5831 (5.21s)
+[b2_bilstm_seed44] ep 07 loss 0.6187 train_acc 0.6631 val_acc 0.5924 (4.88s)
+[b2_bilstm_seed44] ep 08 loss 0.5936 train_acc 0.6903 val_acc 0.5782 (5.36s)
+[b2_bilstm_seed44] ep 09 loss 0.5729 train_acc 0.7157 val_acc 0.5937 (4.85s)
+[b2_bilstm_seed44] ep 10 loss 0.5556 train_acc 0.7277 val_acc 0.5918 (5.04s)
+[b2_bilstm_seed44] ep 11 loss 0.5316 train_acc 0.7509 val_acc 0.6030 (4.9s)
+[b2_bilstm_seed44] ep 12 loss 0.5224 train_acc 0.7593 val_acc 0.5980 (5.32s)
+[b2_bilstm_seed44] ep 13 loss 0.5038 train_acc 0.7764 val_acc 0.5993 (4.92s)
+[b2_bilstm_seed44] ep 14 loss 0.4909 train_acc 0.7884 val_acc 0.5924 (4.95s)
+[b2_bilstm_seed44] ep 15 loss 0.4792 train_acc 0.7991 val_acc 0.5968 (5.09s)
+[b2_bilstm_seed44] ep 16 loss 0.4737 train_acc 0.8055 val_acc 0.5955 (4.88s)
+[b2_bilstm_seed44] ep 17 loss 0.4666 train_acc 0.8120 val_acc 0.5906 (4.88s)
+[b2_bilstm_seed44] best val_acc 0.6030 at epoch 11
+==> b2_bilstm: val acc 0.5999 +- 0.0173
+[colab] Executing cell 19/32 - f258a025-22a5-40ab-bd64-2a7021afb5ee...
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+config.json:   0%|          | 0.00/481 [00:00<?, ?B/s]
+tokenizer_config.json:   0%|          | 0.00/25.0 [00:00<?, ?B/s]
+vocab.json:   0%|          | 0.00/899k [00:00<?, ?B/s]
+merges.txt:   0%|          | 0.00/456k [00:00<?, ?B/s]
+tokenizer.json:   0%|          | 0.00/1.36M [00:00<?, ?B/s]
+model.safetensors: reconstructing file:   0%|          |  0.00B /  499MB        
+model.safetensors: downloading bytes:           |  0.00B            
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]
+[transformers] [1mRobertaForMultipleChoice LOAD REPORT[0m from: FacebookAI/roberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.bias                | UNEXPECTED | 
+lm_head.dense.weight        | UNEXPECTED | 
+lm_head.dense.bias          | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+classifier.weight           | MISSING    | 
+classifier.bias             | MISSING    | 
+roberta.pooler.dense.weight | MISSING    | 
+roberta.pooler.dense.bias   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[B3 FacebookAI/roberta-base] ep 1 loss 0.6942 val_acc 0.5298 (26.6s)
+[B3 FacebookAI/roberta-base] ep 2 loss 0.6940 val_acc 0.5112 (26.7s)
+[B3 FacebookAI/roberta-base] ep 3 loss 0.6938 val_acc 0.4746 (26.6s)
+[B3 FacebookAI/roberta-base] ep 4 loss 0.6938 val_acc 0.5112 (26.6s)
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]
+[transformers] [1mRobertaForMultipleChoice LOAD REPORT[0m from: FacebookAI/roberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.bias                | UNEXPECTED | 
+lm_head.dense.weight        | UNEXPECTED | 
+lm_head.dense.bias          | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+classifier.weight           | MISSING    | 
+classifier.bias             | MISSING    | 
+roberta.pooler.dense.weight | MISSING    | 
+roberta.pooler.dense.bias   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[B3 FacebookAI/roberta-base] ep 1 loss 0.6946 val_acc 0.5403 (26.7s)
+[B3 FacebookAI/roberta-base] ep 2 loss 0.6936 val_acc 0.6234 (26.5s)
+[B3 FacebookAI/roberta-base] ep 3 loss 0.6875 val_acc 0.6284 (26.7s)
+[B3 FacebookAI/roberta-base] ep 4 loss 0.6512 val_acc 0.6371 (26.7s)
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]
+[transformers] [1mRobertaForMultipleChoice LOAD REPORT[0m from: FacebookAI/roberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.bias                | UNEXPECTED | 
+lm_head.dense.weight        | UNEXPECTED | 
+lm_head.dense.bias          | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+classifier.weight           | MISSING    | 
+classifier.bias             | MISSING    | 
+roberta.pooler.dense.weight | MISSING    | 
+roberta.pooler.dense.bias   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[B3 FacebookAI/roberta-base] ep 1 loss 0.6927 val_acc 0.6067 (26.8s)
+[B3 FacebookAI/roberta-base] ep 2 loss 0.6651 val_acc 0.6501 (26.6s)
+[B3 FacebookAI/roberta-base] ep 3 loss 0.5960 val_acc 0.6731 (26.6s)
+[B3 FacebookAI/roberta-base] ep 4 loss 0.5384 val_acc 0.6805 (26.6s)
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
+B3 val acc per seed: {42: np.float64(0.5298), 43: np.float64(0.6371), 44: np.float64(0.6805)}
+[colab] Executing cell 20/32 - 1cbaebe8-b689-49f9-be27-c8717cf1d107...
+config.json:   0%|          | 0.00/684 [00:00<?, ?B/s]
+tokenizer_config.json:   0%|          | 0.00/7.23k [00:00<?, ?B/s]
+vocab.json:   0%|          | 0.00/2.78M [00:00<?, ?B/s]
+merges.txt:   0%|          | 0.00/1.67M [00:00<?, ?B/s]
+tokenizer.json:   0%|          | 0.00/7.03M [00:00<?, ?B/s]
+model.safetensors: reconstructing file:   0%|          |  0.00B / 3.09GB        
+model.safetensors: downloading bytes:           |  0.00B            
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]
+generation_config.json:   0%|          | 0.00/138 [00:00<?, ?B/s]
+B0 majority                      val acc 0.5000
+B1 TF-IDF + LR                   val acc 0.5924
+B3 RoBERTa-base (fine-tuned)     val acc 0.6158
+B4 Qwen2.5-1.5B (zero-shot)      val acc 0.7810
+[colab] Executing cell 21/32 - 49a62541-92ab-4e63-a839-d9e3cac92999...
+Loading weights:   0%|          | 0/338 [00:00<?, ?it/s]
