@@ -1,0 +1,7 @@
+variant,seed42,seed43,seed44,val_mean,source
+no lexical head,0.5993,0.5974,0.5844,0.5937,"pilot 1, free Colab T4, 2026-09-30 (DEVELOPMENT_LOG section 26.3; tools/pilot_lexical.py)"
+lexical head lr 3e-4 (shared),0.5993,0.6005,0.5844,0.5947,"pilot 1"
+lexical head lr 3e-4 wd 0.01,0.5993,0.5999,0.5844,0.5945,"pilot 1"
+lexical head lr 3e-3,0.6055,0.6117,0.5974,0.6049,"pilot 2"
+lexical head lr 1e-2,0.6086,0.6154,0.6042,0.6094,"pilot 2 (selected)"
+lexical head lr 3e-2,0.6024,0.6079,0.6086,0.6063,"pilot 2"

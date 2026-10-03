@@ -123,6 +123,31 @@ def strict_tables(s):
         checked += 2
         if [round(c, 1) for c in cells] != expect:
             errors.append(f"Table 2 '{label}': report {cells} vs results {expect}")
+    # Table 3 (development history): each row against the results file of THAT run
+    def dact(path):
+        r = next(x for x in csv.DictReader(open(os.path.join(ROOT, path), encoding="utf-8")) if x["model"] == "DACT (full)")
+        return [pct(r["val acc"]), pct(r["test acc"])]
+    pilot = {x["variant"]: f"{100 * float(x['val_mean']):.1f}" for x in
+             csv.DictReader(open(os.path.join(ROOT, "experiments", "lexical_pilot", "pilot_results.csv"), encoding="utf-8"))}
+    goal = {x["arm"]: x for x in csv.DictReader(open(os.path.join(ROOT, "experiments", "goal_matching", "results.csv"), encoding="utf-8"))}
+    history = {
+        "Run 1 (A100)": dact("evidence/historical/a100_outputs/results/final_results.csv"),
+        "Run 2 (T4)": dact("experiments/t4_run_e5fdb29/outputs/results/final_results.csv"),
+        "Pilot (val)": [pilot["lexical head lr 3e-4 (shared)"], pilot["lexical head lr 1e-2"]],
+        "Run 3 (T4)": dact("experiments/t4_run_538cf5b/outputs/results/final_results.csv"),
+        "Final (A100)": dact("outputs/results/final_results.csv"),
+        "Pre-reg.": [f"{100 * float(goal['goal_matching']['val_mean']):.1f}", f"{100 * float(goal['control_main_model']['val_mean']):.1f}"],
+    }
+    for label, expect in history.items():
+        line = next(l for l in rows if l.startswith(label))
+        cells = re.findall(r"\d+\.\d", line.split("&", 2)[2])
+        checked += len(expect)
+        if cells != expect:
+            errors.append(f"Table 3 '{label}': report {cells} vs results {expect}")
+    tfidf = [pct(fr["B1 TF-IDF + LR"]["val acc"]), pct(fr["B1 TF-IDF + LR"]["test acc"])]
+    checked += 2
+    if f"TF-IDF + LR scores {tfidf[0]} / {tfidf[1]}" not in s:
+        errors.append(f"Table 3 caption: TF-IDF should read {tfidf}")
     p = round(float(fr["B1 TF-IDF + LR"]["McNemar p vs DACT"]), 2)
     checked += 1
     if f"p{{=}}{p:.2f}" not in s:
@@ -133,7 +158,7 @@ def strict_tables(s):
 def main():
     s = open(TEX, encoding="utf-8").read()
     checked, errors = strict_tables(s)
-    print(f"STRICT check (Tables 1-2 row by row, headline p-value): {checked} values, {len(errors)} errors")
+    print(f"STRICT check (Tables 1-3 row by row, headline p-value): {checked} values, {len(errors)} errors")
     for e in errors:
         print("   ", e)
     body = s[s.index(r"\begin{abstract}"):s.index(r"\section*{Team Contributions}")]

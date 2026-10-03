@@ -1317,3 +1317,35 @@ This section follows the "honest final improvement pass" prompt (`IMPROVEMENT_PR
 ### 34.4 Still for the group
 - The AI-use statement (see 33.3).
 - Merge `honest-pass` into `main` if the group agrees. `v1.0.0-rc2` stays the fallback.
+
+---
+
+## 35. Presentation pass to address "clearer claim" and "density" (2026-10-03, branch `polish-90`)
+
+**Step 1.** At the group member's request, `main` was first fast-forwarded to `honest-pass` (`1816b58` → `8cc0ad1`) and pushed. `polish-90` starts from that commit.
+
+The evaluation in this conversation (≈ 87/100) named two presentation weaknesses: a modest main result that the report did not frame as a clear answer, and very dense pages. No result changed: there was no new run, and the test set was not used.
+
+### 35.1 Changes
+**Abstract, rewritten around a research question:** can a from-scratch model learn *where* two solutions differ, and is that enough?
+- **Yes to the first.** 86 % of pooling attention goes to the differing words, against 25 % uniform, and ablations support the difference tags.
+- **No to the second.** DACT is best on validation, tied with TF-IDF on test (p = 0.88), and 5–14 points behind pretrained models. Wrong predictions attend more to the differing words: the bottleneck is knowledge, not focus.
+
+**Introduction:** the findings use the same three-part answer.
+
+**"What Worked and What Did Not":** about 700 words of prose replaced by:
+- **Table 3, the development history.** One row each for run 1, run 2, the pilot, run 3, the final run and the pre-registered experiment, with DACT val / test accuracy and the outcome.
+- **Three short paragraphs:** what worked, what did not, and protocol / audit / evidence.
+
+The main text now ends at the top of the right column of page 6, about half a column shorter than before.
+
+**Conclusion:** "the best from-scratch model" is now qualified with "on validation, although on test it only ties a lexical baseline".
+
+**Layout:** `\usepackage{array}` added for the left-aligned table columns. There are no overfull boxes.
+
+### 35.2 Traceability
+- **Run 2's results** existed only in git history. They were restored to `experiments/t4_run_e5fdb29/outputs/results/final_results.csv` (`git show e5fdb29:…`).
+- **The lexical-head pilot results** were recorded from section 26.3 to `experiments/lexical_pilot/pilot_results.csv`, per seed.
+- **`tools/check_report_numbers.py`** now also checks **Table 3 row by row** against each run's own results file, plus the TF-IDF caption.
+- **Result:** the strict check covers **49 values with 0 errors**, and the traceability check finds 0 mismatches (121 distinct numbers).
+- The PDF compiles with no errors, undefined references or overfull boxes. It is 7 pages; the main text ends on page 6.
