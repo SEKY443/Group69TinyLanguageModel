@@ -14,7 +14,7 @@ from tokenizers import Tokenizer
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'src'))
 from config import Config,get_device,environment_info
-from data import load_piqa,PIQADataset,make_loader
+from data import load_piqa_with_test_labels,PIQADataset,make_loader
 from experiments import run_experiment,test_experiment
 from model import DACT
 from viz import select_cases,plot_attention_case
@@ -41,7 +41,7 @@ def main():
     cfg=Config(**{**legacy,**historical['config']}).but(data_dir=args.data_dir,out_dir=str(out),num_workers=0)
     # Worker count changes scheduling only; documented as a local resource difference.
     device=get_device()
-    tr,va,te=load_piqa(cfg)
+    tr,va,te=load_piqa_with_test_labels(cfg,'reproduce_main.py',str(ROOT/'outputs'))
     tok=Tokenizer.from_file(str(HIST/'tokenizer.json'));tok.save(str(out/'tokenizer.json'))
     data={'train':tr,'val':va,'test':te,'tok':tok,'vocab_size':tok.get_vocab_size()}
     for name,rows in [('train',tr),('val',va),('test',te)]:data[name+'_ds']=PIQADataset(rows,tok,cfg)

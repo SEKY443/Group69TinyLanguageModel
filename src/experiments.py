@@ -9,8 +9,8 @@ import numpy as np
 import torch
 
 from baselines import BiLSTMAttention  # nb-skip
-from config import Config, get_device, set_seed, write_progress  # nb-skip
-from data import make_loader, prepare_everything  # nb-skip
+from config import Config, get_device, log_test_access, set_seed, write_progress  # nb-skip
+from data import load_labels, make_loader, prepare_everything  # nb-skip
 from evaluate import accuracy, bootstrap_ci, summarise_seeds, save_predictions  # nb-skip
 from model import DACT, count_parameters  # nb-skip
 from train import mlm_warmup, predict, train_qa  # nb-skip
@@ -183,6 +183,21 @@ def run_experiment(name, cfg, arch, data, device, seeds, verbose=True, resume=Tr
     return res
 
 
+def final_eval(data, cfg, reason):
+    """The ONLY place where test labels are read: loads test-labels.lst into the test rows and dataset, appends a
+    line (time, commit, reason) to test_access.log in out_dir and the persistent run folder, and opens the guard."""
+    labels = load_labels(cfg.data_dir, "test")
+    rows, ds = data["test"], data["test_ds"]
+    for i, r in enumerate(rows):          # rows may be a prefix of the file (smoke mode)
+        r["label"] = labels[i]
+    ds.labels = [r["label"] for r in ds.rows]
+    data["test_labels_loaded"] = True
+    log_test_access((cfg.out_dir, cfg.persist_dir), reason, len(rows))
+    globals()["FINAL_EVAL"] = True
+    print(f"FINAL EVALUATION opened ({reason}); logged in test_access.log")
+    return np.array([r["label"] for r in rows])
+
+
 @torch.no_grad()
 def test_experiment(res, data, device):
     """FINAL evaluation on the test split: loads every saved checkpoint of an experiment and predicts once."""
@@ -190,6 +205,8 @@ def test_experiment(res, data, device):
     # (Run as a plain module, e.g. the smoke test below, FINAL_EVAL is undefined and the check is skipped.)
     if not globals().get("FINAL_EVAL", True):
         raise RuntimeError("test_experiment called before the final-results step (FINAL_EVAL is False)")
+    if not data.get("test_labels_loaded", True):
+        raise RuntimeError("test labels are not loaded: call final_eval(DATA, CFG, reason) first")
     cfg = Config(**res["config"])
     test_loader = make_loader(data["test_ds"], cfg, False, device)
     preds, accs = [], []
@@ -223,6 +240,7 @@ if __name__ == "__main__":  # nb-skip
     for k in ("train_ds", "val_ds", "test_ds"):  # nb-skip
         ds = data[k]; ds.items, ds.labels, ds.rows = ds.items[:256], ds.labels[:256], ds.rows[:256]  # nb-skip
     r = run_experiment("smoke_dact", cfg, "dact", data, device, seeds=[0])  # nb-skip
+    final_eval(data, cfg, "local smoke test of src/experiments.py")  # nb-skip
     r = test_experiment(r, data, device)  # nb-skip
     print(r["test"])  # nb-skip
     for kw in ({"use_diff_tags": False}, {"use_cross_solution": False}, {"pool_mode": "mean"}, {"pool_mode": "attn"}, {"objective": "pointwise", "mlm_epochs": 0}, {"tag_bias_init": 0.0}):  # nb-skip

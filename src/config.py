@@ -158,6 +158,17 @@ def fresh_path(path):
     return f"{base}.{time.strftime('%Y%m%d_%H%M%S')}{ext}"
 
 
+def log_test_access(roots, reason, n_items):
+    """Appends one line (time, commit, reason) to <root>/test_access.log for every root: the audit trail of every
+    read of the test labels. Called by experiments.final_eval and data.load_piqa_with_test_labels."""
+    record = {"time": time.strftime("%Y-%m-%d %H:%M:%S"), "commit": git_commit(), "reason": reason, "n_items": n_items}
+    for root in filter(None, roots):
+        os.makedirs(root, exist_ok=True)
+        with open(os.path.join(root, "test_access.log"), "a", encoding="utf-8") as f:
+            f.write(json.dumps(record) + "\n")
+    return record
+
+
 def write_run_config(cfg, device, run_id, **extra):
     """One file per run with everything needed to reproduce it: config, seeds, commit, environment, data checksums
     (the data manifest written by prepare_everything). Saved to out_dir and to the persistent run folder."""

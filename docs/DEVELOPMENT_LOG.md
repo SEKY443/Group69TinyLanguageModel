@@ -1458,3 +1458,51 @@ Source: section 3 of the upgrade prompt and `FUTURE_FIXES_NOTES.md` (C15, E21–
 - `sync_notebook.py --check`: out of date: none;
 - `check_test_access.py`: OK;
 - `check_report_numbers.py`: STRICT tables 49 values / 0 errors, STRICT prose 42 claims / 0 errors, loose 0 mismatches.
+
+## 39. Upgrade 4: evaluation hygiene (2026-10-03, branch `upgrade/eval-hygiene` from `upgrade/tests`)
+Source: section 4 of the upgrade prompt and `FUTURE_FIXES_NOTES.md` (C12, C15, D17). No test accuracy was computed; the calibration study uses validation predictions only.
+
+**4.1 Test labels only through `final_eval`.**
+- `load_piqa` now returns the test split with a placeholder label (`HIDDEN_LABEL = 0`): the real labels are not in memory before Step 5.
+- `experiments.final_eval(DATA, CFG, reason)` is the only notebook function that reads `test-labels.lst`. It loads the labels into the test rows and dataset, appends `{time, commit, reason, n_items}` to `test_access.log` in `out_dir` and the persistent run folder, and opens the guard.
+- `test_experiment` refuses to run unless `final_eval` has been called, even when `FINAL_EVAL` is forced to True.
+- **Notebook:** Step 5 starts with `yte = final_eval(...)`, and the statistics cell shows the test label share only after that call.
+- **Tools that score test predictions** (`rescore_without_duplicate.py`, `analyse_replication.py`, `replicate_lexical_baselines.py`, `reproduce_main.py`) use `data.load_piqa_with_test_labels(cfg, reason, log_root)`, which logs to `outputs/test_access.log`. None of them was run in this upgrade. `verify_audit_claims.py` does not need labels and no longer loads them.
+- `tools/check_test_access.py` also flags `final_eval(`, `load_labels(` and `test-labels` before the final cell.
+- **Side effect:** the test split's `ordered_sha256` in `data_manifest.json` now covers the inputs with placeholder labels, so it differs from the hash recorded by the A100 run. The file checksums are unchanged.
+- **`test_access.log`:** none exists in the repository, so there are **zero test-label reads** in this upgrade. A test asserts that `outputs/test_access.log` is absent.
+
+**4.2 Unrounded ablation deltas everywhere.** The notebook's key-numbers cell, the report's Table 2 and prose, the notebook discussion and `check_report_numbers.py` now use differences of the unrounded means, rounded once.
+- **Three test deltas change:** − difference tags −1.0 → **−0.9**; − cross-solution attention −0.9 → **−0.8**; tag bias initialised at 0 +0.1 → **+0.2**.
+- **The rest is unchanged,** including all validation deltas.
+- The Table 2 caption now says "differences of the unrounded 3-seed mean accuracies".
+- The key-numbers cell's saved output was cleared, because it came from the old code; it reappears when the notebook is run.
+
+**4.3 Calibration on validation** (`tools/calibration.py` → `experiments/calibration/val_calibration.csv`). Uses 15-bin top-label ECE, plus Brier score and NLL. Sources: the saved validation predictions of the A100 run (DACT, 8 ablations, B2; 3 seeds each except B2 with 1), and B1 recomputed on validation in the locked environment. B3 and B4 are not included: their validation probabilities were never saved, and the notebook now saves them for the next run.
+
+| Model (validation) | Acc | ECE | Mean confidence | Brier | NLL |
+|---|---|---|---|---|---|
+| DACT (full) | 61.21 | 9.85 | 69.86 | 0.2474 | 0.7039 |
+| − lexical head | 59.45 | 8.03 | 65.38 | 0.2498 | 0.7045 |
+| − difference tags | 59.88 | 9.00 | 68.42 | 0.2514 | 0.7162 |
+| − cross-solution attention | 60.50 | 7.68 | 67.00 | 0.2429 | 0.6901 |
+| pointwise objective | 60.50 | 19.56 | 79.30 | 0.2832 | 0.8788 |
+| vanilla Transformer | 58.75 | 6.08 | 62.68 | 0.2498 | 0.7050 |
+| B2 BiLSTM + attention | 59.49 | 8.54 | 63.84 | 0.2505 | 0.7207 |
+| B1 TF-IDF + LR | 59.24 | 5.25 | 63.75 | 0.2418 | 0.6815 |
+
+- **Sanity check:** every accuracy equals the logged validation mean.
+- **Reading:**
+  - DACT is over-confident: 69.9 % mean confidence for 61.2 % accuracy.
+  - Removing the lexical head lowers the confidence by 4.5 points and the ECE by 1.8 points. This supports the over-confidence note (FUTURE_FIXES D17), but the head is not the only source.
+  - Pointwise scoring is by far the worst calibrated (ECE 19.6).
+  - B1 is the best calibrated.
+- **Not yet in the report:** this is a validation-only diagnostic. Candidate 1 of section 5 (a length-normalised or temperature-scaled lexical head) would use it as its pre-declared secondary metric.
+
+**Report PDF (this branch only):** rebuilt with Tectonic after the corrections of sections 38 and 39 (three grid numbers, three ablation deltas, caption). Still 7 pages; the main text ends on page 6; only underfull-box warnings. `main`'s PDF is unchanged.
+
+**Checks on this branch:**
+- `sync_notebook.py --check`: none out of date;
+- `check_test_access.py`: OK;
+- `check_report_numbers.py`: tables 49 / 0 errors, prose 42 / 0 errors;
+- `pytest`: **32 tests pass** (31 fast in 67 s, plus the notebook end-to-end test in 2 min 27 s, which now opens Step 5 through `final_eval` on synthetic data).

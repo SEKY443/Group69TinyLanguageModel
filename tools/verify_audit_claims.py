@@ -25,7 +25,7 @@ def main():
     ap.add_argument("--data-dir", required=True)
     args = ap.parse_args()
     train_full = load_split(args.data_dir, "train")       # the whole training file (TRAIN + VAL)
-    test = load_split(args.data_dir, "test")
+    test = load_split(args.data_dir, "test", with_labels=False)   # labels are not needed for this audit
 
     # ---- 1. duplicates ----------------------------------------------------------------------------
     key = lambda r: (r["goal"], r["sol1"], r["sol2"])  # noqa: E731

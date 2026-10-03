@@ -118,8 +118,8 @@ def strict_tables(s):
         line = next(l for l in rows if label in l and "$\\Delta$" not in l)
         cells = [float(x.replace("$-$", "-").replace("+", "")) for x in re.findall(r"(?:\$-\$|\+)?\d+\.\d", line)]
         r = fr[model]
-        # same convention as the notebook's key-numbers cell: difference of the means rounded to 0.1 points
-        expect = [round(round(100 * float(r[c]), 1) - round(100 * float(d[c]), 1), 1) for c in ("val acc", "test acc")]
+        # same convention as the notebook's key-numbers cell: difference of the UNROUNDED means, rounded once
+        expect = [round(100 * (float(r[c]) - float(d[c])), 1) for c in ("val acc", "test acc")]
         expect = [0.0 if e == 0 else e for e in expect]
         checked += 2
         if [round(c, 1) for c in cells] != expect:
@@ -185,8 +185,8 @@ def prose_claims():
     D, B1, B2 = "DACT (full)", "B1 TF-IDF + LR", "B2 BiLSTM + attention"
 
     def delta(m, col, ref=D, sign=False):
-        # rounded-means convention of the notebook's key-numbers cell and Table 2
-        d = round(round(100 * float(fr[m][col]), 1) - round(100 * float(fr[ref][col]), 1), 1)
+        # difference of the unrounded means, as in the notebook's key-numbers cell and Table 2
+        d = round(100 * (float(fr[m][col]) - float(fr[ref][col])), 1)
         d = 0.0 if d == 0 else d
         return f"{d:+.1f}" if sign else f"{abs(d):.1f}"
 

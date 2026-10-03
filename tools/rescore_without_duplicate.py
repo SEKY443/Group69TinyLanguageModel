@@ -23,7 +23,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from baselines import tfidf_lr_baseline  # noqa: E402
 from config import Config  # noqa: E402
-from data import load_piqa, load_split  # noqa: E402
+from data import load_piqa_with_test_labels, load_split  # noqa: E402
 
 DUP_TEST = [1545]
 
@@ -45,7 +45,8 @@ def main():
     ap.add_argument("--data-dir", required=True)
     args = ap.parse_args()
     cfg = Config(data_dir=args.data_dir)
-    train, val, test = load_piqa(cfg)
+    train, val, test = load_piqa_with_test_labels(cfg, "rescore_without_duplicate.py: saved test predictions",
+                                                  os.path.join(ROOT, "outputs"))
     labels = np.array([r["label"] for r in test])
 
     # where do the duplicated training-file rows sit after the 90/10 split?

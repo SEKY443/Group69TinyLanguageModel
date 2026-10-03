@@ -114,22 +114,22 @@ B4 Qwen2.5-1.5B, zero-shot & 78.1 & 75.4 \\
 \toprule
 Ablation (vs.\ full \dact{}) & $\Delta$ Val & $\Delta$ Test \\
 \midrule
-$-$ difference tags & $-$1.3 & $-$1.0 \\
+$-$ difference tags & $-$1.3 & $-$0.9 \\
 $-$ lexical head & $-$1.8 & $-$0.4 \\
 pointwise (independent BCE) objective & $-$0.7 & 0.0 \\
 mean instead of attention pooling & $-$0.1 & $-$0.6 \\
-$-$ cross-solution attention & $-$0.7 & $-$0.9 \\
+$-$ cross-solution attention & $-$0.7 & $-$0.8 \\
 $-$ tag bias in pooling & +0.5 & +0.2 \\
-tag bias initialised at 0 & +0.4 & +0.1 \\
+tag bias initialised at 0 & +0.4 & +0.2 \\
 \midrule
 vanilla (all of the above removed) & $-$2.5 & $-$2.4 \\
 \bottomrule
 \end{tabular}
-\caption{Ablations, 3 seeds each, one change at a time on the selected configuration; differences of the 3-seed mean accuracies, each rounded to 0.1 points before subtracting (seed std $\approx$ 0.3--1.2).}
+\caption{Ablations, 3 seeds each, one change at a time on the selected configuration; differences of the unrounded 3-seed mean accuracies, rounded to 0.1 points (seed std $\approx$ 0.3--1.2).}
 \label{tab:abl}
 \end{table}
 
-\paragraph{Ablations.} Each ablation tests one hypothesis about a design choice (Table~\ref{tab:abl}); everything else, including seeds, data and budget, is fixed. \emph{Marking and comparing the difference helps}: removing the tags costs 1.3 / 1.0 points and removing cross-solution attention 0.7 / 0.9. \emph{Direct lexical evidence helps}, mainly on validation: removing the lexical head costs 1.8 / 0.4. The forced-choice objective helps on validation only (independent binary scoring: 0.7 / 0.0). Removing everything costs 2.5 / 2.4 points, the largest drop. Attention pooling makes little difference (0.1 / 0.6), and the tag bias, including its initial value, makes no consistent difference (removing it gives +0.5 / +0.2): these components overlap with the tags, which already tell the model where the options differ. Differences below one seed std are not conclusive, and with seven comparisons single p-values should not be over-read \citep{dror2018hitchhiker}.
+\paragraph{Ablations.} Each ablation tests one hypothesis about a design choice (Table~\ref{tab:abl}); everything else, including seeds, data and budget, is fixed. \emph{Marking and comparing the difference helps}: removing the tags costs 1.3 / 0.9 points and removing cross-solution attention 0.7 / 0.8. \emph{Direct lexical evidence helps}, mainly on validation: removing the lexical head costs 1.8 / 0.4. The forced-choice objective helps on validation only (independent binary scoring: 0.7 / 0.0). Removing everything costs 2.5 / 2.4 points, the largest drop. Attention pooling makes little difference (0.1 / 0.6), and the tag bias, including its initial value, makes no consistent difference (removing it gives +0.5 / +0.2): these components overlap with the tags, which already tell the model where the options differ. Differences below one seed std are not conclusive, and with seven comparisons single p-values should not be over-read \citep{dror2018hitchhiker}.
 
 \paragraph{Complementary errors.} \dact{} and TF-IDF agree on 77.9\% of test items; \dact{} alone solves 11.2\% (205 items) and TF-IDF alone 10.9\%, for an oracle accuracy of 72.4\%. The items only \dact{} solves typically have a one-word difference inside long shared text (\emph{water} vs.\ \emph{soda}; the typo \emph{sparrow bottle} vs.\ \emph{spray bottle}), where a bag-of-words difference vector has almost nothing to work with. Against RoBERTa the oracle rises to 83.6\%.
 

@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT / 'tools'))
 from project_paths import resolve_artifact
 from evaluate import bootstrap_ci, holm_adjust, mcnemar_exact
 from config import Config
-from data import load_piqa
+from data import load_piqa_with_test_labels
 
 
 def read(path):
@@ -41,7 +41,8 @@ def main():
     base = ROOT / 'experiments/completed/outputs_replication_baselines'
     result = read(run / 'results/dact_replication_test.json')
     baseline = read(base / 'results.json')
-    _, raw_val, raw_test = load_piqa(Config(data_dir=str(ROOT / '../../PIQA')))
+    _, raw_val, raw_test = load_piqa_with_test_labels(Config(data_dir=str(ROOT / '../../PIQA')),
+                                                      'analyse_replication.py', str(ROOT / 'outputs'))
     records, checks, test_rows = [], [], {}
     for split, n in [('val', 1612), ('test', 1838)]:
         reference = None

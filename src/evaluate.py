@@ -25,6 +25,21 @@ def save_predictions(path, rows, prediction, run, split):
             stream.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
 
+def calibration(prob2, labels, n_bins=15):
+    """Top-label calibration of a binary choice. prob2 = P(option 2). ECE uses n_bins equal-width confidence bins
+    (Guo et al., 2017): sum over bins of |accuracy - mean confidence| weighted by the bin's share of items."""
+    prob2, labels = np.asarray(prob2, dtype=float), np.asarray(labels)
+    pred = (prob2 > 0.5).astype(int)
+    conf = np.where(pred == 1, prob2, 1 - prob2)
+    correct = (pred == labels).astype(float)
+    bins = np.minimum((conf * n_bins).astype(int), n_bins - 1)
+    ece = sum(abs(correct[bins == b].mean() - conf[bins == b].mean()) * (bins == b).mean()
+              for b in range(n_bins) if (bins == b).any())
+    p_gold = np.clip(np.where(labels == 1, prob2, 1 - prob2), 1e-12, 1)
+    return {"accuracy": float(correct.mean()), "ece": float(ece), "mean_confidence": float(conf.mean()),
+            "brier": float(np.mean((prob2 - labels) ** 2)), "nll": float(-np.log(p_gold).mean())}
+
+
 def save_baseline_val(cfg, name, rows, pred, prob=None):
     """Validation predictions of a baseline (B1/B3/B4) in the same format as DACT's, also in the persistent folder."""
     out = {"pred": np.asarray(pred), **({"prob": np.asarray(prob)} if prob is not None else {})}
