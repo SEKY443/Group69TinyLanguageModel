@@ -93,6 +93,32 @@ class ContrastiveCrossSolution(nn.Module):
         return self.out_ln(h_self + self.drop(m)), w
 
 
+class GoalMatching(nn.Module):
+    """Pre-registered experiment: every token attends to the goal tokens of its own option; gated fusion.
+
+    The cross-solution block compares the two options with each other; this block scores how a solution relates to
+    the goal ("does it repeat or answer the goal?"), which the analysis found missing in the p = 0.50 ties.
+    """
+
+    def __init__(self, cfg: Config):
+        super().__init__()
+        d = cfg.d_model
+        self.ln_q = nn.LayerNorm(d)
+        self.ln_kv = nn.LayerNorm(d)
+        self.attn = MultiHeadAttention(d, cfg.n_heads, cfg.attn_dropout)
+        self.fuse = nn.Sequential(nn.Linear(3 * d, d), nn.GELU(), nn.Dropout(cfg.dropout), nn.Linear(d, d))
+        self.gate = nn.Linear(2 * d, d)
+        self.out_ln = nn.LayerNorm(d)
+        self.drop = nn.Dropout(cfg.dropout)
+
+    def forward(self, h, goal_mask, return_attn=False):
+        q, kv = self.ln_q(h), self.ln_kv(h)
+        c, w = self.attn(q, kv, goal_mask, return_attn)
+        m = self.fuse(torch.cat([q, c, q * c], dim=-1))
+        g = torch.sigmoid(self.gate(torch.cat([q, c], dim=-1)))
+        return self.out_ln(h + self.drop(g * m)), w
+
+
 class AttentionPooling(nn.Module):
     """Additive attention pooling over solution tokens.
 
@@ -136,6 +162,7 @@ class DACT(nn.Module):
         self.layers = nn.ModuleList([EncoderLayer(cfg) for _ in range(cfg.n_layers)])
         self.final_ln = nn.LayerNorm(d)
         self.cross = ContrastiveCrossSolution(cfg) if cfg.use_cross_solution else None
+        self.goal = GoalMatching(cfg) if getattr(cfg, "use_goal_matching", False) else None
         self.pool = AttentionPooling(d, cfg.pool_mode, cfg.tag_bias_init)
         self.scorer = nn.Sequential(nn.Linear(2 * d, d), nn.GELU(), nn.Dropout(cfg.dropout), nn.Linear(d, 1))
         # masked-LM head (only used for the optional in-domain warm-up), tied to the token embedding
@@ -177,8 +204,12 @@ class DACT(nn.Module):
         N = B * 2
         h, self_attn = self.encode(ids.view(N, L), seg.view(N, L), tags.view(N, L), attn_mask.view(N, L),
                                    return_attn)
-        h = h.view(B, 2, L, -1)
         out = {}
+        if self.goal is not None:
+            # keys = the goal segment of the same option ([CLS] goal [SEP]); queries = every token
+            goal_mask = (seg.view(N, L) == 0) & attn_mask.view(N, L)
+            h, out["goal_attn"] = self.goal(h, goal_mask, return_attn)
+        h = h.view(B, 2, L, -1)
         if self.cross is not None:
             # keys = the rival's solution tokens plus its [CLS] as a "no match" sink
             key_mask = sol_mask.clone()
