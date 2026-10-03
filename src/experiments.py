@@ -79,6 +79,10 @@ def run_experiment(name, cfg, arch, data, device, seeds, verbose=True, resume=Tr
 @torch.no_grad()
 def test_experiment(res, data, device):
     """FINAL evaluation on the test split: loads every saved checkpoint of an experiment and predicts once."""
+    # Guard: in the notebook FINAL_EVAL is False until the final-results step, so test labels cannot be read earlier.
+    # (Run as a plain module, e.g. the smoke test below, FINAL_EVAL is undefined and the check is skipped.)
+    if not globals().get("FINAL_EVAL", True):
+        raise RuntimeError("test_experiment called before the final-results step (FINAL_EVAL is False)")
     cfg = Config(**res["config"])
     test_loader = make_loader(data["test_ds"], cfg, False, device)
     preds, accs = [], []

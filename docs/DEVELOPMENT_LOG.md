@@ -1184,3 +1184,74 @@ The group member asked to fix the three weaknesses from the 82/100 evaluation. A
 - The main text ends on page 6, within the limit; Team Contributions and the references follow.
 - The new PDF was copied to `CITS4012_69_submission/`.
 - `main` was not changed. The branch `report-polish` is pushed for the group to review and merge.
+
+---
+
+## 33. Honest final pass, steps 1–2: verification and documentation (2026-10-03, branch `honest-pass`)
+
+This section follows the "honest final improvement pass" prompt (`IMPROVEMENT_PROMPT.md`, produced by an LLM-council review).
+
+**Base.** Branch `honest-pass` starts from `report-polish` (`f6f6975`), which is `main` / `v1.0.0-rc2` (`1816b58`) plus the report fixes of section 32. The prompt says to start from `main`; `report-polish` was used instead so those fixes are not lost. `v1.0.0-rc2` remains the fallback.
+
+**Rule followed in this section:** no training was done, and no test number was used for any decision.
+
+### 33.1 Step 1: audit claims reproduced (`tools/verify_audit_claims.py` → `outputs/results/audit_checks.csv`)
+
+- **Duplicates: confirmed.**
+  - There are 6 duplicate rows within the training file.
+  - One test item, **index 1545** ("How to make a vodka and soda?"), is identical to training-file rows **9975 and 11667**, with the same label. Both copies are in TRAIN, none in VAL.
+  - No test item matches a training item with the options swapped.
+- **Order-dependent difference tags: confirmed.**
+  - **102** test items change tags when the two options are swapped with the current pipeline. The audit's 103 was for the original pipeline (prefix truncation).
+  - With `symmetric_diff_tags=True`: 0.
+  - No test item has identical encoded inputs.
+- **Overfitting: confirmed** (final A100 run, `outputs/logs/dact_full_seed*.jsonl`).
+
+  | Seed | Best epoch | Train acc at best epoch | Val acc at best epoch | Train acc, last epoch |
+  |---|---|---|---|---|
+  | 42 | 5 | 0.917 | 0.615 | 0.978 |
+  | 43 | 4 | 0.890 | 0.614 | 0.976 |
+  | 44 | 4 | 0.891 | 0.608 | 0.975 |
+
+- **Test access** (`tools/check_test_access.py`):
+  - `src/`: only `test_experiment` scores the test set, and the representative seed is chosen by validation.
+  - Notebook, before the final-results section: cells 9, 33 and 34 load test data or compute held-out baseline predictions **without labels**.
+  - **Cell 10 read test labels**, for the label share in the dataset-statistics table. This was descriptive and fed no decision, but it broke the rule.
+  - **Guard added:**
+    - cell 6 sets `FINAL_EVAL = False`;
+    - cell 10 shows the test label share only if `FINAL_EVAL` is set;
+    - cell 37 (Step 5) sets `FINAL_EVAL = True` and prints the test label share there;
+    - `test_experiment` raises an error while `FINAL_EVAL` is False.
+  - **Checks:**
+    - the checker passes on the new notebook (exit code 0) and fails on the pre-guard notebook (exit code 1);
+    - a unit check confirmed that `test_experiment` is blocked when `FINAL_EVAL` is False;
+    - a smoke run of the whole notebook passed (CPU, synthetic data, stubbed B3/B4).
+  - The saved outputs of cells 6, 10 and 37 still come from the code before the guard (see 33.3).
+
+### 33.2 Re-scoring without the duplicate (`tools/rescore_without_duplicate.py` → `outputs/results/rescore_without_duplicate.csv`)
+
+- This is evaluation only: the saved test predictions (`outputs/predictions/*_test.jsonl.gz`) were scored with item 1545 excluded. Nothing was retrained.
+- **Effect:** about 0.02 points.
+  - DACT: 61.57 → 61.55 %.
+  - TF-IDF + LR: 61.21 → 61.19 %.
+  - Every ablation moved by 0.004–0.021 points.
+- **B1 and B3/B4:** B1's predictions were not saved, so it was recomputed. B3 and B4 predictions were not saved; one item changes their accuracy by at most 0.054 points.
+- **Reproducibility finding:** B1 reproduces 61.21 % only with the Colab library versions (scikit-learn 1.6.1, scipy 1.16.3, numpy 2.1.3). With scipy 1.18 / numpy 2.5 the identical code gives **60.88 %**, because the optimiser behaves differently. Library versions must therefore be pinned (step 4).
+
+### 33.3 Step 2: documentation
+
+**Report:**
+- **Abstract and findings:** DACT is the best from-scratch model on validation; on test it is statistically tied with TF-IDF (p = 0.88).
+- **New paragraph "Validity of the test numbers":** validation is the only split behind design decisions. The test set was evaluated in several development runs, and the lexical head was introduced after earlier test results had been seen.
+- **Overall comparison:** opens with the tie.
+- **Data paragraph:** names the guard and duplicate item 1545, with the re-scored numbers.
+- **Audit paragraph:** 103 order-dependent items (original pipeline) / 102 (current).
+- **Limitations:** the order dependence (102, and 0 with the canonical alignment) and overfitting (89–92 % train vs about 61 % val at the selected epoch; 97–98 % by the last epoch).
+- **Checks:** the PDF compiles with no errors or undefined references. It is 7 pages; the main text ends on page 6.
+
+**Notebook:**
+- A validity and audit note at the top of the quantitative discussion (markdown only).
+
+**Not done:**
+- **AI-use statement:** not added. The group member had earlier asked for it to be removed from the report (section 27.5). The prompt says not to write it on the group's behalf, so this decision stays with the group, and it is listed in the summary.
+- **No re-run yet:** the code cells changed by the guard (6, 10, 37 and the `experiments` module cell) keep the outputs of the A100 run of commit `0d70cdc`. Their saved outputs differ from what the new code would print only in the dataset-statistics table (the test label share) and in one extra printed line in Step 5.
