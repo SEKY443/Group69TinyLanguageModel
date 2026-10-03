@@ -68,6 +68,8 @@ class Config:
     run_seed: int = 42         # model/data-loader RNG; seed above remains the fixed split seed
     deterministic: bool = False  # historical CUDA runs used fast, nondeterministic kernels
     symmetric_diff_tags: bool = False  # opt-in NEW protocol; historical results use False
+    length_bucketing: bool = False     # opt-in NEW protocol: training batches of similar length (less padding)
+    bucket_chunk: int = 50             # bucketing sorts chunks of bucket_chunk x batch_size shuffled items
 
     def to_dict(self):
         return asdict(self)
