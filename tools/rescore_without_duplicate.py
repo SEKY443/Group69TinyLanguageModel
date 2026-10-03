@@ -28,6 +28,18 @@ from data import load_piqa, load_split  # noqa: E402
 DUP_TEST = [1545]
 
 
+def rescore(runs, labels, exclude):
+    """Mean accuracy over seeds with and without the excluded items; runs = [(seed, predictions), ...]."""
+    keep = np.ones(len(labels), bool)
+    keep[exclude] = False
+    full_acc = [float((p == labels).mean()) for _, p in runs]
+    excl_acc = [float((p[keep] == labels[keep]).mean()) for _, p in runs]
+    dup_correct = [int(all(p[i] == labels[i] for i in exclude)) for _, p in runs]
+    return {"test_acc_all": float(np.mean(full_acc)), "test_acc_without_duplicate": float(np.mean(excl_acc)),
+            "difference_points": 100 * (float(np.mean(excl_acc)) - float(np.mean(full_acc))),
+            "duplicate_item_correct_in_seeds": f"{sum(dup_correct)}/{len(runs)}"}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-dir", required=True)
@@ -35,8 +47,6 @@ def main():
     cfg = Config(data_dir=args.data_dir)
     train, val, test = load_piqa(cfg)
     labels = np.array([r["label"] for r in test])
-    keep = np.ones(len(test), bool)
-    keep[DUP_TEST] = False
 
     # where do the duplicated training-file rows sit after the 90/10 split?
     full = load_split(args.data_dir, "train")
@@ -66,14 +76,12 @@ def main():
     preds_by_exp["B0_majority"] = [(0, np.full(len(test), int(np.mean([r["label"] for r in train]) >= 0.5)))]
 
     for exp, runs in sorted(preds_by_exp.items()):
-        full_acc = [float((p == labels).mean()) for _, p in runs]
-        excl_acc = [float((p[keep] == labels[keep]).mean()) for _, p in runs]
-        dup_correct = [int(p[DUP_TEST[0]] == labels[DUP_TEST[0]]) for _, p in runs]
+        r = rescore(runs, labels, DUP_TEST)
         rows.append({"experiment": exp, "n_seeds": len(runs),
-                     "test_acc_all_1838": round(float(np.mean(full_acc)), 6),
-                     "test_acc_without_duplicate_1837": round(float(np.mean(excl_acc)), 6),
-                     "difference_points": round(100 * (np.mean(excl_acc) - np.mean(full_acc)), 4),
-                     "duplicate_item_correct_in_seeds": f"{sum(dup_correct)}/{len(runs)}"})
+                     "test_acc_all_1838": round(r["test_acc_all"], 6),
+                     "test_acc_without_duplicate_1837": round(r["test_acc_without_duplicate"], 6),
+                     "difference_points": round(r["difference_points"], 4),
+                     "duplicate_item_correct_in_seeds": r["duplicate_item_correct_in_seeds"]})
     out = os.path.join(ROOT, "outputs", "results", "rescore_without_duplicate.csv")
     with open(out, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))

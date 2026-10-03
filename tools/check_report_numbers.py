@@ -27,7 +27,8 @@ DOCUMENTED = {
     "16113": "PIQA training file size", "14501": "TRAIN size", "1612": "VAL size", "1838": "TEST (dev) size",
     "14.5": "TRAIN size in thousands (14,501)",
     "103": "order-dependent test items in the ORIGINAL pipeline (docs/PROJECT_AUDIT.md, audit track)",
-    "10": "validation share 10 %", "50": "chance level 50 %", "15": "median share of differing tokens (notebook statistics)",
+    "10": "validation share 10 %", "50": "chance level 50 %", "50.0": "TRAIN label-1 share (notebook statistics cell)",
+    "0.3": "dropout of the grid candidate 'base, dropout 0.3' (notebook Step 1)", "15": "median share of differing tokens (notebook statistics)",
     "1.6": "share of test solutions longer than 96 BPE tokens (DEVELOPMENT_LOG section 5)",
     "40": "goal truncation (Config.max_goal_len)", "96": "solution truncation (Config.max_sol_len)",
     "97": "token position of the cobbler item's difference (DEVELOPMENT_LOG section 16)",
@@ -155,12 +156,124 @@ def strict_tables(s):
     return checked, errors
 
 
+# ---------------------------------------------------------------- strict check of the prose (section 3.4)
+def _csv(path, key):
+    return {r[key]: r for r in csv.DictReader(open(os.path.join(ROOT, path), encoding="utf-8"))}
+
+
+def _json(path):
+    return json.load(open(os.path.join(ROOT, path), encoding="utf-8"))
+
+
+def p1(x):
+    """A fraction as a percentage with one decimal, as written in the report."""
+    return f"{100 * float(x):.1f}"
+
+
+def prose_claims():
+    """Every result number in the report's prose, as the exact LaTeX text it must appear in, built from one named
+    result-file cell. A changed result or a typo in the report makes the snippet disappear -> error."""
+    fr = _csv("outputs/results/final_results.csv", "model")
+    rs = _csv("outputs/results/rescore_without_duplicate.csv", "experiment")
+    an = {k: v["value"] for k, v in _csv("outputs/results/analysis_numbers.csv", "quantity").items()}
+    eo = _csv("outputs/results/error_overlap.csv", "")
+    probe = _csv("outputs/results/diff_probe_by_layer.csv", "layer")
+    goal = _csv("experiments/goal_matching/results.csv", "arm")
+    hp = [_json(f"outputs/results/hp{i}_val.json")["val"]["mean"] for i in range(5)]
+    v = lambda m: p1(fr[m]["val acc"])    # noqa: E731
+    t = lambda m: p1(fr[m]["test acc"])   # noqa: E731
+    D, B1, B2 = "DACT (full)", "B1 TF-IDF + LR", "B2 BiLSTM + attention"
+
+    def delta(m, col, ref=D, sign=False):
+        # rounded-means convention of the notebook's key-numbers cell and Table 2
+        d = round(round(100 * float(fr[m][col]), 1) - round(100 * float(fr[ref][col]), 1), 1)
+        d = 0.0 if d == 0 else d
+        return f"{d:+.1f}" if sign else f"{abs(d):.1f}"
+
+    def cost(m):
+        return f"{delta(m, 'val acc')} / {delta(m, 'test acc')}"
+    pent = an["pooling_entropy_mean_correct_wrong_p"].split()
+    case = {re.search(r"_(\d+)_prob", k)[1]: max(map(float, val.split())) for k, val in an.items() if k.startswith("case_")}
+    # run 2's logs were not archived; its RoBERTa seeds are recorded in the development log (section 24)
+    log = open(os.path.join(ROOT, "docs", "DEVELOPMENT_LOG.md"), encoding="utf-8").read()
+    run2_b3 = min(float(x) for x in re.search(r"RoBERTa seeds\.\*\* Validation accuracy was ([\d.]+) / \*\*([\d.]+)\*\* / ([\d.]+)", log).groups()) / 100
+    run3 = _csv("experiments/t4_run_538cf5b/outputs/results/final_results.csv", "model")
+    moved = max(abs(round(100 * float(run3[m][c]), 1) - round(100 * float(fr[m][c]), 1))
+                for m in fr if m != D and m in run3 for c in ("val acc", "test acc") if fr[m][c] and run3[m][c])
+    return {
+        "abstract: DACT val": f"model on validation ({v(D)}\\%, 3 seeds)",
+        "abstract: DACT vs TF-IDF test, p": f"({t(D)} vs.\\ {t(B1)}\\%, McNemar $p{{=}}{float(fr[B1]['McNemar p vs DACT']):.2f}$)",
+        "duplicate: re-scoring change": f"changes accuracy by about {abs(float(rs['dact_full']['difference_points'])):.2f} points",
+        "duplicate: DACT": f"{100 * float(rs['dact_full']['test_acc_all_1838']):.2f}\\,$\\to$\\,{100 * float(rs['dact_full']['test_acc_without_duplicate_1837']):.2f}\\%",
+        "duplicate: TF-IDF": f"{100 * float(rs['B1_tfidf_lr']['test_acc_all_1838']):.2f}\\,$\\to$\\,{100 * float(rs['B1_tfidf_lr']['test_acc_without_duplicate_1837']):.2f}\\%",
+        "data: val / test label-1 share (B0 accuracy)": f"/ {p1(fr['B0 majority']['val acc'])} / {p1(fr['B0 majority']['test acc'])}\\% label 1",
+        "grid: base": f"4 layers) {p1(hp[0])}\\%",
+        "grid: small": f"4 heads) {p1(hp[1])}\\%}}",
+        "grid: dropout 0.3": f"dropout 0.3 {p1(hp[2])}\\%",
+        "grid: MLM warm-up": f"{p1(hp[3])} / {p1(hp[4])}\\%. The selected model",
+        "params: DACT": f"{_json('outputs/results/dact_full_val.json')['runs'][0]['n_params'] / 1e6:.2f}\\,M parameters",
+        "params: BiLSTM": f"({_json('outputs/results/b2_bilstm_val.json')['runs'][0]['n_params'] / 1e6:.1f}\\,M parameters)",
+        "vs BiLSTM": f"+{delta(B2, 'val acc')} / +{delta(B2, 'test acc')} points over the BiLSTM (not significant on test, McNemar $p{{=}}{float(fr[B2]['McNemar p vs DACT']):.2f}$)",
+        "vs TF-IDF": f"+{delta(B1, 'val acc')} / +{delta(B1, 'test acc')} over TF-IDF",
+        "tied on test": f"statistically tied ({t(D)} vs.\\ {t(B1)}\\%, McNemar $p{{=}}{float(fr[B1]['McNemar p vs DACT']):.2f}$)",
+        "pretraining gap (test)": f"RoBERTa is {delta('B3 RoBERTa-base (fine-tuned)', 'test acc')} and the zero-shot LLM {delta('B4 Qwen2.5-1.5B (zero-shot)', 'test acc')} points above",
+        "ablation: tags": f"removing the tags costs {cost('− difference tags')} points",
+        "ablation: cross": f"cross-solution attention {cost('− cross-solution attention')}.",
+        "ablation: lexical": f"removing the lexical head costs {cost('− lexical head')}.",
+        "ablation: pointwise": f"(independent binary scoring: {cost('pointwise objective')})",
+        "ablation: vanilla": f"Removing everything costs {cost('vanilla Transformer')} points",
+        "ablation: mean pooling": f"little difference ({cost('mean pooling')})",
+        "ablation: tag bias": f"(removing it gives {delta('− diff bias in pooling', 'val acc', sign=True)} / {delta('− diff bias in pooling', 'test acc', sign=True)})",
+        "errors: agreement": f"agree on {p1(eo[B1]['agreement'])}\\% of test items",
+        "errors: only DACT": f"alone solves {p1(eo[B1]['only DACT'])}\\% ({an['items_only_dact_solves_vs_tfidf']} items)",
+        "errors: only TF-IDF / oracle": f"TF-IDF alone {p1(eo[B1]['only other'])}\\%, for an oracle accuracy of {p1(eo[B1]['oracle'])}\\%",
+        "errors: oracle vs RoBERTa": f"the oracle rises to {p1(eo['B3 RoBERTa-base (fine-tuned)']['oracle'])}\\%",
+        "attention: trained / share": f"puts {p1(an['attention_mass_differing_trained'])}\\% of its pooling attention on differing tokens, which make up {p1(an['attention_mass_uniform_reference'])}\\%",
+        "attention: untrained": f"untrained model reaches only {p1(an['attention_mass_untrained'])}\\%",
+        "attention: bias 0": f"set to 0 still reaches {p1(an['attention_mass_trained_tag_bias_0'])}\\%",
+        "attention: bias moved": f"(1.0\\,$\\to$\\,{an['tag_bias_other_shared_diff'].split()[-1]})",
+        "entropy, p": f"entropy is {float(pent[0]):.2f} (1 = uniform), for correct and wrong predictions alike ($p{{=}}{float(pent[3]):.2f}$)",
+        "probe: vanilla embedding / encoder": f"reaches {p1(probe['embedding']['vanilla (no tags)'])}\\% balanced accuracy on the vanilla Transformer's embeddings and only {p1(probe['encoder 2']['vanilla (no tags)'])}\\%",
+        "attention: wrong vs correct": f"({p1(an['attention_mass_wrong_predictions'])} vs.\\ {p1(an['attention_mass_correct_predictions'])}\\%, $p{{<}}0.001$)" if float(an["attention_mass_correct_vs_wrong_mannwhitney_p"]) < 0.001 else "p >= 0.001",
+        "case: lotion bars (747)": f"a confident error (p = {case['747']:.2f} for option 1)",
+        "case: baby in bed (1724)": f"the most uncertain item (p = {case['1724']:.2f}; option 2 is gold)",
+        "case: LED (993)": f"wins with p = {case['993']:.2f} against",
+        "case: tea (1123)": f"\\emph{{boil water for a cup of tea}} (p = {case['1123']:.2f})",
+        "case: boiler (1282)": f"the model prefers it with p = {case['1282']:.2f}",
+        "history: RoBERTa seed at chance (run 2)": f"stayed at chance ({p1(run2_b3)}\\% validation)",
+        "history: goal matching": f"it lost {100 * (float(goal['control_main_model']['val_mean']) - float(goal['goal_matching']['val_mean'])):.1f} points on validation",
+        "history: run 3 vs final spread": f"moved by up to {moved:.1f} points",
+    }
+
+
+def strict_prose(s):
+    claims = prose_claims()
+    errors = [f"{label}: expected text not found: {snippet}" for label, snippet in claims.items() if snippet not in s]
+    # coverage: every decimal number of the prose must sit inside a claim's text or be a documented non-result
+    body = s[s.index(r"\begin{abstract}"):s.index(r"\section*{Team Contributions}")]
+    body = re.sub(r"\\begin\{table\*?\}.*?\\end\{table\*?\}", " ", body, flags=re.S)
+    body = re.sub(r"\\includegraphics\[[^\]]*\]", " ", body)
+    covered = [(m.start(), m.end()) for snippet in claims.values() for m in re.finditer(re.escape(snippet), body)]
+    for m in re.finditer(r"(?<![\w.\\])(\d+\.\d+)(?![\w])", body):
+        inside = any(a <= m.start() and m.end() <= b for a, b in covered)
+        if not inside and m.group(1) not in DOCUMENTED:
+            ctx = body[max(0, m.start() - 40):m.end() + 10].replace("\n", " ")
+            errors.append(f"result number {m.group(1)} is not covered by a claim: ...{ctx}...")
+    return len(claims), errors
+
+
 def main():
     s = open(TEX, encoding="utf-8").read()
     checked, errors = strict_tables(s)
     print(f"STRICT check (Tables 1-3 row by row, headline p-value): {checked} values, {len(errors)} errors")
     for e in errors:
         print("   ", e)
+    n_prose, prose_errors = strict_prose(s)
+    print(f"STRICT check (result numbers in the prose, each built from a named result-file cell): {n_prose} claims, "
+          f"{len(prose_errors)} errors")
+    for e in prose_errors:
+        print("   ", e)
+    errors += prose_errors
     body = s[s.index(r"\begin{abstract}"):s.index(r"\section*{Team Contributions}")]
     body = re.sub(r"\\(citep|citet|citealp|cite|ref|label|includegraphics)(\[[^\]]*\])?\{[^}]*\}", " ", body)
     body = re.sub(r"\\begin\{tabular\}\{[^}]*\}", " ", body)

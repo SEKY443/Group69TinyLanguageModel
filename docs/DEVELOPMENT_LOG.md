@@ -1411,3 +1411,50 @@ Test predictions are unchanged: B1 and B3 still make held-out test predictions w
 **Evidence:**
 - `tests/test_reproducibility.py` (6 tests): notebook list = lock file, run config, never-overwrite, baseline validation predictions, restart rule (restart, then give up after 2).
 - Notebook smoke run of this branch (synthetic data, CPU, RoBERTa/Qwen stubbed): exit 0. The version warning fired as expected (CPU torch 2.14, pandas 3.0.6, …), `run_config.json` was written to both folders, and `B1_tfidf_lr_val.jsonl`, `B3_roberta_seed42_val.jsonl` and `B4_qwen_zero_shot_val.jsonl` were saved.
+
+## 38. Upgrade 3: tests, CI, tools; three wrong numbers found in the report (2026-10-03, branch `upgrade/tests` from `upgrade/reproducibility`)
+Source: section 3 of the upgrade prompt and `FUTURE_FIXES_NOTES.md` (C15, E21–E23).
+
+**Test suite** (`pytest`, CPU, synthetic PIQA-format data, `pytest.ini`): **25 tests**.
+- `test_core.py` (13 tests):
+  - padding masks; padding does not change scores;
+  - swap equivariance with symmetric alignment; order-free symmetric tags;
+  - `truncate_around_diff`, including the cobbler case where the only difference lies past token 96 and prefix truncation would make both inputs identical;
+  - the lexical head: bucket 0 gets no gradient and stays 0, its own learning rate, initialisation at 0;
+  - the `FINAL_EVAL` guard;
+  - `save_predictions` (format, probabilities, no overwrite, length check);
+  - the duplicate re-scoring (`rescore()` was factored out of `tools/rescore_without_duplicate.py`; its output is unchanged).
+- `test_resume.py` (5 tests) and `test_reproducibility.py` (6 tests): sections 36–37.
+- `test_notebook_smoke.py` (1 test, marked `slow`):
+  - executes every code cell of `CITS4012_69.ipynb` in smoke mode, with RoBERTa/Qwen stubbed;
+  - checks the run config, the baseline predictions and `FINAL_EVAL`;
+  - re-runs the notebook as on a new VM: nothing may be retrained, and `final_results.csv` must be byte-identical.
+- *Run time:* 1 min 54 s on an idle machine; 3 min 21 s while other programs were using the CPU (the same single test took 7.5 s vs 14 s). `-m "not slow"` skips the notebook run.
+- *A wrong assumption corrected by a test:* the first lexical-head test assumed bucket 0 is never read in the forward pass. In fact `padding_idx` only blocks the gradient. The property that actually holds, and is now tested, is that bucket 0 receives zero gradient and stays at its initial 0.
+
+**CI** (`.github/workflows/ci.yml`, GitHub Actions, CPU): `sync_notebook.py --check`, `check_test_access.py`, `check_report_numbers.py`, then `pytest`, using the locked scientific stack.
+
+**Tools:**
+- **One notebook builder:** `tools/sync_notebook.py`.
+- **Retired** (moved to `tools/retired/` with a README; nothing deleted):
+  - `build_notebook.py` and its generated `notebooks/CITS4012_69_reproducible.ipynb`;
+  - `final_checks.py` and `smoke_notebook.py`, which depended on that notebook;
+  - `audit_evidence.py` and `verify_model.py`: written for the audit track's intermediate `src/`. With today's `src/` they would rebuild the lexical-head model from the original configs; with `evidence/historical/src/` they fail to import. Run in an isolated copy, both failed as expected.
+  - `append_audit_cells.py`: it writes into the root `CITS4012_69.ipynb`, which is now the submission notebook.
+- Their outputs remain in `report_support/` and `evidence/historical/`.
+
+**Stronger number check.** `tools/check_report_numbers.py` has a second STRICT check: **42 prose claims**. Each claim is the exact LaTeX text a result must appear in, built from one named result-file cell (final results, re-scoring, analysis numbers, error overlap, probe, grid, parameter counts, goal-matching results, and the run-3 vs final spread). A coverage pass also reports any decimal number in the prose that is neither inside a claim nor a documented setting. One value has no archived result file: run 2's RoBERTa logs were never archived, so the 53.7 % at-chance seed is checked against `DEVELOPMENT_LOG.md` section 24.
+
+**It found three wrong numbers in the submitted report and notebook.**
+- **Where:** the Step 1 grid in the report's Training paragraph, and the "Selected configuration" bullet of the notebook's quantitative discussion, read base 61.0 / small 61.3 / dropout 0.3 60.9 %.
+- **The logged values** (`outputs/results/hp*_val.json` and the notebook's own Step 1 output) are **61.2 / 61.5 / 60.7 %**. The two MLM values (60.9 / 61.0) were right.
+- **Origin:** the numbers came from commit `15ae038`, whose result files already held the correct values, so this was a transcription error. The loose traceability check could not catch it, because each wrong value happens to equal some other logged number.
+- **Fixed on this branch only** (report `.tex` and notebook markdown):
+  - The selection is unchanged (small wins).
+  - The corrected spread (0.8 points, not 0.4) contradicts the notebook's claim that it is "below one seed std". The sentence now says the spread is about twice DACT's seed std, so a one-seed grid cannot separate the candidates (cf. FUTURE_FIXES B8).
+- **Main is unchanged.** `main` (`e52e087`) and its PDF still contain the old numbers; resubmitting is the group's decision.
+
+**Check outputs on this branch:**
+- `sync_notebook.py --check`: out of date: none;
+- `check_test_access.py`: OK;
+- `check_report_numbers.py`: STRICT tables 49 values / 0 errors, STRICT prose 42 claims / 0 errors, loose 0 mismatches.

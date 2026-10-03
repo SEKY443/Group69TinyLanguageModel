@@ -69,17 +69,19 @@ After editing a module in `src/`, run:
 python tools/sync_notebook.py
 ```
 
-## Audit-track local setup and checks (PowerShell)
+## Tests and checks (CPU, about 2 minutes)
 
-```powershell
-uv venv --python 3.13 .venv
-uv pip install --python .venv/Scripts/python.exe -r requirements.txt
-.venv/Scripts/python.exe tools/audit_evidence.py --data-dir ../../PIQA
-.venv/Scripts/python.exe tools/verify_model.py --data-dir ../../PIQA
-.venv/Scripts/python.exe tools/final_checks.py
+```bash
+pip install -r requirements-lock.txt pytest      # or a CPU torch build plus the locked scientific stack
+python -m pytest                                  # 25 tests; add -m "not slow" to skip the notebook run
+python tools/sync_notebook.py --check             # the notebook's module cells equal src/
+python tools/check_test_access.py                 # no test labels before the final-results cell
+python tools/check_report_numbers.py              # report tables equal their result files
 ```
 
-These tools were written for the original model. They have not been re-run since the merge, which made the lexical head the default. See `docs/REFINEMENT_SUMMARY.md` and `docs/PROJECT_STRUCTURE.md` for the audit track's full handover.
+The same checks run on GitHub Actions (`.github/workflows/ci.yml`). The audit track's old tools (`audit_evidence.py`,
+`verify_model.py`, `final_checks.py`, …) were written for the pre-merge model and are kept in `tools/retired/` (see
+its README); their outputs remain in `report_support/`.
 
 ## Submission
 The brief requires exactly two files:
