@@ -16,7 +16,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 nb = json.load(open(os.path.join(ROOT, "CITS4012_69.ipynb"), encoding="utf-8"))
 TOUCH = re.compile(r'DATA\["test(_ds)?"\]|test_ds|\byte\b|test_pred|test_experiment\(|\b_te\b|test_loader|FINAL_EVAL')
-LABELS = re.compile(r'\byte\b|test_experiment\(|for split in \("train", "val", "test"\).*labels|DATA\[f"\{split\}_ds"\]\.labels')
+LABELS = re.compile(r'\byte\b|test_experiment\(|final_eval\(|load_labels\(|test-labels|for split in \("train", "val", "test"\).*labels|DATA\[f"\{split\}_ds"\]\.labels')
 
 final_cell = None
 problems = []
@@ -26,7 +26,7 @@ for i, cell in enumerate(nb["cells"]):
     src = "".join(cell["source"])
     if src.startswith('"""'):                         # module definitions (src/*.py): calls are what matters
         continue
-    if re.search(r"^FINAL_EVAL = True", src, re.M):
+    if re.search(r"^FINAL_EVAL = True|^yte = final_eval\(", src, re.M):
         final_cell = i
     lines = src.splitlines()
     hits = [(n + 1, l) for n, l in enumerate(lines) if TOUCH.search(l)]
@@ -37,7 +37,7 @@ for i, cell in enumerate(nb["cells"]):
     for n, l in hits:
         print(f"   {n:3d}: {l.strip()[:120]}")
         label_use = LABELS.search(l) and "FINAL_EVAL" not in l
-        guarded = "if (split != \"test\" or FINAL_EVAL)" in l
+        guarded = "if (split != \"test\" or FINAL_EVAL)" in l or "if (split != \"test\" or DATA[\"test_labels_loaded\"])" in l
         if stage == "before final" and label_use and not guarded:
             problems.append(f"cell {i} line {n}: test labels used before FINAL_EVAL = True")
 

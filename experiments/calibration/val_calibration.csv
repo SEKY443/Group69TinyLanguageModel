@@ -1,0 +1,12 @@
+model,n_seeds,accuracy,accuracy_std,ece,ece_std,mean_confidence,mean_confidence_std,brier,brier_std,nll,nll_std,source
+DACT (full),3,0.6121,0.0036,0.0985,0.0089,0.6986,0.0076,0.2474,0.0041,0.7039,0.014,outputs/predictions/dact_full_seed*_val.jsonl.gz
+− difference tags,3,0.5988,0.005,0.09,0.0285,0.6842,0.032,0.2514,0.0102,0.7162,0.0394,outputs/predictions/abl0_seed*_val.jsonl.gz
+− cross-solution attention,3,0.605,0.0072,0.0768,0.0431,0.67,0.0439,0.2429,0.0113,0.6901,0.0375,outputs/predictions/abl1_seed*_val.jsonl.gz
+− diff bias in pooling,3,0.617,0.0028,0.0843,0.0102,0.6884,0.0024,0.2431,0.0011,0.6905,0.0031,outputs/predictions/abl2_seed*_val.jsonl.gz
+mean pooling,3,0.6108,0.0042,0.0937,0.0062,0.6942,0.006,0.2469,0.0022,0.7027,0.0086,outputs/predictions/abl3_seed*_val.jsonl.gz
+pointwise objective,3,0.605,0.0029,0.1956,0.0266,0.793,0.0281,0.2832,0.0123,0.8788,0.0836,outputs/predictions/abl4_seed*_val.jsonl.gz
+vanilla Transformer,3,0.5875,0.0081,0.0608,0.0077,0.6268,0.0101,0.2498,0.0018,0.705,0.0066,outputs/predictions/abl5_seed*_val.jsonl.gz
+− lexical head,3,0.5945,0.0091,0.0803,0.0485,0.6538,0.0658,0.2498,0.0097,0.7045,0.0334,outputs/predictions/abl6_seed*_val.jsonl.gz
+diff-bias prior 0,3,0.6164,0.0031,0.0826,0.0095,0.6885,0.0025,0.2431,0.0011,0.6906,0.0031,outputs/predictions/abl7_seed*_val.jsonl.gz
+B2 BiLSTM + attention,3,0.5949,0.012,0.0854,0.035,0.6384,0.0837,0.2505,0.0095,0.7207,0.0466,outputs/predictions/b2_bilstm_seed*_val.jsonl.gz
+B1 TF-IDF + LR,1,0.5924,,0.0525,,0.6375,,0.2418,,0.6815,,recomputed on validation (tfidf_lr_baseline)

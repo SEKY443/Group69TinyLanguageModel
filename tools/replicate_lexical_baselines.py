@@ -8,7 +8,7 @@ import numpy as np
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'src'))
 from config import Config,environment_info
-from data import load_piqa
+from data import load_piqa_with_test_labels
 from baselines import majority_baseline,tfidf_lr_baseline,tfidf_lr_predict
 from evaluate import accuracy,save_predictions
 
@@ -16,7 +16,7 @@ def main():
     out=ROOT/'experiments/completed/outputs_replication_baselines'
     if out.exists():raise FileExistsError(out)
     (out/'predictions').mkdir(parents=True)
-    tr,va,te=load_piqa(Config(data_dir=str(ROOT/'../../PIQA')))
+    tr,va,te=load_piqa_with_test_labels(Config(data_dir=str(ROOT/'../../PIQA')),'replicate_lexical_baselines.py',str(ROOT/'outputs'))
     start=time.time()
     fitted=tfidf_lr_baseline(tr,va)
     joblib.dump({'vectorizer':fitted['vectorizer'],'classifier':fitted['classifier']},out/'B1.joblib')

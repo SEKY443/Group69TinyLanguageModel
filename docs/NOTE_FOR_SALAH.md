@@ -29,7 +29,7 @@ Other changes on `revision-2`:
 
 **Please read this before judging the numbers:**
 - **Protocol:** the lexical head was configured on **validation only**, in a pilot where the test split wasn't loaded. But the decision to *try* a lexical component came after we had seen the earlier test results. The report and notebook both say this and treat the small test gap as indicative only.
-- **AI use:** the `revision-2` work, including the report draft, was done with an AI coding assistant (Claude Code). The log records this. The current report has **no AI-use statement**, because it was removed on request. The group needs to decide what to declare under the unit's policy, and that affects all of us.
+- **AI use:** the `revision-2` work, including the report draft, was done by Ali with an AI coding assistant (Claude Code). The log records this. The current report has **no AI-use statement**, because it was removed on request. The group needs to decide what to declare under the unit's policy, and that affects all of us.
 
 ## 2. What happened to your work in the merge
 

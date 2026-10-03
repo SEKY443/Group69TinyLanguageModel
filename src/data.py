@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from tokenizers import Tokenizer, models, normalizers, pre_tokenizers, trainers
 from torch.utils.data import DataLoader, Dataset
 
-from config import Config  # nb-skip
+from config import Config, log_test_access  # nb-skip
 
 EXPECTED_FILES = ("train.jsonl", "train-labels.lst", "test.jsonl", "test-labels.lst")
 SPECIALS = ["[PAD]", "[UNK]", "[CLS]", "[SEP]", "[MASK]"]
@@ -94,11 +94,20 @@ def prepare_data(cfg: Config):
     return cfg.data_dir
 
 
-def load_split(data_dir, split):
+HIDDEN_LABEL = 0   # placeholder label of a test item until final_eval() reads the real one
+
+
+def load_labels(data_dir, split):
+    with open(os.path.join(data_dir, f"{split}-labels.lst"), encoding="utf-8") as f:
+        return [int(line) for line in f if line.strip()]
+
+
+def load_split(data_dir, split, with_labels=True):
+    """Rows of one split. with_labels=False (the test split) gives every row the placeholder HIDDEN_LABEL, so the
+    real labels are not even in memory before experiments.final_eval()."""
     with open(os.path.join(data_dir, f"{split}.jsonl"), encoding="utf-8") as f:
         rows = [json.loads(line) for line in f if line.strip()]
-    with open(os.path.join(data_dir, f"{split}-labels.lst"), encoding="utf-8") as f:
-        labels = [int(line) for line in f if line.strip()]
+    labels = load_labels(data_dir, split) if with_labels else [HIDDEN_LABEL] * len(rows)
     if len(rows) != len(labels):
         raise ValueError(f"{split}: {len(rows)} rows vs {len(labels)} labels")
     for i, (r, y) in enumerate(zip(rows, labels)):
@@ -115,16 +124,26 @@ def load_split(data_dir, split):
 def load_piqa(cfg: Config):
     """Returns train / validation (held out from the official training file) / test.
 
-    The test split is returned separately and must only be used for the final evaluation.
+    The test split is returned WITHOUT its labels (placeholder HIDDEN_LABEL); experiments.final_eval() reads them.
     """
     data_dir = prepare_data(cfg)
     full_train = load_split(data_dir, "train")
-    test = load_split(data_dir, "test")
+    test = load_split(data_dir, "test", with_labels=False)
     idx = np.arange(len(full_train))
     tr_idx, va_idx = train_test_split(idx, test_size=cfg.val_frac, random_state=cfg.seed,
                                       stratify=[r["label"] for r in full_train])
     train = [full_train[i] for i in tr_idx]
     val = [full_train[i] for i in va_idx]
+    return train, val, test
+
+
+def load_piqa_with_test_labels(cfg: Config, reason, log_root):
+    """load_piqa() with the real test labels, for evaluation tools outside the notebook. Each call is logged in
+    <log_root>/test_access.log, like the notebook's final_eval()."""
+    train, val, test = load_piqa(cfg)
+    for r, y in zip(test, load_labels(cfg.data_dir, "test")):
+        r["label"] = y
+    log_test_access((log_root,), reason, len(test))
     return train, val, test
 
 
@@ -263,6 +282,7 @@ def prepare_everything(cfg: Config):
     with open(os.path.join(cfg.out_dir, "data_manifest.json"), "w", encoding="utf-8") as stream:
         json.dump(manifest, stream, indent=2)
     return {"train": train, "val": val, "test": test, "tok": tok, "vocab_size": tok.get_vocab_size(),
+            "test_labels_loaded": False,
             "train_ds": PIQADataset(train, tok, cfg), "val_ds": PIQADataset(val, tok, cfg),
             "test_ds": PIQADataset(test, tok, cfg)}
 

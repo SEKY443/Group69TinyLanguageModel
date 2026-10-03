@@ -456,7 +456,7 @@ colab stop -s group69                                        # always stop: sess
 
 ## 22. Revision 2: review-driven improvements (2026-09-29, ≈21:00–22:00)
 
-The project was reviewed against the marking guide in the brief. The review scored it at about 70/100 and found the weaknesses below. Revision 2 addresses the ones that code can fix. The changes were made with **Claude Code (an AI coding assistant)** at a group member's request. Declare this AI assistance in the way the unit requires.
+The project was reviewed against the marking guide in the brief. The review scored it at about 70/100 and found the weaknesses below. Revision 2 addresses the ones that code can fix. The changes were made by Ali with **Claude Code (an AI coding assistant)**, which Ali directed and reviewed. Declare this AI assistance in the way the unit requires.
 
 ### 22.1 Review findings that motivated the changes
 | # | Finding | Evidence | Action |
@@ -535,7 +535,7 @@ The project was reviewed against the marking guide in the brief. The review scor
 
 ## 23. Revision 2b: council review and follow-up changes (2026-09-29, ≈22:30–23:15)
 
-After revision 2 was pushed, a group member asked Claude Code to "check the work then improve it" with an **LLM council**:
+After revision 2 was pushed, Ali asked Claude Code to "check the work then improve it" with an **LLM council**:
 - Five independent AI advisors (Contrarian, First Principles, Expansionist, Outsider, Executor) each assessed the repository.
 - Five anonymous peer reviews ranked their answers.
 - A chairman agent combined everything into a verdict.
@@ -612,10 +612,10 @@ All of these were Claude sub-agents, not people. This revision was also written 
 
 ## 24. Re-run attempts with the Colab CLI, and changes for a browser run (2026-09-29 22:10 – 2026-09-30 11:30, AWST)
 
-### 24.1 Setting up the Colab CLI on Windows (Claude Code, at the group member's request)
+### 24.1 Setting up the Colab CLI on Windows (Ali, using Claude Code)
 - Google's `google-colab-cli` 0.7.4 (the `googlecolab` GitHub org) was installed with `uv tool install`.
 - It **doesn't run on native Windows**: it imports `termios`, which exists only on Unix. It was therefore installed inside **WSL Ubuntu**, together with the Google Cloud SDK 587.0.0 for sign-in.
-- Sign-in uses Application Default Credentials. The group member ran `~/colab-login.sh` in WSL themselves and signed in with their own account in the browser. Claude Code never saw or handled the credentials.
+- Sign-in uses Application Default Credentials. Ali ran `~/colab-login.sh` in WSL and signed in with their own account in the browser. Claude Code never saw or handled the credentials.
 - The account has **0 compute units**:
   - `colab new --gpu A100` was rejected ("no quota or entitlement"), so nothing was charged.
   - A free **Tesla T4** session was created instead.
@@ -661,7 +661,7 @@ The group member chose to run the notebook in the Colab web UI on a free T4. To 
 
 ## 25. Full re-run on a free T4 and updated results (2026-09-30, ≈17:00–19:30 AWST)
 
-### 25.1 How the run was made (Claude Code, with the group member's authorisation "to do all actions to finish the task")
+### 25.1 How the run was made (Ali, using Claude Code with the authorisation "to do all actions to finish the task")
 - The files the group member reported downloading from their own browser run were not on this computer. Neither `CITS4012_69*.ipynb` nor `outputs*.zip` was found on drives C:, D: or E:, so that run's outputs could not be used.
 - A new free **T4** session (`group69`) was created with the CLI.
 - The VM was set up with `setup_vm.py`: clone of `revision-2` at **`5ef7cda`**, PIQA fetched with gdown, and the `/content/data` symlink.
@@ -801,9 +801,9 @@ Setup: the small configuration (d = 128, 2 layers, no warm-up), 3 seeds, validat
 
 ---
 
-## 27. Report draft (2026-10-01, Claude Code at the group member's request)
+## 27. Report draft (2026-10-01, Ali, using Claude Code)
 
-The group member asked for the project report "with the proof of works", including what failed as well as what worked. Claude Code wrote a complete **draft**, which the group must review, correct and complete.
+Ali asked for the project report "with the proof of works", including what failed as well as what worked. Claude Code wrote a complete **draft**, which the group must review, correct and complete.
 
 ### 27.1 Files (`report/`)
 - `CITS4012_69.tex`: the report, using the official ACL style with `\usepackage[final]{acl}` and `\author{Group 69}`.
@@ -1051,7 +1051,7 @@ artifacts remain locally retained, not remotely backed up. No commit or push was
 
 ---
 
-## 28. Merge of the two tracks into `merge-review` (2026-10-01, Claude Code at the group member's request)
+## 28. Merge of the two tracks into `merge-review` (2026-10-01, Ali, using Claude Code)
 
 The group member asked to merge `revision-2` into `main` "after checking and confirming that it's better". The check found that `main` had moved on: Salah Elshafey's commit `e08e80c` ("updates", 30 Sep 23:53, 90 files) added an evidence audit of the original A100 run, robustness and provenance code, a local replication of the original model, and report notes. The two branches had diverged in direction, not only in content.
 
@@ -1349,3 +1349,160 @@ The main text now ends at the top of the right column of page 6, about half a co
 - **`tools/check_report_numbers.py`** now also checks **Table 3 row by row** against each run's own results file, plus the TF-IDF caption.
 - **Result:** the strict check covers **49 values with 0 errors**, and the traceability check finds 0 mismatches (121 distinct numbers).
 - The PDF compiles with no errors, undefined references or overfull boxes. It is 7 pages; the main text ends on page 6.
+
+## 36. Upgrade 1: robustness to interruption (2026-10-03, branch `upgrade/robustness` from `main` `e52e087`)
+Source: section 1 of the upgrade prompt and `FUTURE_FIXES_NOTES.md` (A1, A2). Free Colab VMs were reclaimed in 4 of 7 full attempts, and `resume` only worked inside one VM because `outputs/` is local. No result number changed; no test split was evaluated.
+
+**Changes:**
+- **`Config.persist_dir`** (`src/config.py`): a persistent run folder. The notebook sets it to `/content/drive/MyDrive/Group69/runs/<RUN_ID>` when Drive is *already* mounted (`drive.mount()` waits for a login and hangs CLI runs), otherwise `./Group69/runs/<RUN_ID>`. `RUN_ID` comes from `GROUP69_RUN_ID` (default `main`, or `smoke` in smoke mode).
+- **Per-seed persistence** (`src/experiments.py`): after each seed, a completion marker `results/<run>_done.json` (run summary + config) is written and the seed's log, MLM log, validation predictions, checkpoint and sidecar are copied to `persist_dir`. After the last seed the experiment summary is copied too. Copies never overwrite an existing file.
+- **Resume across VMs:** `run_experiment(resume=True)` first restores the experiment's files from `persist_dir`, then loads a finished experiment, or finished seeds of a half-finished one. Checkpoint paths are resolved against the current `out_dir`. Experiment identity ignores `run_seed`, `out_dir` and `persist_dir`.
+- **Evidence is never overwritten:**
+  - the files of an interrupted seed are renamed to `*.partial-<time>.*` (for example `logs/dact_seed43.partial-20261003_201500.jsonl`) before that seed restarts;
+  - a finished seed or summary with a *different* config raises `FileExistsError` ("use a new out_dir / RUN_ID");
+  - a summary with the same config that cannot be resumed (missing checkpoint) is kept as `*_val.stale-<time>.json`.
+- **Heartbeat** (`write_progress` in `src/config.py`): `progress.json` in `out_dir` and `persist_dir` is replaced atomically at the start of every seed and after every epoch, with time, git commit (or `GROUP69_COMMIT`), step, experiment/run, seed, epoch, val_acc and best val_acc. Monitoring failures never stop training.
+- **Notebook:** module cells re-synced with `tools/sync_notebook.py`; the config cell sets `persist_dir`. (On this branch only; the submitted notebook on `main` is unchanged.)
+
+**Acceptance test** (`tests/test_resume.py`, synthetic PIQA-format data, CPU, deterministic, about 40 s):
+1. an uninterrupted 2-seed run gives the reference table;
+2. the same run is "reclaimed" after epoch 1 of seed 2: seed 1 is already in the persistent folder, seed 2 is not, and `progress.json` shows seed 2;
+3. a restart on the same VM trains only seed 2, keeps its partial log (1 epoch) under a `.partial-` name, and gives a table identical to the reference (seeds, val acc, val loss, epochs, mean/std);
+4. a new VM (empty `out_dir`) trains nothing and gives the identical table;
+5. extra tests: a restart on a new VM after the interruption trains only the missing seed; persistence never overwrites; a different config is refused; `persist_dir` is not part of the identity.
+
+**Notebook evidence** (`CITS4012_69.ipynb` of this branch, smoke mode, synthetic data, CPU, RoBERTa/Qwen stubbed by the external harness):
+- run 1 (fresh): all code cells ran, exit 0, 293 s, 27 training epochs logged; the persistent folder `./Group69/runs/smoke` received every experiment;
+- run 2 ("new VM": `outputs_nbsmoke/` moved away, persistent folder kept): exit 0, 44 s, 16 "already finished, loaded" messages, 0 training epochs;
+- `final_results.csv`, `error_overlap.csv` and `diff_probe_by_layer.csv` of the two runs are byte-identical (`cmp`).
+
+**Not covered:** a real Colab VM loss with Google Drive. The code path is the same (`persist_dir` is just a folder), but Drive sync latency was not tested.
+
+## 37. Upgrade 2: reproducibility (2026-10-03, branch `upgrade/reproducibility` from `upgrade/robustness`)
+Source: section 2 of the upgrade prompt and `FUTURE_FIXES_NOTES.md` (B7, B10, B11, E24). Every decision here used the validation split only; no test accuracy was computed.
+
+**One lock file.** `requirements-lock.txt` holds the exact versions of the final A100 run. `requirements-a100.txt` now only includes it (`-r requirements-lock.txt`), so old references still work. The notebook's environment cell compares the running versions with the same list: a mismatch prints a loud warning, or raises when `GROUP69_STRICT_VERSIONS=1`. A test checks that the notebook list equals the lock file.
+
+**B1 version sensitivity, validation only** (`tools/b1_version_check.py`, rows appended to `experiments/b1_versions/b1_versions.csv`, real PIQA, CPU):
+
+| Environment | scikit-learn | scipy | numpy | C | B1 val acc |
+|---|---|---|---|---|---|
+| locked | 1.6.1 | 1.16.3 | 2.1.3 | 3.0 | **59.2432 %** (equals the A100 value, 59.24) |
+| newer | 1.6.1 | 1.18.1 | 2.5.3 | 3.0 | **58.9950 %** |
+
+- **The prompt asked for test numbers here** (61.21 vs 60.88 %); that conflicts with its own rule that test accuracy is never computed. The test values come from the earlier run in section 33.2 and were **not** recomputed; only validation was measured.
+- **The "locked" environment is not the full A100 environment:** Python 3.12.10, CPU torch 2.14.0, tokenizers 0.23.2. B1 uses only scikit-learn, scipy and numpy, which match the lock.
+
+**`run_config.json`** (`write_run_config` in `src/config.py`, called after data preparation): run id, time, git commit, full config, environment, the data manifest (file and split checksums, tokenizer hash) and any version mismatch. It is written to `out_dir` and the persistent run folder; a second run gets a time-stamped name.
+
+**Validation predictions for every baseline.** `save_baseline_val` writes `predictions/B1_tfidf_lr_val.jsonl`, `B3_roberta_seed<seed>_val.jsonl` and `B4_qwen_zero_shot_val.jsonl` in DACT's format, with probabilities:
+- B1: `predict_proba`;
+- B3: softmax of the multiple-choice logits;
+- B4: softmax of the two mean log-probabilities, documented as a score, not a calibrated probability.
+
+Test predictions are unchanged: B1 and B3 still make held-out test predictions without scoring them (this avoids keeping 3 × 500 MB checkpoints), and B4 predicts test only in Step 5.
+
+**RoBERTa restart rule** (declared before any run; NEW, not used for the reported A100 numbers):
+- if validation accuracy after epoch 1 is below 0.52, the seed is abandoned and re-run with seed + 1000, at most twice;
+- the abandoned log is kept and ends with an `"abandoned"` event;
+- the notebook prints, per seed actually used, the mean, std and **median**, plus the list of restarts.
+- *Why 0.52:* chance is 0.50 and one standard error on 1,612 items is 1.25 points.
+
+**Evidence:**
+- `tests/test_reproducibility.py` (6 tests): notebook list = lock file, run config, never-overwrite, baseline validation predictions, restart rule (restart, then give up after 2).
+- Notebook smoke run of this branch (synthetic data, CPU, RoBERTa/Qwen stubbed): exit 0. The version warning fired as expected (CPU torch 2.14, pandas 3.0.6, …), `run_config.json` was written to both folders, and `B1_tfidf_lr_val.jsonl`, `B3_roberta_seed42_val.jsonl` and `B4_qwen_zero_shot_val.jsonl` were saved.
+
+## 38. Upgrade 3: tests, CI, tools; three wrong numbers found in the report (2026-10-03, branch `upgrade/tests` from `upgrade/reproducibility`)
+Source: section 3 of the upgrade prompt and `FUTURE_FIXES_NOTES.md` (C15, E21–E23).
+
+**Test suite** (`pytest`, CPU, synthetic PIQA-format data, `pytest.ini`): **25 tests**.
+- `test_core.py` (13 tests):
+  - padding masks; padding does not change scores;
+  - swap equivariance with symmetric alignment; order-free symmetric tags;
+  - `truncate_around_diff`, including the cobbler case where the only difference lies past token 96 and prefix truncation would make both inputs identical;
+  - the lexical head: bucket 0 gets no gradient and stays 0, its own learning rate, initialisation at 0;
+  - the `FINAL_EVAL` guard;
+  - `save_predictions` (format, probabilities, no overwrite, length check);
+  - the duplicate re-scoring (`rescore()` was factored out of `tools/rescore_without_duplicate.py`; its output is unchanged).
+- `test_resume.py` (5 tests) and `test_reproducibility.py` (6 tests): sections 36–37.
+- `test_notebook_smoke.py` (1 test, marked `slow`):
+  - executes every code cell of `CITS4012_69.ipynb` in smoke mode, with RoBERTa/Qwen stubbed;
+  - checks the run config, the baseline predictions and `FINAL_EVAL`;
+  - re-runs the notebook as on a new VM: nothing may be retrained, and `final_results.csv` must be byte-identical.
+- *Run time:* 1 min 54 s on an idle machine; 3 min 21 s while other programs were using the CPU (the same single test took 7.5 s vs 14 s). `-m "not slow"` skips the notebook run.
+- *A wrong assumption corrected by a test:* the first lexical-head test assumed bucket 0 is never read in the forward pass. In fact `padding_idx` only blocks the gradient. The property that actually holds, and is now tested, is that bucket 0 receives zero gradient and stays at its initial 0.
+
+**CI** (`.github/workflows/ci.yml`, GitHub Actions, CPU): `sync_notebook.py --check`, `check_test_access.py`, `check_report_numbers.py`, then `pytest`, using the locked scientific stack.
+
+**Tools:**
+- **One notebook builder:** `tools/sync_notebook.py`.
+- **Retired** (moved to `tools/retired/` with a README; nothing deleted):
+  - `build_notebook.py` and its generated `notebooks/CITS4012_69_reproducible.ipynb`;
+  - `final_checks.py` and `smoke_notebook.py`, which depended on that notebook;
+  - `audit_evidence.py` and `verify_model.py`: written for the audit track's intermediate `src/`. With today's `src/` they would rebuild the lexical-head model from the original configs; with `evidence/historical/src/` they fail to import. Run in an isolated copy, both failed as expected.
+  - `append_audit_cells.py`: it writes into the root `CITS4012_69.ipynb`, which is now the submission notebook.
+- Their outputs remain in `report_support/` and `evidence/historical/`.
+
+**Stronger number check.** `tools/check_report_numbers.py` has a second STRICT check: **42 prose claims**. Each claim is the exact LaTeX text a result must appear in, built from one named result-file cell (final results, re-scoring, analysis numbers, error overlap, probe, grid, parameter counts, goal-matching results, and the run-3 vs final spread). A coverage pass also reports any decimal number in the prose that is neither inside a claim nor a documented setting. One value has no archived result file: run 2's RoBERTa logs were never archived, so the 53.7 % at-chance seed is checked against `DEVELOPMENT_LOG.md` section 24.
+
+**It found three wrong numbers in the submitted report and notebook.**
+- **Where:** the Step 1 grid in the report's Training paragraph, and the "Selected configuration" bullet of the notebook's quantitative discussion, read base 61.0 / small 61.3 / dropout 0.3 60.9 %.
+- **The logged values** (`outputs/results/hp*_val.json` and the notebook's own Step 1 output) are **61.2 / 61.5 / 60.7 %**. The two MLM values (60.9 / 61.0) were right.
+- **Origin:** the numbers came from commit `15ae038`, whose result files already held the correct values, so this was a transcription error. The loose traceability check could not catch it, because each wrong value happens to equal some other logged number.
+- **Fixed on this branch only** (report `.tex` and notebook markdown):
+  - The selection is unchanged (small wins).
+  - The corrected spread (0.8 points, not 0.4) contradicts the notebook's claim that it is "below one seed std". The sentence now says the spread is about twice DACT's seed std, so a one-seed grid cannot separate the candidates (cf. FUTURE_FIXES B8).
+- **Main is unchanged.** `main` (`e52e087`) and its PDF still contain the old numbers; resubmitting is the group's decision.
+
+**Check outputs on this branch:**
+- `sync_notebook.py --check`: out of date: none;
+- `check_test_access.py`: OK;
+- `check_report_numbers.py`: STRICT tables 49 values / 0 errors, STRICT prose 42 claims / 0 errors, loose 0 mismatches.
+
+## 39. Upgrade 4: evaluation hygiene (2026-10-03, branch `upgrade/eval-hygiene` from `upgrade/tests`)
+Source: section 4 of the upgrade prompt and `FUTURE_FIXES_NOTES.md` (C12, C15, D17). No test accuracy was computed; the calibration study uses validation predictions only.
+
+**4.1 Test labels only through `final_eval`.**
+- `load_piqa` now returns the test split with a placeholder label (`HIDDEN_LABEL = 0`): the real labels are not in memory before Step 5.
+- `experiments.final_eval(DATA, CFG, reason)` is the only notebook function that reads `test-labels.lst`. It loads the labels into the test rows and dataset, appends `{time, commit, reason, n_items}` to `test_access.log` in `out_dir` and the persistent run folder, and opens the guard.
+- `test_experiment` refuses to run unless `final_eval` has been called, even when `FINAL_EVAL` is forced to True.
+- **Notebook:** Step 5 starts with `yte = final_eval(...)`, and the statistics cell shows the test label share only after that call.
+- **Tools that score test predictions** (`rescore_without_duplicate.py`, `analyse_replication.py`, `replicate_lexical_baselines.py`, `reproduce_main.py`) use `data.load_piqa_with_test_labels(cfg, reason, log_root)`, which logs to `outputs/test_access.log`. None of them was run in this upgrade. `verify_audit_claims.py` does not need labels and no longer loads them.
+- `tools/check_test_access.py` also flags `final_eval(`, `load_labels(` and `test-labels` before the final cell.
+- **Side effect:** the test split's `ordered_sha256` in `data_manifest.json` now covers the inputs with placeholder labels, so it differs from the hash recorded by the A100 run. The file checksums are unchanged.
+- **`test_access.log`:** none exists in the repository, so there are **zero test-label reads** in this upgrade. A test asserts that `outputs/test_access.log` is absent.
+
+**4.2 Unrounded ablation deltas everywhere.** The notebook's key-numbers cell, the report's Table 2 and prose, the notebook discussion and `check_report_numbers.py` now use differences of the unrounded means, rounded once.
+- **Three test deltas change:** − difference tags −1.0 → **−0.9**; − cross-solution attention −0.9 → **−0.8**; tag bias initialised at 0 +0.1 → **+0.2**.
+- **The rest is unchanged,** including all validation deltas.
+- The Table 2 caption now says "differences of the unrounded 3-seed mean accuracies".
+- The key-numbers cell's saved output was cleared, because it came from the old code; it reappears when the notebook is run.
+
+**4.3 Calibration on validation** (`tools/calibration.py` → `experiments/calibration/val_calibration.csv`). Uses 15-bin top-label ECE, plus Brier score and NLL. Sources: the saved validation predictions of the A100 run (DACT, 8 ablations, B2; 3 seeds each except B2 with 1), and B1 recomputed on validation in the locked environment. B3 and B4 are not included: their validation probabilities were never saved, and the notebook now saves them for the next run.
+
+| Model (validation) | Acc | ECE | Mean confidence | Brier | NLL |
+|---|---|---|---|---|---|
+| DACT (full) | 61.21 | 9.85 | 69.86 | 0.2474 | 0.7039 |
+| − lexical head | 59.45 | 8.03 | 65.38 | 0.2498 | 0.7045 |
+| − difference tags | 59.88 | 9.00 | 68.42 | 0.2514 | 0.7162 |
+| − cross-solution attention | 60.50 | 7.68 | 67.00 | 0.2429 | 0.6901 |
+| pointwise objective | 60.50 | 19.56 | 79.30 | 0.2832 | 0.8788 |
+| vanilla Transformer | 58.75 | 6.08 | 62.68 | 0.2498 | 0.7050 |
+| B2 BiLSTM + attention | 59.49 | 8.54 | 63.84 | 0.2505 | 0.7207 |
+| B1 TF-IDF + LR | 59.24 | 5.25 | 63.75 | 0.2418 | 0.6815 |
+
+- **Sanity check:** every accuracy equals the logged validation mean.
+- **Reading:**
+  - DACT is over-confident: 69.9 % mean confidence for 61.2 % accuracy.
+  - Removing the lexical head lowers the confidence by 4.5 points and the ECE by 1.8 points. This supports the over-confidence note (FUTURE_FIXES D17), but the head is not the only source.
+  - Pointwise scoring is by far the worst calibrated (ECE 19.6).
+  - B1 is the best calibrated.
+- **Not yet in the report:** this is a validation-only diagnostic. Candidate 1 of section 5 (a length-normalised or temperature-scaled lexical head) would use it as its pre-declared secondary metric.
+
+**Report PDF (this branch only):** rebuilt with Tectonic after the corrections of sections 38 and 39 (three grid numbers, three ablation deltas, caption). Still 7 pages; the main text ends on page 6; only underfull-box warnings. `main`'s PDF is unchanged.
+
+**Checks on this branch:**
+- `sync_notebook.py --check`: none out of date;
+- `check_test_access.py`: OK;
+- `check_report_numbers.py`: tables 49 / 0 errors, prose 42 / 0 errors;
+- `pytest`: **32 tests pass** (31 fast in 67 s, plus the notebook end-to-end test in 2 min 27 s, which now opens Step 5 through `final_eval` on synthetic data).

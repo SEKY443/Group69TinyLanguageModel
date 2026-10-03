@@ -1,0 +1,14 @@
+# THE lock file: exact package versions of the final A100 run (commit 0d70cdc), printed by its saved notebook.
+# The notebook's environment cell compares the running versions with this list and warns loudly on a mismatch
+# (set GROUP69_STRICT_VERSIONS=1 to make a mismatch an error). Keep the two lists identical (tests check it).
+# Original Python: 3.13.15. On Colab install torch with the matching CUDA wheel, e.g. CUDA 12.8.
+# Why it matters: with scipy 1.18.1 / numpy 2.5.3 B1 (TF-IDF + LR) selects the same C but its validation accuracy
+# moves from 59.24 % to 59.00 % (experiments/b1_versions/b1_versions.csv).
+torch==2.11.0
+numpy==2.1.3
+scikit-learn==1.6.1
+scipy==1.16.3
+pandas==2.2.3
+matplotlib==3.10.0
+tokenizers==0.23.1
+transformers==5.16.1

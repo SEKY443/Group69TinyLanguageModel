@@ -20,6 +20,7 @@ class Config:
     local_zip_glob: str = "*.zip"                               # fallback when running outside Colab
     data_dir: str = "data/piqa"
     out_dir: str = "outputs"
+    persist_dir: str = ""       # e.g. MyDrive/Group69/runs/<run_id>: finished experiments are copied here and restored on a new VM
 
     # ---- data ----
     seed: int = 42              # seed for the train/validation split (kept fixed across runs)
@@ -122,6 +123,66 @@ def amp_dtype(device):
     if device.type != "cuda":
         return None
     return torch.bfloat16 if torch.cuda.is_bf16_supported(including_emulation=False) else torch.float16
+
+
+def git_commit():
+    """Short commit of the code being run, or 'unknown' (e.g. a notebook uploaded without its repository)."""
+    import subprocess
+    try:
+        out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=5)
+        return out.stdout.strip() or os.environ.get("GROUP69_COMMIT", "unknown")
+    except Exception:
+        return os.environ.get("GROUP69_COMMIT", "unknown")
+
+
+def write_progress(cfg, **fields):
+    """Heartbeat: overwrites <out_dir>/progress.json (and the persistent copy) so a run can be monitored cheaply."""
+    record = {"time": time.strftime("%Y-%m-%d %H:%M:%S"), "commit": git_commit(), **fields}
+    for root in filter(None, (cfg.out_dir, cfg.persist_dir)):
+        try:
+            os.makedirs(root, exist_ok=True)
+            tmp = os.path.join(root, "progress.json.tmp")
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(record, f, indent=1)
+            os.replace(tmp, os.path.join(root, "progress.json"))     # atomic: a reader never sees half a file
+        except OSError:
+            pass                                                     # monitoring must never break training
+    return record
+
+
+def fresh_path(path):
+    """`path`, or a time-stamped sibling if it exists, so a re-run never overwrites earlier evidence."""
+    if not os.path.exists(path):
+        return path
+    base, ext = os.path.splitext(path)
+    return f"{base}.{time.strftime('%Y%m%d_%H%M%S')}{ext}"
+
+
+def log_test_access(roots, reason, n_items):
+    """Appends one line (time, commit, reason) to <root>/test_access.log for every root: the audit trail of every
+    read of the test labels. Called by experiments.final_eval and data.load_piqa_with_test_labels."""
+    record = {"time": time.strftime("%Y-%m-%d %H:%M:%S"), "commit": git_commit(), "reason": reason, "n_items": n_items}
+    for root in filter(None, roots):
+        os.makedirs(root, exist_ok=True)
+        with open(os.path.join(root, "test_access.log"), "a", encoding="utf-8") as f:
+            f.write(json.dumps(record) + "\n")
+    return record
+
+
+def write_run_config(cfg, device, run_id, **extra):
+    """One file per run with everything needed to reproduce it: config, seeds, commit, environment, data checksums
+    (the data manifest written by prepare_everything). Saved to out_dir and to the persistent run folder."""
+    manifest = os.path.join(cfg.out_dir, "data_manifest.json")
+    record = {"run_id": run_id, "time": time.strftime("%Y-%m-%d %H:%M:%S"), "commit": git_commit(),
+              "config": cfg.to_dict(), "environment": environment_info(device),
+              "data": json.load(open(manifest, encoding="utf-8")) if os.path.isfile(manifest) else None, **extra}
+    for root in filter(None, (cfg.out_dir, cfg.persist_dir)):
+        os.makedirs(root, exist_ok=True)
+        path = fresh_path(os.path.join(root, "run_config.json"))
+        with open(path, "x", encoding="utf-8") as f:
+            json.dump(record, f, indent=2)
+        record.setdefault("path", path)
+    return record
 
 
 class JsonlLogger:

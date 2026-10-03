@@ -1,0 +1,3 @@
+time,label,split,n,C,val_acc,python,scikit-learn,scipy,numpy,seconds
+2026-10-03 21:42:34,locked,val,1612,3.0,59.2432,3.12.10,1.6.1,1.16.3,2.1.3,5.4
+2026-10-03 21:43:37,newer,val,1612,3.0,58.995,3.12.10,1.6.1,1.18.1,2.5.3,4.5
