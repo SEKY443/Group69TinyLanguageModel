@@ -1,0 +1,23 @@
+{
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "val_acc": {
+    "control_main_model": [
+      0.6122828784119106,
+      0.6228287841191067,
+      0.6023573200992556
+    ],
+    "goal_matching": [
+      0.6116625310173698,
+      0.6060794044665012,
+      0.6104218362282878
+    ]
+  },
+  "gain_points": -0.31,
+  "pooled_sd_points": 0.753,
+  "rule": "gain >= 1.0 point AND gain > 2 x pooled seed std (validation)",
+  "accepted": false
+}

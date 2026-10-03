@@ -8,3 +8,4 @@ outputs_*/
 CHANGELOG.local.md
 .DS_Store
 tmp/
+experiments/goal_matching/run_*/checkpoints/

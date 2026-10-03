@@ -1,0 +1,4 @@
+arm,seed42,seed43,seed44,val_mean,val_std
+control_main_model,0.6123,0.6228,0.6024,0.6125,0.0102
+goal_matching,0.6117,0.6061,0.6104,0.6094,0.0029
+decision,,,,-0.31,0.753

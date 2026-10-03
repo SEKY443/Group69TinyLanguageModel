@@ -1255,3 +1255,65 @@ This section follows the "honest final improvement pass" prompt (`IMPROVEMENT_PR
 **Not done:**
 - **AI-use statement:** not added. The group member had earlier asked for it to be removed from the report (section 27.5). The prompt says not to write it on the group's behalf, so this decision stays with the group, and it is listed in the summary.
 - **No re-run yet:** the code cells changed by the guard (6, 10, 37 and the `experiments` module cell) keep the outputs of the A100 run of commit `0d70cdc`. Their saved outputs differ from what the new code would print only in the dataset-statistics table (the test label share) and in one extra printed line in Step 5.
+
+---
+
+## 34. Honest final pass, steps 3–5: pre-registered experiment, reproducibility, proof (2026-10-03, branch `honest-pass`)
+
+### 34.1 Step 3: goal-to-solution matching, pre-registered and rejected
+
+**Pre-registration:** `experiments/goal_matching/PREREGISTRATION.md`, committed in **`2931eae` at 2026-10-03T07:03:57Z**, before any training.
+- **The change:** a `GoalMatching` block with 165,504 parameters. Every token attends to the goal segment of its own option, followed by a gated fusion.
+- **Fixed configuration:** the main model's configuration with the block added; no tuning of the block.
+- **Rule:** a 3-seed validation gain of at least 1.0 point AND more than twice the pooled seed std.
+- **Deadline:** 10 October.
+- **Default:** the block is off (`Config.use_goal_matching = False`), so the main model is unchanged. Unit checks (forward passes only, no training) confirmed 1,927,492 parameters without the block, and swap symmetry with and without it.
+
+**Run:**
+- One free Colab T4 session (`goalexp`) cloned `honest-pass` at `2931eae` and ran `tools/goal_matching_experiment.py`.
+- The first training log started at **07:05:54Z**, after the pre-registration commit.
+- The test split was deleted from memory before training. **No test predictions exist:** the run folder holds only validation prediction files.
+- The session was stopped afterwards.
+
+**Result (validation accuracy, seeds 42/43/44; `experiments/goal_matching/results.csv`):**
+
+| Arm | Seed 42 | Seed 43 | Seed 44 | Mean ± std |
+|---|---|---|---|---|
+| Control (main model) | 61.23 | 62.28 | 60.24 | **61.25 ± 1.02** |
+| Goal matching | 61.17 | 60.61 | 61.04 | **60.94 ± 0.29** |
+
+- The gain was **−0.31 points**, against a pooled std of 0.75.
+- **REJECTED.** As the protocol requires: no test run, DACT unchanged, and the negative result is reported with validation numbers only.
+- The run's logs, validation predictions and decision file are in `experiments/goal_matching/run_20261003_070526/`. The checkpoints (47 MB) are git-ignored.
+
+**Report:**
+- A new paragraph, "A pre-registered change that did not help", in "What Worked and What Did Not".
+- Limitations: "an explicit goal-matching block did not help in a pre-registered validation test" replaces the earlier suggestion of it as future work.
+
+### 34.2 Step 4: reproducibility
+
+- **Pins:** `requirements-a100.txt` already pins the A100 environment (torch 2.11.0, numpy 2.1.3, scipy 1.16.3, scikit-learn 1.6.1, …). Section 33.2 shows these pins matter: B1 changes from 61.21 to 60.88 % with newer scipy/numpy.
+- **Seeds:** the split seed is 42; training seeds are 42/43/44 for every trained model and for the experiment.
+- **Code version of the saved outputs:** the notebook Readme previously said "produced by exactly the code shown (commit `0d70cdc`)". It now says the outputs were produced by `0d70cdc`, and lists the changes made since: the `FINAL_EVAL` guard, and the goal-matching block switched off. It states that neither changes the model or any result. The only saved output the current code would print differently is the test label share in the statistics table.
+- **No re-run:** none was needed or made. The experiment was rejected, so the protocol allows no further test evaluation.
+
+### 34.3 Step 5: proof tools
+
+- **`tools/check_test_access.py`** passes (exit 0). It fails (exit 1) on the notebook as it was before the guard.
+- **`tools/check_report_numbers.py`** (exit 0):
+  - **Strict check:** every cell of Tables 1–2 and the headline p-value, matched row by row against `final_results.csv`. 35 values, **0 errors**.
+  - **Traceability check:** all 126 distinct numbers in the main text, **0 mismatches**. 90 trace to logged result files and 36 are documented non-result numbers, each with a source.
+  - **The traceability check is weak.** A random one-decimal number matches some logged value about half the time. So only the strict check is presented as verification.
+  - **While building it:**
+    - Three ablation deltas in Table 2 are differences of **rounded** means (e.g. 60.6 − 61.6 = −1.0, where the exact value is −0.94). This matches the notebook's key-numbers cell, so the numbers were kept, and the caption now states the convention.
+    - The analysis numbers that the notebook prints but did not save are exported from the executed notebook's outputs to `outputs/results/analysis_numbers.csv` (`tools/export_analysis_numbers.py`). Nothing was recomputed.
+    - The T4 timing results are recorded in `experiments/t4_timing/timing.csv`.
+- **Notebook check:**
+  - 57 cells, 32 of them code cells (23 with outputs); **0 error cells**.
+  - The saved consistency check reads `OK: 14 result rows, 30 training runs with logs, 40 log files`.
+  - A smoke run of the whole current notebook passed (CPU, synthetic data, stubbed B3/B4).
+- **PDF:** 8 pages; **the main text ends on page 6** (Team Contributions starts on page 6).
+
+### 34.4 Still for the group
+- The AI-use statement (see 33.3).
+- Merge `honest-pass` into `main` if the group agrees. `v1.0.0-rc2` stays the fallback.

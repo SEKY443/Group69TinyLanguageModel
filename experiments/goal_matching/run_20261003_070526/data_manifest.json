@@ -1,0 +1,25 @@
+{
+  "split_seed": 42,
+  "val_frac": 0.1,
+  "files": {
+    "train.jsonl": "f805f9c96518d7b59f2f870d90f712457cda949979469d9fa3fd706ce22e0a1a",
+    "train-labels.lst": "df8ae080c41f02f88e81f6932d425f4b7ee72f433ad552e6a30d45e358e8f8bb",
+    "test.jsonl": "93503cc97c679e459b065c3d13e848282e44b2a25213985bed3e5d458abef72d",
+    "test-labels.lst": "b4192dc3a2a0363d9d60ccf79800cbbe2f32ebb17726efdde6970e0b8131bceb"
+  },
+  "splits": {
+    "train": {
+      "size": 14501,
+      "ordered_sha256": "33402e6761a661a0937f7300aa237a89610838f021989ae1c840faf869a4aa3e"
+    },
+    "val": {
+      "size": 1612,
+      "ordered_sha256": "d90abc7463f40f1a07e50a9d958b93d27d806d672546eebf94b82cc50ab099d2"
+    },
+    "test": {
+      "size": 1838,
+      "ordered_sha256": "7aab70539ddbf526b3b971598334dcce94a3ccdac2a2a63a6c8efe98bdd577f8"
+    }
+  },
+  "tokenizer_sha256": "6bf4c5c3bfffc947afc8a089b24ee8b5fd817368e40c4a872980c750448bbe99"
+}

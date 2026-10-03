@@ -1,0 +1,4 @@
+autocast,ms_per_step,seconds_per_epoch_114_steps,source
+fp16,108,12,"timing run on a free Colab T4, 2026-09-30 (colab run tools; recorded in DEVELOPMENT_LOG section 24.2)"
+fp32,254,29,"same run"
+bf16,377,43,"same run (bf16 emulated on the T4)"
