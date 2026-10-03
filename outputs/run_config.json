@@ -1,0 +1,105 @@
+{
+  "run_id": "main",
+  "time": "2026-10-03 15:14:26",
+  "commit": "b880108",
+  "config": {
+    "data_folder_url": "https://drive.google.com/drive/folders/1lxEsHLbRsgOHh8rOAd75QHUZds7ybKtT",
+    "drive_zip": "/content/drive/MyDrive/Group69/PIQA.zip",
+    "local_zip_glob": "*.zip",
+    "data_dir": "data/piqa",
+    "out_dir": "outputs",
+    "persist_dir": "./Group69/runs/main",
+    "seed": 42,
+    "val_frac": 0.1,
+    "vocab_size": 8000,
+    "min_frequency": 2,
+    "max_goal_len": 40,
+    "max_sol_len": 96,
+    "diff_aware_truncation": true,
+    "d_model": 256,
+    "n_heads": 4,
+    "n_layers": 4,
+    "d_ff": 1024,
+    "dropout": 0.2,
+    "attn_dropout": 0.1,
+    "max_len": 160,
+    "use_diff_tags": true,
+    "use_cross_solution": true,
+    "pool_mode": "diff_attn",
+    "tag_bias_init": 1.0,
+    "use_lexical": true,
+    "use_goal_matching": false,
+    "lex_buckets": 262144,
+    "lex_lr": 0.01,
+    "objective": "pairwise",
+    "mlm_epochs": 0,
+    "batch_size": 128,
+    "lr": 0.0003,
+    "weight_decay": 0.05,
+    "epochs": 20,
+    "warmup_ratio": 0.06,
+    "label_smoothing": 0.1,
+    "patience": 6,
+    "grad_clip": 1.0,
+    "mlm_lr": 0.0005,
+    "mlm_prob": 0.15,
+    "amp": true,
+    "num_workers": 2,
+    "run_seed": 42,
+    "deterministic": false,
+    "symmetric_diff_tags": false
+  },
+  "environment": {
+    "python": "3.13.15",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+    "packages": {
+      "torch": "2.11.0+cu130",
+      "numpy": "2.1.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.16.3",
+      "pandas": "2.2.3",
+      "matplotlib": "3.10.0",
+      "tokenizers": "0.23.2",
+      "transformers": "5.17.0"
+    },
+    "device": "cuda",
+    "cuda": "13.0",
+    "gpu": "Tesla T4",
+    "deterministic": false
+  },
+  "data": {
+    "split_seed": 42,
+    "val_frac": 0.1,
+    "files": {
+      "train.jsonl": "f805f9c96518d7b59f2f870d90f712457cda949979469d9fa3fd706ce22e0a1a",
+      "train-labels.lst": "df8ae080c41f02f88e81f6932d425f4b7ee72f433ad552e6a30d45e358e8f8bb",
+      "test.jsonl": "93503cc97c679e459b065c3d13e848282e44b2a25213985bed3e5d458abef72d",
+      "test-labels.lst": "b4192dc3a2a0363d9d60ccf79800cbbe2f32ebb17726efdde6970e0b8131bceb"
+    },
+    "splits": {
+      "train": {
+        "size": 14501,
+        "ordered_sha256": "33402e6761a661a0937f7300aa237a89610838f021989ae1c840faf869a4aa3e"
+      },
+      "val": {
+        "size": 1612,
+        "ordered_sha256": "d90abc7463f40f1a07e50a9d958b93d27d806d672546eebf94b82cc50ab099d2"
+      },
+      "test": {
+        "size": 1838,
+        "ordered_sha256": "2ff94cfde76097062332230a4bebe95b8861dbacc37a74d79449f0544cbe3612"
+      }
+    },
+    "tokenizer_sha256": "0c4c50b2cb9c0ddd4fc56703bba7508421ebf1ad5e0cdc0e77f4c5e941f22b26"
+  },
+  "version_mismatch": {
+    "tokenizers": [
+      "0.23.2",
+      "0.23.1"
+    ],
+    "transformers": [
+      "5.17.0",
+      "5.16.1"
+    ]
+  }
+}

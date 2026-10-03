@@ -1,0 +1,6 @@
+{"time": "2026-10-01 16:07:22", "event": "start", "model": "FacebookAI/roberta-base", "requested_revision": null, "resolved_revision": "e2da8e2f811d1448a5b465c236feacd80ffbac7b", "seed": 43, "epochs": 4, "lr": 2e-05, "batch_size": 32, "max_len": 128, "n_params": 124646401, "environment": {"python": "3.13.15", "platform": "Linux-6.6.122+-x86_64-with-glibc2.39", "packages": {"torch": "2.11.0+cu128", "numpy": "2.1.3", "scikit-learn": "1.6.1", "scipy": "1.16.3", "pandas": "2.2.3", "matplotlib": "3.10.0", "tokenizers": "0.23.1", "transformers": "5.16.1"}, "device": "cuda", "cuda": "12.8", "gpu": "NVIDIA A100-SXM4-40GB", "deterministic": false}}
+{"time": "2026-10-01 16:07:54", "event": "epoch", "epoch": 1, "train_loss": 0.6939363860348773, "val_acc": 0.5558312655086849, "seconds": 27.3}
+{"time": "2026-10-01 16:08:21", "event": "epoch", "epoch": 2, "train_loss": 0.679201329463379, "val_acc": 0.6563275434243176, "seconds": 27.1}
+{"time": "2026-10-01 16:08:48", "event": "epoch", "epoch": 3, "train_loss": 0.6331099795612469, "val_acc": 0.6830024813895782, "seconds": 27.0}
+{"time": "2026-10-01 16:09:16", "event": "epoch", "epoch": 4, "train_loss": 0.5842128636290849, "val_acc": 0.6910669975186104, "seconds": 27.1}
+{"time": "2026-10-01 16:09:19", "event": "end", "best_val_acc": 0.6910669975186104}

@@ -51,6 +51,8 @@ DOCUMENTED = {
     "35": "free-tier session lifetime in minutes (section 24)", "0.694": "chance-level loss ln 2 of the failed RoBERTa seed",
     "1545": "index of the duplicated test item (audit_checks.csv)", "26": "count from the baby-wipes analysis (section 16)",
     "100": "probe accuracy 100 % / percentages",
+    "33": "training runs with logs in the final run (notebook consistency-check cell: '33 training runs with logs')",
+    "52": "RoBERTa restart threshold, 52 % validation accuracy after epoch 1 (declared rule, notebook Step 4)",
 }
 
 
@@ -95,7 +97,8 @@ TABLE1 = {"B0 majority": "B0 majority", "B1 TF-IDF + LR": "B1 TF-IDF + LR",
 TABLE2 = {"difference tags": "− difference tags", "lexical head": "− lexical head",
           "pointwise": "pointwise objective", "mean instead": "mean pooling",
           "cross-solution attention": "− cross-solution attention", "tag bias in pooling": "− diff bias in pooling",
-          "tag bias initialised at 0": "diff-bias prior 0", "vanilla": "vanilla Transformer"}
+          "tag bias initialised at 0": "diff-bias prior 0", "MLM warm-up": "− MLM warm-up",
+          "vanilla": "vanilla Transformer"}
 
 
 def strict_tables(s):
@@ -136,8 +139,9 @@ def strict_tables(s):
         "Run 2 (T4)": dact("experiments/t4_run_e5fdb29/outputs/results/final_results.csv"),
         "Pilot (val)": [pilot["lexical head lr 3e-4 (shared)"], pilot["lexical head lr 1e-2"]],
         "Run 3 (T4)": dact("experiments/t4_run_538cf5b/outputs/results/final_results.csv"),
-        "Final (A100)": dact("outputs/results/final_results.csv"),
+        "Run 4 (A100)": dact("experiments/a100_run_0d70cdc/outputs/results/final_results.csv"),
         "Pre-reg.": [f"{100 * float(goal['goal_matching']['val_mean']):.1f}", f"{100 * float(goal['control_main_model']['val_mean']):.1f}"],
+        "Final (T4)": dact("outputs/results/final_results.csv"),
     }
     for label, expect in history.items():
         line = next(l for l in rows if l.startswith(label))
@@ -197,52 +201,71 @@ def prose_claims():
     # run 2's logs were not archived; its RoBERTa seeds are recorded in the development log (section 24)
     log = open(os.path.join(ROOT, "docs", "DEVELOPMENT_LOG.md"), encoding="utf-8").read()
     run2_b3 = min(float(x) for x in re.search(r"RoBERTa seeds\.\*\* Validation accuracy was ([\d.]+) / \*\*([\d.]+)\*\* / ([\d.]+)", log).groups()) / 100
-    run3 = _csv("experiments/t4_run_538cf5b/outputs/results/final_results.csv", "model")
-    moved = max(abs(round(100 * float(run3[m][c]), 1) - round(100 * float(fr[m][c]), 1))
-                for m in fr if m != D and m in run3 for c in ("val acc", "test acc") if fr[m][c] and run3[m][c])
+    run4 = _csv("experiments/a100_run_0d70cdc/outputs/results/final_results.csv", "model")
+    moved = max(abs(round(100 * float(run4[m][c]), 1) - round(100 * float(fr[m][c]), 1))
+                for m in fr if m != D and m in run4 and fr[m]["from scratch"] == "True"
+                for c in ("val acc", "test acc") if fr[m][c] and run4[m][c])
+    b3 = "B3 RoBERTa-base (fine-tuned)"
+    b3_seeds = {}
+    for f in glob.glob(os.path.join(ROOT, "outputs", "logs", "B3_*.jsonl")):
+        recs = [json.loads(l) for l in open(f, encoding="utf-8") if l.strip()]
+        if any(r.get("event") == "end" for r in recs):
+            b3_seeds[f] = max(r["val_acc"] for r in recs if r.get("event") == "epoch")
+    b3_ci = [float(x) for x in re.findall(r"[\d.]+", fr[b3]["test 95% CI"])]
+    pval = lambda m: float(fr[m]["McNemar p vs DACT"])  # noqa: E731
+    p_wrong = float(an["attention_mass_correct_vs_wrong_mannwhitney_p"])
+    tags_test = delta("− difference tags", "test acc")
     return {
+        "abstract: attention mass (rounded)": f"put {100 * float(an['attention_mass_differing_trained']):.0f}\\% of its pooling attention on the differing words (uniform attention would give {100 * float(an['attention_mass_uniform_reference']):.0f}\\%)",
+        "abstract: vanilla gap (rounded)": f"beat a vanilla Transformer by about {round((float(delta('vanilla Transformer', 'val acc')) + float(delta('vanilla Transformer', 'test acc'))) / 2):.0f} points",
         "abstract: DACT val": f"model on validation ({v(D)}\\%, 3 seeds)",
-        "abstract: DACT vs TF-IDF test, p": f"({t(D)} vs.\\ {t(B1)}\\%, McNemar $p{{=}}{float(fr[B1]['McNemar p vs DACT']):.2f}$)",
+        "abstract: DACT vs TF-IDF test, p": f"({t(D)} vs.\\ {t(B1)}\\%, McNemar $p{{=}}{pval(B1):.2f}$)",
+        "abstract: LLM gap (rounded)": f"a zero-shot pretrained LLM is {float(delta('B4 Qwen2.5-1.5B (zero-shot)', 'test acc')):.0f} points better",
         "duplicate: re-scoring change": f"changes accuracy by about {abs(float(rs['dact_full']['difference_points'])):.2f} points",
         "duplicate: DACT": f"{100 * float(rs['dact_full']['test_acc_all_1838']):.2f}\\,$\\to$\\,{100 * float(rs['dact_full']['test_acc_without_duplicate_1837']):.2f}\\%",
         "duplicate: TF-IDF": f"{100 * float(rs['B1_tfidf_lr']['test_acc_all_1838']):.2f}\\,$\\to$\\,{100 * float(rs['B1_tfidf_lr']['test_acc_without_duplicate_1837']):.2f}\\%",
         "data: val / test label-1 share (B0 accuracy)": f"/ {p1(fr['B0 majority']['val acc'])} / {p1(fr['B0 majority']['test acc'])}\\% label 1",
         "grid: base": f"4 layers) {p1(hp[0])}\\%",
-        "grid: small": f"4 heads) {p1(hp[1])}\\%}}",
+        "grid: small": f"4 heads) {p1(hp[1])}\\%",
         "grid: dropout 0.3": f"dropout 0.3 {p1(hp[2])}\\%",
-        "grid: MLM warm-up": f"{p1(hp[3])} / {p1(hp[4])}\\%. The selected model",
+        "grid: MLM warm-up (selected)": f"{p1(hp[3])} / \\textbf{{{p1(hp[4])}\\%}}",
+        "grid: selection margin": f"{100 * (hp[4] - hp[0]):.2f} points ahead of base",
         "params: DACT": f"{_json('outputs/results/dact_full_val.json')['runs'][0]['n_params'] / 1e6:.2f}\\,M parameters",
         "params: BiLSTM": f"({_json('outputs/results/b2_bilstm_val.json')['runs'][0]['n_params'] / 1e6:.1f}\\,M parameters)",
-        "vs BiLSTM": f"+{delta(B2, 'val acc')} / +{delta(B2, 'test acc')} points over the BiLSTM (not significant on test, McNemar $p{{=}}{float(fr[B2]['McNemar p vs DACT']):.2f}$)",
+        "vs BiLSTM": f"+{delta(B2, 'val acc')} / +{delta(B2, 'test acc')} points over the BiLSTM (not significant on test, McNemar $p{{=}}{pval(B2):.2f}$)",
         "vs TF-IDF": f"+{delta(B1, 'val acc')} / +{delta(B1, 'test acc')} over TF-IDF",
-        "tied on test": f"statistically tied ({t(D)} vs.\\ {t(B1)}\\%, McNemar $p{{=}}{float(fr[B1]['McNemar p vs DACT']):.2f}$)",
-        "pretraining gap (test)": f"RoBERTa is {delta('B3 RoBERTa-base (fine-tuned)', 'test acc')} and the zero-shot LLM {delta('B4 Qwen2.5-1.5B (zero-shot)', 'test acc')} points above",
-        "ablation: tags": f"removing the tags costs {cost('− difference tags')} points",
-        "ablation: cross": f"cross-solution attention {cost('− cross-solution attention')}.",
+        "tied on test": f"statistically tied ({t(D)} vs.\\ {t(B1)}\\%, McNemar $p{{=}}{pval(B1):.2f}$)",
+        "pretraining gap (test)": f"the zero-shot LLM is {delta('B4 Qwen2.5-1.5B (zero-shot)', 'test acc')} points above",
+        "B3 working seed (val)": f"the third reaches {p1(max(b3_seeds.values()))}\\% validation (test 95\\% CI {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f})",
+        "B3 working seed (prose)": f"test 95\\% CI of {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f}, above \\dact{{}}'s {t(D)}\\%",
+        "B3 A100 reference": f"all seeds trained: {p1(run4[b3]['val acc'])} / {p1(run4[b3]['test acc'])}",
+        "ablation: vanilla": f"together costs {cost('vanilla Transformer')} points, the largest drop and the only significant one on test ($p{{=}}{pval('vanilla Transformer'):.3f}$)",
         "ablation: lexical": f"removing the lexical head costs {cost('− lexical head')}.",
         "ablation: pointwise": f"(independent binary scoring: {cost('pointwise objective')})",
-        "ablation: vanilla": f"Removing everything costs {cost('vanilla Transformer')} points",
-        "ablation: mean pooling": f"little difference ({cost('mean pooling')})",
-        "ablation: tag bias": f"(removing it gives {delta('− diff bias in pooling', 'val acc', sign=True)} / {delta('− diff bias in pooling', 'test acc', sign=True)})",
+        "ablation: tags": f"The difference tags help on test only ({cost('− difference tags')})",
+        "ablation: cross": f"cross-solution attention (removing it gives {delta('− cross-solution attention', 'val acc', sign=True)} / $-${delta('− cross-solution attention', 'test acc')})",
+        "ablation: mean pooling": f"attention pooling ({delta('mean pooling', 'test acc', sign=True)} on test with mean pooling)",
+        "ablation: MLM warm-up": f"the MLM warm-up ({delta('− MLM warm-up', 'val acc', sign=True)} / $-${delta('− MLM warm-up', 'test acc')})",
         "errors: agreement": f"agree on {p1(eo[B1]['agreement'])}\\% of test items",
         "errors: only DACT": f"alone solves {p1(eo[B1]['only DACT'])}\\% ({an['items_only_dact_solves_vs_tfidf']} items)",
         "errors: only TF-IDF / oracle": f"TF-IDF alone {p1(eo[B1]['only other'])}\\%, for an oracle accuracy of {p1(eo[B1]['oracle'])}\\%",
-        "errors: oracle vs RoBERTa": f"the oracle rises to {p1(eo['B3 RoBERTa-base (fine-tuned)']['oracle'])}\\%",
+        "errors: oracle vs RoBERTa": f"the oracle rises to {p1(eo[b3]['oracle'])}\\%",
         "attention: trained / share": f"puts {p1(an['attention_mass_differing_trained'])}\\% of its pooling attention on differing tokens, which make up {p1(an['attention_mass_uniform_reference'])}\\%",
         "attention: untrained": f"untrained model reaches only {p1(an['attention_mass_untrained'])}\\%",
         "attention: bias 0": f"set to 0 still reaches {p1(an['attention_mass_trained_tag_bias_0'])}\\%",
         "attention: bias moved": f"(1.0\\,$\\to$\\,{an['tag_bias_other_shared_diff'].split()[-1]})",
         "entropy, p": f"entropy is {float(pent[0]):.2f} (1 = uniform), for correct and wrong predictions alike ($p{{=}}{float(pent[3]):.2f}$)",
         "probe: vanilla embedding / encoder": f"reaches {p1(probe['embedding']['vanilla (no tags)'])}\\% balanced accuracy on the vanilla Transformer's embeddings and only {p1(probe['encoder 2']['vanilla (no tags)'])}\\%",
-        "attention: wrong vs correct": f"({p1(an['attention_mass_wrong_predictions'])} vs.\\ {p1(an['attention_mass_correct_predictions'])}\\%, $p{{<}}0.001$)" if float(an["attention_mass_correct_vs_wrong_mannwhitney_p"]) < 0.001 else "p >= 0.001",
-        "case: lotion bars (747)": f"a confident error (p = {case['747']:.2f} for option 1)",
-        "case: baby in bed (1724)": f"the most uncertain item (p = {case['1724']:.2f}; option 2 is gold)",
+        "attention: wrong vs correct": f"({p1(an['attention_mass_wrong_predictions'])} vs.\\ {p1(an['attention_mass_correct_predictions'])}\\%, $p{{=}}{p_wrong:.2f}$)" if p_wrong >= 0.001 else "p < 0.001",
+        "case: lotion bars (747), caption": f"a confident error (p = {case['747']:.2f} for option 1)",
+        "case: lotion bars (747), text": f"the model prefers it with p = {case['747']:.2f}",
+        "case: small cheap home (1516)": f"the most uncertain item (p = {case['1516']:.2f}; option 1 is gold)",
         "case: LED (993)": f"wins with p = {case['993']:.2f} against",
-        "case: tea (1123)": f"\\emph{{boil water for a cup of tea}} (p = {case['1123']:.2f})",
-        "case: boiler (1282)": f"the model prefers it with p = {case['1282']:.2f}",
+        "case: exotic trip (841)": f"(p = {case['841']:.2f} for a strict itinerary",
         "history: RoBERTa seed at chance (run 2)": f"stayed at chance ({p1(run2_b3)}\\% validation)",
         "history: goal matching": f"it lost {100 * (float(goal['control_main_model']['val_mean']) - float(goal['goal_matching']['val_mean'])):.1f} points on validation",
-        "history: run 3 vs final spread": f"moved by up to {moved:.1f} points",
+        "history: run 4 vs final spread": f"moved by up to {moved:.1f} points",
+        "tags help on test (consistency)": f"$-$ difference tags & $-${delta('− difference tags', 'val acc')} & $-${tags_test}",
     }
 
 

@@ -18,8 +18,8 @@
     },
     "test": {
       "size": 1838,
-      "ordered_sha256": "7aab70539ddbf526b3b971598334dcce94a3ccdac2a2a63a6c8efe98bdd577f8"
+      "ordered_sha256": "2ff94cfde76097062332230a4bebe95b8861dbacc37a74d79449f0544cbe3612"
     }
   },
-  "tokenizer_sha256": "59cb5f424268207ed5ab552f59df46b5eae8f3155371ba4903c6c3316401c18e"
+  "tokenizer_sha256": "0c4c50b2cb9c0ddd4fc56703bba7508421ebf1ad5e0cdc0e77f4c5e941f22b26"
 }

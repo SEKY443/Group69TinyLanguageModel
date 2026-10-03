@@ -12,7 +12,7 @@ This repository combines two tracks of work (merged on 2026-10-01, see `docs/DEV
 
 ```text
 Group69TinyLanguageModel/
-├── CITS4012_69.ipynb        # submission candidate: executed run of the final model (A100, 2026-10-01)
+├── CITS4012_69.ipynb        # submission: executed run of the final model (free T4, commit b880108, 2026-10-04)
 ├── report/                  # ACL report draft: CITS4012_69.tex, CITS4012_69.pdf, figures, make_figures.py
 ├── outputs/                 # logs, results and figures of that final run
 ├── src/                     # model, data, training and evaluation (merged code of both tracks)
@@ -23,14 +23,15 @@ Group69TinyLanguageModel/
 │   └── a100_outputs/        #   and the original A100 logs, results and figures
 ├── report_support/          # audit notes, tables and figures about the ORIGINAL model
 ├── notebooks/               # current-source reproduction candidate from the audit track
-├── experiments/             # archived runs: T4 run of the final model, A100 runs of 2026-10-01 incl. Salah's version
+├── experiments/             # archived runs: A100 run 0d70cdc, earlier T4 run, A100 runs of 2026-10-01 incl. Salah's version
 ├── templates/               # original course notebook template
 └── requirements*.txt        # local and historical environments
 ```
 
 | Artifact | Meaning |
 |---|---|
-| `CITS4012_69.ipynb` | **Final executed notebook** (commit `0d70cdc` code, Colab Pro A100): DACT 61.2 / 61.6 % val / test, all baselines, 8 ablations, attention analysis, consistency check |
+| `CITS4012_69.ipynb` | **Final executed notebook** (commit `b880108`, free Colab T4): DACT 61.3 / 61.9 % val / test, all baselines (2 of 3 RoBERTa seeds failed to fine-tune), 9 ablations, attention analysis, consistency check; its outputs are in `outputs/` |
+| `experiments/a100_run_0d70cdc/` | Outputs of the previous final run (Colab Pro A100, commit `0d70cdc`): DACT 61.2 / 61.6 %, RoBERTa 68.0 / 66.7 % |
 | `report/CITS4012_69.pdf` | Report draft built from that run; Team Contributions still to be written by the group |
 | `outputs/` | Logs, results, figures and per-item predictions (gzip) of the final run (40 JSON-lines logs) |
 | `experiments/a100_runs_20261001/` | Both A100 runs of 2026-10-01 compared (`COMPARISON.md`): current version vs Salah's version |

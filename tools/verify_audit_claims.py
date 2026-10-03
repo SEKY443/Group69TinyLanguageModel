@@ -10,6 +10,7 @@ import argparse
 import glob
 import json
 import os
+import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -72,7 +73,8 @@ def main():
             {"check": "test_items_tags_change_when_swapped_current_pipeline", "value": changed},
             {"check": "test_items_tags_change_when_swapped_symmetric", "value": changed_sym},
             {"check": "test_items_identical_encoded_inputs", "value": identical}]
-    for path in sorted(glob.glob(os.path.join(ROOT, "outputs", "logs", "dact_full_seed*.jsonl"))):
+    for path in sorted(p for p in glob.glob(os.path.join(ROOT, "outputs", "logs", "dact_full_seed*.jsonl"))
+                       if re.search(r"dact_full_seed\d+\.jsonl$", p)):   # not the MLM warm-up logs (*_mlm.jsonl)
         recs = [json.loads(l) for l in open(path, encoding="utf-8") if l.strip()]
         ep = [r for r in recs if r.get("event") == "epoch"]
         end = [r for r in recs if r.get("event") == "end"]
