@@ -1,0 +1,10 @@
+{
+ "time": "2026-10-03 17:47:27",
+ "commit": "1ff22a1",
+ "step": "train",
+ "run": "dact_bucketing_seed44",
+ "seed": 44,
+ "epoch": 13,
+ "val_acc": 0.5881,
+ "best_val_acc": 0.6098
+}

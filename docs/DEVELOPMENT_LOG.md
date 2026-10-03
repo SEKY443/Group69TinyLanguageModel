@@ -1558,3 +1558,34 @@ Ali asked for a fresh Colab run of the merged `main` (`b880108`), because seven 
   - **Result:** tables 53 values / 0 errors, prose 50 claims / 0 errors, loose 0 mismatches.
 
 **Notebook text:** the Readme (code version, logs, runtime), the quantitative discussion (cell 43) and the qualitative discussion (cell 52) were rewritten from this run's printed outputs, including the RoBERTa failure, the grid instability and the new cases.
+
+
+## 41. Training hardening (2026-10-04, branch `upgrade/training-hardening` from `main` `e2a4b2a`)
+Source: `TRAINING_UPGRADE_PROMPT.md` (the generic QLoRA/SFT/W&B prompt rewritten for this project). The full audit table is in `docs/TRAINING_AUDIT.md`. No test number was computed; the repository's `outputs/test_access.log` is unchanged (2 lines, both from the final run).
+
+**Code** (commit `1ff22a1`; the notebook was synced):
+- **Diagnostics:** `train_qa`, `mlm_warmup` and B3's `finetune_pretrained` now log, per epoch, the gradient norm before clipping (mean, and max for DACT), step time, peak GPU memory and learning rate. The per-step `.item()` calls were replaced by running sums on the device. The per-step finiteness check is kept as a safety check, and it still syncs.
+- **Length bucketing:** `Config.length_bucketing` (default False) and `bucket_chunk` with `BucketBatchSampler`. Used only for the training loader; evaluation keeps the dataset order. *Side effect:* the two new config fields mean that runs persisted by older code are refused by the resume identity check, as intended for a config change.
+- **B4:** `lm_batch` and `score_continuations` were factored out, with an out-of-memory fallback that halves the batch, retries and logs it. Free GPU memory is printed before loading.
+- **B3:** `encode_multiple_choice` was factored out for testing; behaviour is unchanged.
+
+**Measurements and decisions (validation only):**
+- **Padding** (`tools/padding_measurement.py`, real training split, no training): 69.6–69.9 % of the batch tensors are padding with random batches, 6.8–6.9 % with bucketing.
+- **Pre-registered bucketing test** (`experiments/length_bucketing/`):
+  - the pre-registration was committed at 01:35 and training ran 01:37–01:50, on a free T4, same session, seeds 42–44;
+  - accuracy: control 60.92 ± 0.16, bucketing 61.12 ± 0.36; the gain of +0.20 is below 1.0 and below 2 × pooled std (0.56), so it is **rejected as a default**;
+  - speed: step time −17 % (50.8 → 42.3 ms), epoch time −15 %; peak memory unchanged (0.68 GB). Documented as an opt-in speed option.
+  - The control's 60.92 is 0.4 points below the final run's DACT (61.29), with the same configuration, GPU type and seeds. That is the session-to-session noise of non-deterministic GPU training.
+- **Gradient checkpointing:** not needed, at 0.68 GB peak on a 15 GB T4.
+- **Removing per-step syncs:** no measurable gain (6.31 s per epoch in the final run with the old code, against 6.25 s here, from different sessions), because the finiteness check still syncs. It is reported as such and not claimed as a speed-up.
+- **Checkpoint selection** (`tools/selection_analysis.py`, existing logs): selecting by validation loss would pick an earlier epoch in 35/38 (T4) and 32/35 (A100) runs and lose 1.4 / 1.9 points of validation accuracy on average. The accuracy rule is kept. The comparison favours the accuracy rule by design, because it is scored on the split it selects on; the size and consistency of the gap still make the loss rule the worse choice here.
+- **RoBERTa:** one change (learning rate 2e-5 → 1e-5) is pre-registered in `experiments/roberta_stability/`, with the number of seeds that learn as the primary metric. It is **not run**: it needs about 65 min of GPU time and the group's go-ahead. One unmeasured claim (how many pairs max length 128 truncates) was removed from that document before committing.
+- **Not done, with reasons in the audit:** LoRA for B3, 4-bit Qwen, sequence packing, W&B.
+
+**Tests:** `tests/test_training_hardening.py`, 11 tests:
+- bucketing off by default, covers every item once, reshuffles, reproducible, less padding, only for the training loader;
+- padding never receives attention; MLM labels only real tokens; B4 scores only the continuation; B3 builds [goal, solution_k] pairs;
+- OOM fallback gives the same scores and raises at batch 1;
+- new log fields present.
+
+The full suite has **43 tests**, passing in 1 min 51 s on CPU.

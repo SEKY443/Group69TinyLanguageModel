@@ -1,0 +1,86 @@
+{
+  "commit": "1ff22a1",
+  "device": "cuda",
+  "arms": {
+    "control": {
+      "val": {
+        "mean": 0.609181141439206,
+        "std": 0.0016412849324221655,
+        "runs": [
+          0.6073200992555832,
+          0.6104218362282878,
+          0.6098014888337469
+        ]
+      },
+      "per_seed": [
+        0.6073200992555832,
+        0.6104218362282878,
+        0.6098014888337469
+      ],
+      "logs": [
+        {
+          "seed": 42,
+          "epochs": 9,
+          "step_ms_mean": 50.15111111111111,
+          "epoch_seconds_mean": 6.1755555555555555,
+          "max_memory_mb": 680.6
+        },
+        {
+          "seed": 43,
+          "epochs": 11,
+          "step_ms_mean": 51.191818181818185,
+          "epoch_seconds_mean": 6.277272727272727,
+          "max_memory_mb": 682.4
+        },
+        {
+          "seed": 44,
+          "epochs": 9,
+          "step_ms_mean": 51.044444444444444,
+          "epoch_seconds_mean": 6.2844444444444445,
+          "max_memory_mb": 683.4
+        }
+      ],
+      "wall_seconds": 338.1
+    },
+    "bucketing": {
+      "val": {
+        "mean": 0.6112489660876758,
+        "std": 0.003634904018041168,
+        "runs": [
+          0.6153846153846154,
+          0.608560794044665,
+          0.6098014888337469
+        ]
+      },
+      "per_seed": [
+        0.6153846153846154,
+        0.608560794044665,
+        0.6098014888337469
+      ],
+      "logs": [
+        {
+          "seed": 42,
+          "epochs": 8,
+          "step_ms_mean": 41.60625,
+          "epoch_seconds_mean": 5.24125,
+          "max_memory_mb": 681.5
+        },
+        {
+          "seed": 43,
+          "epochs": 8,
+          "step_ms_mean": 42.75625,
+          "epoch_seconds_mean": 5.3625,
+          "max_memory_mb": 683.6
+        },
+        {
+          "seed": 44,
+          "epochs": 13,
+          "step_ms_mean": 42.54,
+          "epoch_seconds_mean": 5.37,
+          "max_memory_mb": 683.3
+        }
+      ],
+      "wall_seconds": 304.9
+    }
+  }
+}

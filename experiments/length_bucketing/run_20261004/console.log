@@ -1,0 +1,225 @@
+$ rm -rf /content/hard && git clone -q -b upgrade/training-hardening https://github.com/SEKY443/Group69TinyLanguageModel.git /content/hard
+
+$ git -C /content/hard checkout -q 1ff22a1 && git -C /content/hard log --oneline -1
+1ff22a1 Training hardening: diagnostics, opt-in length bucketing, B4 OOM fallback, masking tests; pre-register bucketing test
+$ pip -q install gdown
+
+$ mkdir -p /content/piqa && cd /content/piqa && gdown -q --folder https://drive.google.com/drive/folders/1lxEsHLbRsgOHh8rOAd75QHUZds7ybKtT -O . && find . -type f -name '*.*' -path '*/*/*' -exec mv {} . \; ; ls
+test.jsonl
+test-labels.lst
+train.jsonl
+train-labels.lst
+dact_control: 1.93M trainable parameters
+[dact_control_seed42 MLM] ep 01 loss 7.578074672765899 (6.85s)
+[dact_control_seed42 MLM] ep 02 loss 6.254265500788103 (5.1s)
+[dact_control_seed42 MLM] ep 03 loss 6.067391378837719 (4.82s)
+[dact_control_seed42 MLM] ep 04 loss 5.910072192811129 (4.66s)
+[dact_control_seed42 MLM] ep 05 loss 5.80306685598273 (5.13s)
+[dact_control_seed42 MLM] ep 06 loss 5.732581423040022 (4.66s)
+[dact_control_seed42 MLM] ep 07 loss 5.6816358064350325 (4.96s)
+[dact_control_seed42 MLM] ep 08 loss 5.6455843741433664 (4.82s)
+[dact_control_seed42 MLM] ep 09 loss 5.621191192091557 (4.67s)
+[dact_control_seed42 MLM] ep 10 loss 5.624879000479715 (5.12s)
+[dact_control_seed42] ep 01 loss 0.6866 train_acc 0.5562 val_acc 0.5949 (6.07s)
+[dact_control_seed42] ep 02 loss 0.5890 train_acc 0.7636 val_acc 0.5980 (6.51s)
+[dact_control_seed42] ep 03 loss 0.4709 train_acc 0.8501 val_acc 0.6073 (5.78s)
+[dact_control_seed42] ep 04 loss 0.4021 train_acc 0.8925 val_acc 0.6067 (6.55s)
+[dact_control_seed42] ep 05 loss 0.3565 train_acc 0.9227 val_acc 0.5986 (5.83s)
+[dact_control_seed42] ep 06 loss 0.3242 train_acc 0.9427 val_acc 0.6030 (6.61s)
+[dact_control_seed42] ep 07 loss 0.3004 train_acc 0.9541 val_acc 0.5974 (5.84s)
+[dact_control_seed42] ep 08 loss 0.2804 train_acc 0.9673 val_acc 0.5955 (6.51s)
+[dact_control_seed42] ep 09 loss 0.2679 train_acc 0.9729 val_acc 0.5924 (5.88s)
+[dact_control_seed42] best val_acc 0.6073 at epoch 3
+[dact_control_seed43 MLM] ep 01 loss 7.613040321751645 (5.17s)
+[dact_control_seed43 MLM] ep 02 loss 6.281964218407347 (4.74s)
+[dact_control_seed43 MLM] ep 03 loss 6.078236897786458 (4.72s)
+[dact_control_seed43 MLM] ep 04 loss 5.918942635519462 (5.15s)
+[dact_control_seed43 MLM] ep 05 loss 5.8056640625 (4.73s)
+[dact_control_seed43 MLM] ep 06 loss 5.73996292917352 (5.1s)
+[dact_control_seed43 MLM] ep 07 loss 5.693764669853344 (4.73s)
+[dact_control_seed43 MLM] ep 08 loss 5.648236191063597 (4.77s)
+[dact_control_seed43 MLM] ep 09 loss 5.629291199801261 (5.09s)
+[dact_control_seed43 MLM] ep 10 loss 5.6168266430235745 (4.73s)
+[dact_control_seed43] ep 01 loss 0.6865 train_acc 0.5597 val_acc 0.5788 (6.61s)
+[dact_control_seed43] ep 02 loss 0.5883 train_acc 0.7630 val_acc 0.6055 (5.93s)
+[dact_control_seed43] ep 03 loss 0.4704 train_acc 0.8428 val_acc 0.6030 (6.56s)
+[dact_control_seed43] ep 04 loss 0.4024 train_acc 0.8911 val_acc 0.6073 (5.97s)
+[dact_control_seed43] ep 05 loss 0.3580 train_acc 0.9215 val_acc 0.6104 (6.53s)
+[dact_control_seed43] ep 06 loss 0.3266 train_acc 0.9432 val_acc 0.5974 (5.88s)
+[dact_control_seed43] ep 07 loss 0.3019 train_acc 0.9559 val_acc 0.5986 (6.58s)
+[dact_control_seed43] ep 08 loss 0.2850 train_acc 0.9643 val_acc 0.5900 (5.95s)
+[dact_control_seed43] ep 09 loss 0.2712 train_acc 0.9719 val_acc 0.5862 (6.58s)
+[dact_control_seed43] ep 10 loss 0.2594 train_acc 0.9777 val_acc 0.5887 (5.94s)
+[dact_control_seed43] ep 11 loss 0.2501 train_acc 0.9814 val_acc 0.5955 (6.52s)
+[dact_control_seed43] best val_acc 0.6104 at epoch 5
+[dact_control_seed44 MLM] ep 01 loss 7.615672329015899 (4.75s)
+[dact_control_seed44 MLM] ep 02 loss 6.272634405838816 (5.12s)
+[dact_control_seed44 MLM] ep 03 loss 6.060126053659539 (4.74s)
+[dact_control_seed44 MLM] ep 04 loss 5.89901840477659 (4.75s)
+[dact_control_seed44 MLM] ep 05 loss 5.795609858998081 (5.14s)
+[dact_control_seed44 MLM] ep 06 loss 5.725925914028235 (4.74s)
+[dact_control_seed44 MLM] ep 07 loss 5.677649782415022 (5.14s)
+[dact_control_seed44 MLM] ep 08 loss 5.636035049170778 (4.74s)
+[dact_control_seed44 MLM] ep 09 loss 5.618096067194353 (4.74s)
+[dact_control_seed44 MLM] ep 10 loss 5.608763577645285 (5.18s)
+[dact_control_seed44] ep 01 loss 0.6868 train_acc 0.5569 val_acc 0.5881 (5.99s)
+[dact_control_seed44] ep 02 loss 0.5894 train_acc 0.7648 val_acc 0.6024 (6.63s)
+[dact_control_seed44] ep 03 loss 0.4695 train_acc 0.8458 val_acc 0.6098 (6.01s)
+[dact_control_seed44] ep 04 loss 0.4022 train_acc 0.8930 val_acc 0.5918 (6.69s)
+[dact_control_seed44] ep 05 loss 0.3573 train_acc 0.9194 val_acc 0.6017 (5.95s)
+[dact_control_seed44] ep 06 loss 0.3266 train_acc 0.9399 val_acc 0.6073 (6.64s)
+[dact_control_seed44] ep 07 loss 0.3018 train_acc 0.9539 val_acc 0.5999 (6.02s)
+[dact_control_seed44] ep 08 loss 0.2844 train_acc 0.9670 val_acc 0.6005 (6.61s)
+[dact_control_seed44] ep 09 loss 0.2720 train_acc 0.9727 val_acc 0.5837 (6.02s)
+[dact_control_seed44] best val_acc 0.6098 at epoch 3
+==> dact_control: val acc 0.6092 +- 0.0016
+{
+ "control": {
+  "val": {
+   "mean": 0.609181141439206,
+   "std": 0.0016412849324221655,
+   "runs": [
+    0.6073200992555832,
+    0.6104218362282878,
+    0.6098014888337469
+   ]
+  },
+  "per_seed": [
+   0.6073200992555832,
+   0.6104218362282878,
+   0.6098014888337469
+  ],
+  "logs": [
+   {
+    "seed": 42,
+    "epochs": 9,
+    "step_ms_mean": 50.15111111111111,
+    "epoch_seconds_mean": 6.1755555555555555,
+    "max_memory_mb": 680.6
+   },
+   {
+    "seed": 43,
+    "epochs": 11,
+    "step_ms_mean": 51.191818181818185,
+    "epoch_seconds_mean": 6.277272727272727,
+    "max_memory_mb": 682.4
+   },
+   {
+    "seed": 44,
+    "epochs": 9,
+    "step_ms_mean": 51.044444444444444,
+    "epoch_seconds_mean": 6.2844444444444445,
+    "max_memory_mb": 683.4
+   }
+  ],
+  "wall_seconds": 338.1
+ }
+}
+dact_bucketing: 1.93M trainable parameters
+[dact_bucketing_seed42 MLM] ep 01 loss 7.578498171086897 (4.82s)
+[dact_bucketing_seed42 MLM] ep 02 loss 6.254405239172149 (5.16s)
+[dact_bucketing_seed42 MLM] ep 03 loss 6.067955686334978 (4.74s)
+[dact_bucketing_seed42 MLM] ep 04 loss 5.90973114549068 (4.77s)
+[dact_bucketing_seed42 MLM] ep 05 loss 5.802064059073465 (5.17s)
+[dact_bucketing_seed42 MLM] ep 06 loss 5.7311867161800985 (4.77s)
+[dact_bucketing_seed42 MLM] ep 07 loss 5.679707845052083 (5.16s)
+[dact_bucketing_seed42 MLM] ep 08 loss 5.643520422149122 (4.77s)
+[dact_bucketing_seed42 MLM] ep 09 loss 5.619231642338267 (4.77s)
+[dact_bucketing_seed42 MLM] ep 10 loss 5.622652288068805 (5.14s)
+[dact_bucketing_seed42] ep 01 loss 0.6862 train_acc 0.5593 val_acc 0.5850 (5.05s)
+[dact_bucketing_seed42] ep 02 loss 0.5895 train_acc 0.7604 val_acc 0.6154 (5.87s)
+[dact_bucketing_seed42] ep 03 loss 0.4698 train_acc 0.8471 val_acc 0.6104 (4.87s)
+[dact_bucketing_seed42] ep 04 loss 0.4004 train_acc 0.8941 val_acc 0.6135 (5.42s)
+[dact_bucketing_seed42] ep 05 loss 0.3542 train_acc 0.9212 val_acc 0.6024 (5.16s)
+[dact_bucketing_seed42] ep 06 loss 0.3255 train_acc 0.9397 val_acc 0.6048 (4.85s)
+[dact_bucketing_seed42] ep 07 loss 0.2991 train_acc 0.9578 val_acc 0.6036 (5.85s)
+[dact_bucketing_seed42] ep 08 loss 0.2825 train_acc 0.9658 val_acc 0.6011 (4.86s)
+[dact_bucketing_seed42] best val_acc 0.6154 at epoch 2
+[dact_bucketing_seed43 MLM] ep 01 loss 7.612500107079222 (5.17s)
+[dact_bucketing_seed43 MLM] ep 02 loss 6.280762789542215 (4.73s)
+[dact_bucketing_seed43 MLM] ep 03 loss 6.076292339124177 (4.84s)
+[dact_bucketing_seed43 MLM] ep 04 loss 5.916344358209978 (5.11s)
+[dact_bucketing_seed43 MLM] ep 05 loss 5.8029126619037825 (4.78s)
+[dact_bucketing_seed43 MLM] ep 06 loss 5.7368217602110745 (5.14s)
+[dact_bucketing_seed43 MLM] ep 07 loss 5.691027724952028 (4.73s)
+[dact_bucketing_seed43 MLM] ep 08 loss 5.6452486807839914 (4.85s)
+[dact_bucketing_seed43 MLM] ep 09 loss 5.626687568530702 (5.02s)
+[dact_bucketing_seed43 MLM] ep 10 loss 5.614982738829496 (4.7s)
+[dact_bucketing_seed43] ep 01 loss 0.6865 train_acc 0.5583 val_acc 0.5831 (5.91s)
+[dact_bucketing_seed43] ep 02 loss 0.5893 train_acc 0.7557 val_acc 0.6086 (4.86s)
+[dact_bucketing_seed43] ep 03 loss 0.4696 train_acc 0.8488 val_acc 0.6042 (5.65s)
+[dact_bucketing_seed43] ep 04 loss 0.4038 train_acc 0.8921 val_acc 0.6055 (5.08s)
+[dact_bucketing_seed43] ep 05 loss 0.3591 train_acc 0.9210 val_acc 0.6048 (4.87s)
+[dact_bucketing_seed43] ep 06 loss 0.3264 train_acc 0.9415 val_acc 0.6017 (5.81s)
+[dact_bucketing_seed43] ep 07 loss 0.3011 train_acc 0.9559 val_acc 0.6042 (4.87s)
+[dact_bucketing_seed43] ep 08 loss 0.2844 train_acc 0.9662 val_acc 0.5937 (5.85s)
+[dact_bucketing_seed43] best val_acc 0.6086 at epoch 2
+[dact_bucketing_seed44 MLM] ep 01 loss 7.616261264734101 (4.77s)
+[dact_bucketing_seed44 MLM] ep 02 loss 6.272733989514802 (4.95s)
+[dact_bucketing_seed44 MLM] ep 03 loss 6.059793572676809 (5.02s)
+[dact_bucketing_seed44 MLM] ep 04 loss 5.898478725500274 (4.82s)
+[dact_bucketing_seed44 MLM] ep 05 loss 5.794259590015077 (5.2s)
+[dact_bucketing_seed44 MLM] ep 06 loss 5.723706697162829 (4.77s)
+[dact_bucketing_seed44 MLM] ep 07 loss 5.674965841728344 (5.1s)
+[dact_bucketing_seed44 MLM] ep 08 loss 5.633116604989035 (4.89s)
+[dact_bucketing_seed44 MLM] ep 09 loss 5.615214029947917 (4.73s)
+[dact_bucketing_seed44 MLM] ep 10 loss 5.606290583024945 (5.19s)
+[dact_bucketing_seed44] ep 01 loss 0.6868 train_acc 0.5547 val_acc 0.5825 (4.97s)
+[dact_bucketing_seed44] ep 02 loss 0.5887 train_acc 0.7632 val_acc 0.6011 (5.94s)
+[dact_bucketing_seed44] ep 03 loss 0.4697 train_acc 0.8463 val_acc 0.6024 (4.91s)
+[dact_bucketing_seed44] ep 04 loss 0.4027 train_acc 0.8935 val_acc 0.6055 (5.29s)
+[dact_bucketing_seed44] ep 05 loss 0.3580 train_acc 0.9226 val_acc 0.5955 (5.69s)
+[dact_bucketing_seed44] ep 06 loss 0.3271 train_acc 0.9399 val_acc 0.6011 (5.23s)
+[dact_bucketing_seed44] ep 07 loss 0.3031 train_acc 0.9541 val_acc 0.6098 (5.96s)
+[dact_bucketing_seed44] ep 08 loss 0.2866 train_acc 0.9641 val_acc 0.5875 (4.97s)
+[dact_bucketing_seed44] ep 09 loss 0.2730 train_acc 0.9726 val_acc 0.5906 (5.88s)
+[dact_bucketing_seed44] ep 10 loss 0.2617 train_acc 0.9779 val_acc 0.5813 (4.99s)
+[dact_bucketing_seed44] ep 11 loss 0.2529 train_acc 0.9821 val_acc 0.5837 (5.39s)
+[dact_bucketing_seed44] ep 12 loss 0.2456 train_acc 0.9859 val_acc 0.5819 (5.53s)
+[dact_bucketing_seed44] ep 13 loss 0.2411 train_acc 0.9877 val_acc 0.5881 (5.06s)
+[dact_bucketing_seed44] best val_acc 0.6098 at epoch 7
+==> dact_bucketing: val acc 0.6112 +- 0.0036
+{
+ "bucketing": {
+  "val": {
+   "mean": 0.6112489660876758,
+   "std": 0.003634904018041168,
+   "runs": [
+    0.6153846153846154,
+    0.608560794044665,
+    0.6098014888337469
+   ]
+  },
+  "per_seed": [
+   0.6153846153846154,
+   0.608560794044665,
+   0.6098014888337469
+  ],
+  "logs": [
+   {
+    "seed": 42,
+    "epochs": 8,
+    "step_ms_mean": 41.60625,
+    "epoch_seconds_mean": 5.24125,
+    "max_memory_mb": 681.5
+   },
+   {
+    "seed": 43,
+    "epochs": 8,
+    "step_ms_mean": 42.75625,
+    "epoch_seconds_mean": 5.3625,
+    "max_memory_mb": 683.6
+   },
+   {
+    "seed": 44,
+    "epochs": 13,
+    "step_ms_mean": 42.54,
+    "epoch_seconds_mean": 5.37,
+    "max_memory_mb": 683.3
+   }
+  ],
+  "wall_seconds": 304.9
+ }
+}
+DONE 1230117
+EXIT
