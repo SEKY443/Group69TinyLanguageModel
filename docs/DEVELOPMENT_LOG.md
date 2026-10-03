@@ -456,7 +456,7 @@ colab stop -s group69                                        # always stop: sess
 
 ## 22. Revision 2: review-driven improvements (2026-09-29, ≈21:00–22:00)
 
-The project was reviewed against the marking guide in the brief. The review scored it at about 70/100 and found the weaknesses below. Revision 2 addresses the ones that code can fix. The changes were made with **Claude Code (an AI coding assistant)** at a group member's request. Declare this AI assistance in the way the unit requires.
+The project was reviewed against the marking guide in the brief. The review scored it at about 70/100 and found the weaknesses below. Revision 2 addresses the ones that code can fix. The changes were made by Ali with **Claude Code (an AI coding assistant)**, which Ali directed and reviewed. Declare this AI assistance in the way the unit requires.
 
 ### 22.1 Review findings that motivated the changes
 | # | Finding | Evidence | Action |
@@ -535,7 +535,7 @@ The project was reviewed against the marking guide in the brief. The review scor
 
 ## 23. Revision 2b: council review and follow-up changes (2026-09-29, ≈22:30–23:15)
 
-After revision 2 was pushed, a group member asked Claude Code to "check the work then improve it" with an **LLM council**:
+After revision 2 was pushed, Ali asked Claude Code to "check the work then improve it" with an **LLM council**:
 - Five independent AI advisors (Contrarian, First Principles, Expansionist, Outsider, Executor) each assessed the repository.
 - Five anonymous peer reviews ranked their answers.
 - A chairman agent combined everything into a verdict.
@@ -612,10 +612,10 @@ All of these were Claude sub-agents, not people. This revision was also written 
 
 ## 24. Re-run attempts with the Colab CLI, and changes for a browser run (2026-09-29 22:10 – 2026-09-30 11:30, AWST)
 
-### 24.1 Setting up the Colab CLI on Windows (Claude Code, at the group member's request)
+### 24.1 Setting up the Colab CLI on Windows (Ali, using Claude Code)
 - Google's `google-colab-cli` 0.7.4 (the `googlecolab` GitHub org) was installed with `uv tool install`.
 - It **doesn't run on native Windows**: it imports `termios`, which exists only on Unix. It was therefore installed inside **WSL Ubuntu**, together with the Google Cloud SDK 587.0.0 for sign-in.
-- Sign-in uses Application Default Credentials. The group member ran `~/colab-login.sh` in WSL themselves and signed in with their own account in the browser. Claude Code never saw or handled the credentials.
+- Sign-in uses Application Default Credentials. Ali ran `~/colab-login.sh` in WSL and signed in with their own account in the browser. Claude Code never saw or handled the credentials.
 - The account has **0 compute units**:
   - `colab new --gpu A100` was rejected ("no quota or entitlement"), so nothing was charged.
   - A free **Tesla T4** session was created instead.
@@ -661,7 +661,7 @@ The group member chose to run the notebook in the Colab web UI on a free T4. To 
 
 ## 25. Full re-run on a free T4 and updated results (2026-09-30, ≈17:00–19:30 AWST)
 
-### 25.1 How the run was made (Claude Code, with the group member's authorisation "to do all actions to finish the task")
+### 25.1 How the run was made (Ali, using Claude Code with the authorisation "to do all actions to finish the task")
 - The files the group member reported downloading from their own browser run were not on this computer. Neither `CITS4012_69*.ipynb` nor `outputs*.zip` was found on drives C:, D: or E:, so that run's outputs could not be used.
 - A new free **T4** session (`group69`) was created with the CLI.
 - The VM was set up with `setup_vm.py`: clone of `revision-2` at **`5ef7cda`**, PIQA fetched with gdown, and the `/content/data` symlink.
@@ -801,9 +801,9 @@ Setup: the small configuration (d = 128, 2 layers, no warm-up), 3 seeds, validat
 
 ---
 
-## 27. Report draft (2026-10-01, Claude Code at the group member's request)
+## 27. Report draft (2026-10-01, Ali, using Claude Code)
 
-The group member asked for the project report "with the proof of works", including what failed as well as what worked. Claude Code wrote a complete **draft**, which the group must review, correct and complete.
+Ali asked for the project report "with the proof of works", including what failed as well as what worked. Claude Code wrote a complete **draft**, which the group must review, correct and complete.
 
 ### 27.1 Files (`report/`)
 - `CITS4012_69.tex`: the report, using the official ACL style with `\usepackage[final]{acl}` and `\author{Group 69}`.
@@ -1051,7 +1051,7 @@ artifacts remain locally retained, not remotely backed up. No commit or push was
 
 ---
 
-## 28. Merge of the two tracks into `merge-review` (2026-10-01, Claude Code at the group member's request)
+## 28. Merge of the two tracks into `merge-review` (2026-10-01, Ali, using Claude Code)
 
 The group member asked to merge `revision-2` into `main` "after checking and confirming that it's better". The check found that `main` had moved on: Salah Elshafey's commit `e08e80c` ("updates", 30 Sep 23:53, 90 files) added an evidence audit of the original A100 run, robustness and provenance code, a local replication of the original model, and report notes. The two branches had diverged in direction, not only in content.
 
