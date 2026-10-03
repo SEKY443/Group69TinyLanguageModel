@@ -1377,3 +1377,37 @@ Source: section 1 of the upgrade prompt and `FUTURE_FIXES_NOTES.md` (A1, A2). Fr
 - `final_results.csv`, `error_overlap.csv` and `diff_probe_by_layer.csv` of the two runs are byte-identical (`cmp`).
 
 **Not covered:** a real Colab VM loss with Google Drive. The code path is the same (`persist_dir` is just a folder), but Drive sync latency was not tested.
+
+## 37. Upgrade 2: reproducibility (2026-10-03, branch `upgrade/reproducibility` from `upgrade/robustness`)
+Source: section 2 of the upgrade prompt and `FUTURE_FIXES_NOTES.md` (B7, B10, B11, E24). Every decision here used the validation split only; no test accuracy was computed.
+
+**One lock file.** `requirements-lock.txt` holds the exact versions of the final A100 run. `requirements-a100.txt` now only includes it (`-r requirements-lock.txt`), so old references still work. The notebook's environment cell compares the running versions with the same list: a mismatch prints a loud warning, or raises when `GROUP69_STRICT_VERSIONS=1`. A test checks that the notebook list equals the lock file.
+
+**B1 version sensitivity, validation only** (`tools/b1_version_check.py`, rows appended to `experiments/b1_versions/b1_versions.csv`, real PIQA, CPU):
+
+| Environment | scikit-learn | scipy | numpy | C | B1 val acc |
+|---|---|---|---|---|---|
+| locked | 1.6.1 | 1.16.3 | 2.1.3 | 3.0 | **59.2432 %** (equals the A100 value, 59.24) |
+| newer | 1.6.1 | 1.18.1 | 2.5.3 | 3.0 | **58.9950 %** |
+
+- **The prompt asked for test numbers here** (61.21 vs 60.88 %); that conflicts with its own rule that test accuracy is never computed. The test values come from the earlier run in section 33.2 and were **not** recomputed; only validation was measured.
+- **The "locked" environment is not the full A100 environment:** Python 3.12.10, CPU torch 2.14.0, tokenizers 0.23.2. B1 uses only scikit-learn, scipy and numpy, which match the lock.
+
+**`run_config.json`** (`write_run_config` in `src/config.py`, called after data preparation): run id, time, git commit, full config, environment, the data manifest (file and split checksums, tokenizer hash) and any version mismatch. It is written to `out_dir` and the persistent run folder; a second run gets a time-stamped name.
+
+**Validation predictions for every baseline.** `save_baseline_val` writes `predictions/B1_tfidf_lr_val.jsonl`, `B3_roberta_seed<seed>_val.jsonl` and `B4_qwen_zero_shot_val.jsonl` in DACT's format, with probabilities:
+- B1: `predict_proba`;
+- B3: softmax of the multiple-choice logits;
+- B4: softmax of the two mean log-probabilities, documented as a score, not a calibrated probability.
+
+Test predictions are unchanged: B1 and B3 still make held-out test predictions without scoring them (this avoids keeping 3 × 500 MB checkpoints), and B4 predicts test only in Step 5.
+
+**RoBERTa restart rule** (declared before any run; NEW, not used for the reported A100 numbers):
+- if validation accuracy after epoch 1 is below 0.52, the seed is abandoned and re-run with seed + 1000, at most twice;
+- the abandoned log is kept and ends with an `"abandoned"` event;
+- the notebook prints, per seed actually used, the mean, std and **median**, plus the list of restarts.
+- *Why 0.52:* chance is 0.50 and one standard error on 1,612 items is 1.25 points.
+
+**Evidence:**
+- `tests/test_reproducibility.py` (6 tests): notebook list = lock file, run config, never-overwrite, baseline validation predictions, restart rule (restart, then give up after 2).
+- Notebook smoke run of this branch (synthetic data, CPU, RoBERTa/Qwen stubbed): exit 0. The version warning fired as expected (CPU torch 2.14, pandas 3.0.6, …), `run_config.json` was written to both folders, and `B1_tfidf_lr_val.jsonl`, `B3_roberta_seed42_val.jsonl` and `B4_qwen_zero_shot_val.jsonl` were saved.

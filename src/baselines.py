@@ -49,7 +49,8 @@ def tfidf_lr_baseline(train_rows, val_rows, test_rows=None, Cs=(0.03, 0.1, 0.3, 
         if best is None or acc > best[0]:
             best = (acc, C, clf)
     _, C, clf = best
-    result = {"C": C, "val_pred": clf.predict(Xva), "vectorizer": vec, "classifier": clf}
+    result = {"C": C, "val_pred": clf.predict(Xva), "val_prob": clf.predict_proba(Xva)[:, 1],
+              "vectorizer": vec, "classifier": clf}
     if test_rows is not None:
         result["test_pred"] = clf.predict(feats(test_rows))
     return result
@@ -92,9 +93,33 @@ class BiLSTMAttention(nn.Module):
 
 
 # ---------------------------------------------------------------- B3
+class AtChance(Exception):
+    """Raised by finetune_pretrained when validation accuracy after epoch 1 is below the declared threshold."""
+
+
+def finetune_with_restart(model_name, train_rows, val_rows, test_rows, device, out_dir, seed=42, max_restarts=2,
+                          **kwargs):
+    """Declared restart rule for unstable fine-tuning: a seed still at chance after epoch 1 is abandoned (its log
+    is kept, ending with an "abandoned" event) and re-run with seed + 1000, at most `max_restarts` times."""
+    tried = []
+    for attempt in range(max_restarts + 1):
+        s = seed + 1000 * attempt
+        try:
+            out = finetune_pretrained(model_name, train_rows, val_rows, test_rows, device, out_dir, seed=s, **kwargs)
+        except AtChance:
+            tried.append(s)
+            continue
+        out.update(seed=s, restarted_from=tried)
+        return out
+    raise RuntimeError(f"{model_name}: seeds {tried} all stayed at chance after epoch 1")
+
+
 def finetune_pretrained(model_name, train_rows, val_rows, test_rows, device, out_dir, epochs=4, lr=1e-5,
-                        batch_size=16, max_len=128, seed=42, verbose=True, revision=None):
-    """Fine-tunes a pretrained encoder with a multiple-choice head; model selection on validation only."""
+                        batch_size=16, max_len=128, seed=42, verbose=True, revision=None, chance_threshold=None):
+    """Fine-tunes a pretrained encoder with a multiple-choice head; model selection on validation only.
+
+    With chance_threshold set, raises AtChance if validation accuracy after epoch 1 is below it (see
+    finetune_with_restart)."""
     from transformers import AutoModelForMultipleChoice, AutoTokenizer, get_linear_schedule_with_warmup
 
     set_seed(seed)
@@ -122,13 +147,15 @@ def finetune_pretrained(model_name, train_rows, val_rows, test_rows, device, out
             yield {k: v[idx].to(device) for k, v in enc.items()}, y[idx].to(device)
 
     @torch.no_grad()
-    def predict(enc, y):
+    def predict(enc, y, with_prob=False):
         model.eval()
-        preds = []
+        logits = []
         for xb, _ in batches(enc, y, False):
             with autocast_ctx(device):
-                preds.append(model(**xb).logits.argmax(-1).cpu())
-        return torch.cat(preds).numpy()
+                logits.append(model(**xb).logits.float().cpu())
+        logits = torch.cat(logits)
+        pred = logits.argmax(-1).numpy()
+        return (pred, logits.softmax(-1)[:, 1].numpy()) if with_prob else pred
 
     tr, ytr = encode(train_rows)
     va, yva = encode(val_rows)
@@ -156,13 +183,18 @@ def finetune_pretrained(model_name, train_rows, val_rows, test_rows, device, out
                          seconds=round(time.time() - t0, 1))
         if verbose:
             print(f"[B3 {model_name}] ep {epoch} loss {rec['train_loss']:.4f} val_acc {val_acc:.4f} ({rec['seconds']}s)")
+        if epoch == 1 and chance_threshold is not None and val_acc < chance_threshold:
+            logger.log(event="abandoned", reason=f"val acc {val_acc:.4f} < {chance_threshold} after epoch 1")
+            del model
+            raise AtChance(model_name, seed, val_acc)
         if val_acc > best_acc:
             best_acc, best_state = val_acc, copy.deepcopy({k: v.cpu() for k, v in model.state_dict().items()})
     model.load_state_dict(best_state)
     checkpoint = f"{out_dir}/checkpoints/B3_{model_name.split('/')[-1]}_seed{seed}"
     model.save_pretrained(checkpoint)
     tok.save_pretrained(checkpoint)
-    out = {"val_pred": predict(va, yva), "best_val_acc": best_acc, "checkpoint": checkpoint,
+    val_pred, val_prob = predict(va, yva, with_prob=True)
+    out = {"val_pred": val_pred, "val_prob": val_prob, "best_val_acc": best_acc, "checkpoint": checkpoint,
            "max_len": max_len, "batch_size": batch_size}
     if test_rows is not None:
         te, yte = encode(test_rows)
@@ -192,8 +224,11 @@ def pretrained_predict(fitted, rows, device):
 
 # ---------------------------------------------------------------- B4
 @torch.no_grad()
-def llm_zero_shot(model_name, rows, device, batch_size=32, verbose=True, revision=None, out_dir=None):
-    """Chooses the solution with the higher mean token log-probability given a goal prompt (no training)."""
+def llm_zero_shot(model_name, rows, device, batch_size=32, verbose=True, revision=None, out_dir=None,
+                  return_prob=False):
+    """Chooses the solution with the higher mean token log-probability given a goal prompt (no training).
+
+    return_prob=True also returns softmax(mean log-probs)[option 2], a score for analysis, not a calibrated probability."""
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
     tok = AutoTokenizer.from_pretrained(model_name, revision=revision)
@@ -232,4 +267,5 @@ def llm_zero_shot(model_name, rows, device, batch_size=32, verbose=True, revisio
             print(f"[B4 {model_name}] {i}/{len(seqs)}")
     scores = torch.cat(scores).view(-1, 2)
     del model
-    return scores.argmax(-1).numpy()
+    pred = scores.argmax(-1).numpy()
+    return (pred, scores.softmax(-1)[:, 1].numpy()) if return_prob else pred

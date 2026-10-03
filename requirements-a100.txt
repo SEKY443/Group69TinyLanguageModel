@@ -1,10 +1,2 @@
-# Versions printed by the ORIGINAL saved A100 notebook. Not a claim about today's Colab image.
-# Original Python: 3.13.15. Install a suitable torch 2.11.0 CUDA 12.8 wheel separately if needed.
-torch==2.11.0
-numpy==2.1.3
-scikit-learn==1.6.1
-scipy==1.16.3
-pandas==2.2.3
-matplotlib==3.10.0
-tokenizers==0.23.1
-transformers==5.16.1
+# Kept for old references; the exact versions now live in one place.
+-r requirements-lock.txt

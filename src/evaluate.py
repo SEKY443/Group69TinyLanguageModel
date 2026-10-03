@@ -5,6 +5,8 @@ import os
 
 import numpy as np
 
+from config import fresh_path  # nb-skip
+
 
 def save_predictions(path, rows, prediction, run, split):
     """Persist only executed predictions; probabilities are omitted if unavailable (e.g. B0)."""
@@ -21,6 +23,13 @@ def save_predictions(path, rows, prediction, run, split):
                 p = float(prediction["prob"][i])
                 rec.update(probability_candidate_1=1-p, probability_candidate_2=p)
             stream.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+
+def save_baseline_val(cfg, name, rows, pred, prob=None):
+    """Validation predictions of a baseline (B1/B3/B4) in the same format as DACT's, also in the persistent folder."""
+    out = {"pred": np.asarray(pred), **({"prob": np.asarray(prob)} if prob is not None else {})}
+    for root in filter(None, (cfg.out_dir, cfg.persist_dir)):
+        save_predictions(fresh_path(os.path.join(root, "predictions", f"{name}_val.jsonl")), rows, out, name, "val")
 
 
 def holm_adjust(pvalues):

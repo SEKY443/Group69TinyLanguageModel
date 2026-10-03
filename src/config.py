@@ -150,6 +150,30 @@ def write_progress(cfg, **fields):
     return record
 
 
+def fresh_path(path):
+    """`path`, or a time-stamped sibling if it exists, so a re-run never overwrites earlier evidence."""
+    if not os.path.exists(path):
+        return path
+    base, ext = os.path.splitext(path)
+    return f"{base}.{time.strftime('%Y%m%d_%H%M%S')}{ext}"
+
+
+def write_run_config(cfg, device, run_id, **extra):
+    """One file per run with everything needed to reproduce it: config, seeds, commit, environment, data checksums
+    (the data manifest written by prepare_everything). Saved to out_dir and to the persistent run folder."""
+    manifest = os.path.join(cfg.out_dir, "data_manifest.json")
+    record = {"run_id": run_id, "time": time.strftime("%Y-%m-%d %H:%M:%S"), "commit": git_commit(),
+              "config": cfg.to_dict(), "environment": environment_info(device),
+              "data": json.load(open(manifest, encoding="utf-8")) if os.path.isfile(manifest) else None, **extra}
+    for root in filter(None, (cfg.out_dir, cfg.persist_dir)):
+        os.makedirs(root, exist_ok=True)
+        path = fresh_path(os.path.join(root, "run_config.json"))
+        with open(path, "x", encoding="utf-8") as f:
+            json.dump(record, f, indent=2)
+        record.setdefault("path", path)
+    return record
+
+
 class JsonlLogger:
     """Append-only JSON-lines logger so every training/evaluation run leaves a persistent log file."""
 
