@@ -93,6 +93,15 @@ class BiLSTMAttention(nn.Module):
 
 
 # ---------------------------------------------------------------- B3
+def encode_multiple_choice(tok, rows, max_len):
+    """[goal, solution_k] pairs for a multiple-choice head: tensors of shape [items, 2, max_len] and the labels."""
+    goals = [r["goal"] for r in rows for _ in range(2)]
+    sols = [r[k] for r in rows for k in ("sol1", "sol2")]
+    enc = tok(goals, sols, truncation=True, max_length=max_len, padding="max_length", return_tensors="pt")
+    enc = {k: v.view(len(rows), 2, -1) for k, v in enc.items()}
+    return enc, torch.tensor([r["label"] for r in rows])
+
+
 class AtChance(Exception):
     """Raised by finetune_pretrained when validation accuracy after epoch 1 is below the declared threshold."""
 
@@ -134,11 +143,7 @@ def finetune_pretrained(model_name, train_rows, val_rows, test_rows, device, out
                n_params=sum(p.numel() for p in model.parameters()), environment=environment_info(device))
 
     def encode(rows):
-        goals = [r["goal"] for r in rows for _ in range(2)]
-        sols = [r[k] for r in rows for k in ("sol1", "sol2")]
-        enc = tok(goals, sols, truncation=True, max_length=max_len, padding="max_length", return_tensors="pt")
-        enc = {k: v.view(len(rows), 2, -1) for k, v in enc.items()}
-        return enc, torch.tensor([r["label"] for r in rows])
+        return encode_multiple_choice(tok, rows, max_len)
 
     def batches(enc, y, shuffle):
         order = torch.randperm(len(y)) if shuffle else torch.arange(len(y))
@@ -166,21 +171,29 @@ def finetune_pretrained(model_name, train_rows, val_rows, test_rows, device, out
     best_acc, best_state = -1.0, None
     for epoch in range(1, epochs + 1):
         model.train()
-        t0, losses = time.time(), []
+        if device.type == "cuda":
+            torch.cuda.reset_peak_memory_stats(device)
+        t0, steps = time.time(), 0
+        loss_sum, grad_sum = torch.zeros((), device=device), torch.zeros((), device=device)
         for xb, yb in batches(tr, ytr, True):
             with autocast_ctx(device):
                 loss = F.cross_entropy(model(**xb).logits.float(), yb)
             opt.zero_grad(set_to_none=True)
             scaler.scale(loss).backward()
             scaler.unscale_(opt)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)   # norm BEFORE clipping
             scaler.step(opt)
             scaler.update()
             sched.step()
-            losses.append(loss.item())
+            loss_sum += loss.detach()
+            grad_sum += grad_norm.detach().float()
+            steps += 1
+        train_seconds = time.time() - t0
         val_acc = float((predict(va, yva) == yva.numpy()).mean())
-        rec = logger.log(event="epoch", epoch=epoch, train_loss=float(np.mean(losses)), val_acc=val_acc,
-                         seconds=round(time.time() - t0, 1))
+        rec = logger.log(event="epoch", epoch=epoch, train_loss=float(loss_sum) / steps, val_acc=val_acc,
+                         seconds=round(time.time() - t0, 1), lr=sched.get_last_lr()[0],
+                         grad_norm_mean=round(float(grad_sum) / steps, 4), step_ms=round(1000 * train_seconds / steps, 1),
+                         max_memory_mb=round(torch.cuda.max_memory_allocated(device) / 2 ** 20, 1) if device.type == "cuda" else None)
         if verbose:
             print(f"[B3 {model_name}] ep {epoch} loss {rec['train_loss']:.4f} val_acc {val_acc:.4f} ({rec['seconds']}s)")
         if epoch == 1 and chance_threshold is not None and val_acc < chance_threshold:
@@ -223,6 +236,46 @@ def pretrained_predict(fitted, rows, device):
 
 
 # ---------------------------------------------------------------- B4
+def lm_batch(chunk, pad_id):
+    """Right-padded input ids, attention mask and continuation mask for [(ids, n_continuation_tokens), ...]: only the
+    last n tokens of each sequence (the solution) are scored, never the prompt or the padding."""
+    L = max(len(s) for s, _ in chunk)
+    ids = torch.full((len(chunk), L), pad_id, dtype=torch.long)
+    cont_mask = torch.zeros((len(chunk), L), dtype=torch.bool)
+    attn = torch.zeros((len(chunk), L), dtype=torch.long)
+    for j, (s, n) in enumerate(chunk):
+        ids[j, :len(s)] = torch.tensor(s)
+        attn[j, :len(s)] = 1
+        cont_mask[j, len(s) - n:len(s)] = True
+    return ids, attn, cont_mask
+
+
+@torch.no_grad()
+def score_continuations(model, seqs, batch_size, pad_id, device, progress=None):
+    """Mean log-probability of each continuation. On a CUDA out-of-memory error the batch is halved and retried
+    (down to 1); the batch sizes used after each fallback are returned for the log."""
+    scores, oom, i, bs = [], [], 0, batch_size
+    while i < len(seqs):
+        chunk = seqs[i:i + bs]
+        ids, attn, cont_mask = (t.to(device) for t in lm_batch(chunk, pad_id))
+        try:
+            logp = model(input_ids=ids, attention_mask=attn).logits.float().log_softmax(-1)
+        except torch.cuda.OutOfMemoryError:
+            if bs == 1:
+                raise
+            bs = max(1, bs // 2)
+            oom.append(bs)
+            torch.cuda.empty_cache()
+            continue
+        tok_lp = logp[:, :-1].gather(-1, ids[:, 1:, None]).squeeze(-1)
+        m = cont_mask[:, 1:].float()
+        scores.append(((tok_lp * m).sum(-1) / m.sum(-1).clamp(min=1)).cpu())
+        if progress is not None and (i // batch_size) % 50 == 0:
+            progress(i)
+        i += len(chunk)
+    return torch.cat(scores), oom
+
+
 @torch.no_grad()
 def llm_zero_shot(model_name, rows, device, batch_size=32, verbose=True, revision=None, out_dir=None,
                   return_prob=False):
@@ -233,6 +286,9 @@ def llm_zero_shot(model_name, rows, device, batch_size=32, verbose=True, revisio
 
     tok = AutoTokenizer.from_pretrained(model_name, revision=revision)
     dtype = amp_dtype(device) or torch.float32
+    if device.type == "cuda" and verbose:
+        free, total = torch.cuda.mem_get_info(device)
+        print(f"[B4 {model_name}] GPU memory before loading: {free / 2**30:.1f} of {total / 2**30:.1f} GiB free; dtype {dtype}")
     model = AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype, revision=revision).to(device).eval()
     if out_dir is not None:
         JsonlLogger(f"{out_dir}/logs/B4_zero_shot.jsonl").log(event="inference", model=model_name,
@@ -247,25 +303,11 @@ def llm_zero_shot(model_name, rows, device, batch_size=32, verbose=True, revisio
         for k in ("sol1", "sol2"):
             cont = tok(" " + r[k], add_special_tokens=False).input_ids[:128]
             seqs.append((prompt + cont, len(cont)))
-    scores = []
-    for i in range(0, len(seqs), batch_size):
-        chunk = seqs[i:i + batch_size]
-        L = max(len(s) for s, _ in chunk)
-        ids = torch.full((len(chunk), L), pad_id, dtype=torch.long)
-        cont_mask = torch.zeros((len(chunk), L), dtype=torch.bool)
-        attn = torch.zeros((len(chunk), L), dtype=torch.long)
-        for j, (s, n) in enumerate(chunk):
-            ids[j, :len(s)] = torch.tensor(s)
-            attn[j, :len(s)] = 1
-            cont_mask[j, len(s) - n:len(s)] = True
-        ids, attn, cont_mask = ids.to(device), attn.to(device), cont_mask.to(device)
-        logp = model(input_ids=ids, attention_mask=attn).logits.float().log_softmax(-1)
-        tok_lp = logp[:, :-1].gather(-1, ids[:, 1:, None]).squeeze(-1)
-        m = cont_mask[:, 1:].float()
-        scores.append(((tok_lp * m).sum(-1) / m.sum(-1).clamp(min=1)).cpu())
-        if verbose and (i // batch_size) % 50 == 0:
-            print(f"[B4 {model_name}] {i}/{len(seqs)}")
-    scores = torch.cat(scores).view(-1, 2)
+    scores, oom = score_continuations(model, seqs, batch_size, pad_id, device,
+                                      progress=(lambda i: print(f"[B4 {model_name}] {i}/{len(seqs)}")) if verbose else None)
+    if out_dir is not None and oom:
+        JsonlLogger(f"{out_dir}/logs/B4_zero_shot.jsonl").log(event="oom_fallback", batch_sizes=oom)
+    scores = scores.view(-1, 2)
     del model
     pred = scores.argmax(-1).numpy()
     return (pred, scores.softmax(-1)[:, 1].numpy()) if return_prob else pred

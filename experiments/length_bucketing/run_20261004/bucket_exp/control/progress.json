@@ -1,0 +1,10 @@
+{
+ "time": "2026-10-03 17:42:17",
+ "commit": "1ff22a1",
+ "step": "train",
+ "run": "dact_control_seed44",
+ "seed": 44,
+ "epoch": 9,
+ "val_acc": 0.5837,
+ "best_val_acc": 0.6098
+}

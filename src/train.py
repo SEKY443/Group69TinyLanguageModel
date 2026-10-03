@@ -101,7 +101,13 @@ def train_qa(model, train_loader, val_loader, cfg: Config, device, run_name, ver
     history = []
     for epoch in range(1, cfg.epochs + 1):
         model.train()
-        t0, tot_loss, tot_correct, n = time.time(), 0.0, 0, 0
+        if device.type == "cuda":
+            torch.cuda.reset_peak_memory_stats(device)
+        # running sums stay on the device: no GPU->CPU copy per step (the finiteness check below is the only sync)
+        t0, n, steps = time.time(), 0, 0
+        tot_loss = torch.zeros((), device=device)
+        tot_correct = torch.zeros((), device=device)
+        grad_sum, grad_max = torch.zeros((), device=device), torch.zeros((), device=device)
         for batch in train_loader:
             batch = to_device(batch, device)
             with autocast_ctx(device, cfg.amp):
@@ -112,18 +118,25 @@ def train_qa(model, train_loader, val_loader, cfg: Config, device, run_name, ver
             opt.zero_grad(set_to_none=True)
             scaler.scale(loss).backward()
             scaler.unscale_(opt)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), cfg.grad_clip)
+            grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), cfg.grad_clip)   # norm BEFORE clipping
             scaler.step(opt)
             scaler.update()
             sched.step()
             bs = batch["labels"].size(0)
-            tot_loss += loss.item() * bs
-            tot_correct += (out["logits"].argmax(-1) == batch["labels"]).sum().item()
+            tot_loss += loss.detach().float() * bs
+            tot_correct += (out["logits"].argmax(-1) == batch["labels"]).sum()
+            grad_sum += grad_norm.detach().float()
+            grad_max = torch.maximum(grad_max, grad_norm.detach().float())
             n += bs
+            steps += 1
+        train_seconds = time.time() - t0
         val = predict(model, val_loader, device, cfg)
         val_acc = float((val["pred"] == val["label"]).mean())
-        rec = logger.log(event="epoch", epoch=epoch, train_loss=tot_loss / n, train_acc=tot_correct / n,
-                         val_acc=val_acc, val_loss=val["loss"], lr=sched.get_last_lr()[0], seconds=round(time.time() - t0, 2))
+        rec = logger.log(event="epoch", epoch=epoch, train_loss=float(tot_loss) / n, train_acc=float(tot_correct) / n,
+                         val_acc=val_acc, val_loss=val["loss"], lr=sched.get_last_lr()[0], seconds=round(time.time() - t0, 2),
+                         grad_norm_mean=round(float(grad_sum) / max(steps, 1), 4), grad_norm_max=round(float(grad_max), 4),
+                         step_ms=round(1000 * train_seconds / max(steps, 1), 2),
+                         max_memory_mb=round(torch.cuda.max_memory_allocated(device) / 2 ** 20, 1) if device.type == "cuda" else None)
         history.append(rec)
         write_progress(cfg, step="train", run=run_name, seed=cfg.run_seed, epoch=epoch, val_acc=round(val_acc, 4),
                        best_val_acc=round(max(best_acc, val_acc), 4))
@@ -185,7 +198,8 @@ def mlm_warmup(model, train_ds, cfg: Config, device, vocab_size, run_name, verbo
     scaler = torch.amp.GradScaler("cuda", enabled=cfg.amp and amp_dtype(device) == torch.float16)
     for epoch in range(1, cfg.mlm_epochs + 1):
         model.train()
-        t0, losses = time.time(), []
+        t0, steps = time.time(), 0
+        loss_sum, grad_sum = torch.zeros((), device=device), torch.zeros((), device=device)
         for batch in loader:
             batch = to_device(batch, device)
             selected = batch["labels"] != -100
@@ -199,13 +213,15 @@ def mlm_warmup(model, train_ds, cfg: Config, device, vocab_size, run_name, verbo
             opt.zero_grad(set_to_none=True)
             scaler.scale(loss).backward()
             scaler.unscale_(opt)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), cfg.grad_clip)
+            grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), cfg.grad_clip)
             scaler.step(opt)
             scaler.update()
             sched.step()
-            losses.append(loss.item())
-        rec = logger.log(event="mlm_epoch", epoch=epoch, loss=float(np.mean(losses)) if losses else None,
-                         seconds=round(time.time() - t0, 2))
+            loss_sum += loss.detach()
+            grad_sum += grad_norm.detach().float()
+            steps += 1
+        rec = logger.log(event="mlm_epoch", epoch=epoch, loss=float(loss_sum) / steps if steps else None,
+                         seconds=round(time.time() - t0, 2), grad_norm_mean=round(float(grad_sum) / max(steps, 1), 4))
         if verbose:
             print(f"[{run_name} MLM] ep {epoch:02d} loss {rec['loss']} ({rec['seconds']}s)")
     return model

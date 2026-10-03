@@ -261,10 +261,55 @@ def collate(batch):
     }
 
 
+class BucketBatchSampler(torch.utils.data.Sampler):
+    """Length bucketing for the training loader (Config.length_bucketing, off by default).
+
+    Each epoch: shuffle all items, cut them into chunks of `chunk` x batch_size, sort every chunk by length, cut it
+    into batches, and shuffle the batch order. Batches hold items of similar length (less padding) while every epoch
+    still sees a different random order. PIQA items are pairs scored together, so items are never packed or split.
+    The random order comes from torch's global RNG, so set_seed() makes it reproducible.
+    """
+
+    def __init__(self, lengths, batch_size, chunk=50):
+        self.lengths, self.batch_size, self.chunk = list(lengths), batch_size, chunk
+
+    def __iter__(self):
+        order = torch.randperm(len(self.lengths)).tolist()
+        size = self.batch_size * self.chunk
+        batches = []
+        for start in range(0, len(order), size):
+            part = sorted(order[start:start + size], key=lambda i: self.lengths[i])
+            batches += [part[i:i + self.batch_size] for i in range(0, len(part), self.batch_size)]
+        for j in torch.randperm(len(batches)).tolist():
+            yield batches[j]
+
+    def __len__(self):
+        return (len(self.lengths) + self.batch_size - 1) // self.batch_size
+
+
+def item_lengths(ds):
+    """Padded length of each item: the longer of its two option sequences."""
+    return [max(len(seq[0]) for seq in item) for item in ds.items]
+
+
+def padding_share(ds, batches):
+    """Share of token positions in the padded [B, 2, L] tensors that are padding, for a list of index batches."""
+    lengths = [[len(seq[0]) for seq in item] for item in ds.items]
+    total = pad = 0
+    for b in batches:
+        L = max(max(lengths[i]) for i in b)
+        total += 2 * L * len(b)
+        pad += sum(2 * L - sum(lengths[i]) for i in b)
+    return pad / total
+
+
 def make_loader(ds, cfg: Config, shuffle, device):
-    return DataLoader(ds, batch_size=cfg.batch_size, shuffle=shuffle, collate_fn=collate,
-                      num_workers=cfg.num_workers if device.type == "cuda" else 0,
-                      pin_memory=device.type == "cuda", persistent_workers=False)
+    workers = dict(num_workers=cfg.num_workers if device.type == "cuda" else 0,
+                   pin_memory=device.type == "cuda", persistent_workers=False)
+    if shuffle and getattr(cfg, "length_bucketing", False):
+        sampler = BucketBatchSampler(item_lengths(ds), cfg.batch_size, cfg.bucket_chunk)
+        return DataLoader(ds, batch_sampler=sampler, collate_fn=collate, **workers)
+    return DataLoader(ds, batch_size=cfg.batch_size, shuffle=shuffle, collate_fn=collate, **workers)
 
 
 def prepare_everything(cfg: Config):
