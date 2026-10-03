@@ -1156,3 +1156,31 @@ The group member chose the combined `merge-review` version for submission, with 
 
 ### 31.1 Change on 2026-10-01
 - At the group member's request, Team Contributions was replaced with a group statement: the work was divided among Ali, Salah and Bayron; each member implemented and tested his own part of the code and wrote the report sections describing his own work. The PDF was recompiled and copied to the submission folder.
+
+---
+
+## 32. Report polish for marks (2026-10-03, branch `report-polish` from `main` `1816b58`)
+
+The group member asked to fix the three weaknesses from the 82/100 evaluation. All three changes are in the report only; the notebook and outputs are unchanged.
+
+1. **Team Contributions are now specific.** The group statement is kept (work divided; each member implemented and tested his own part and wrote the report sections about it), followed by one line per member taken from the git history. The group member confirmed that the account SEKY443 is Bayron.
+   - **Bayron:** original pipeline and baselines, original A100 run, final A100 runs and comparison, integration.
+   - **Ali:** model revision, lexical head and pilot, attention controls and diagnostics, three RoBERTa seeds, T4 runs, first report draft.
+   - **Salah:** evidence audit, robustness and provenance code, replication.
+2. **New "Related work" paragraph** in the Introduction. It covers:
+   - PIQA's pretrained and human reference points from Bisk et al. (RoBERTa-large 77.1 %, humans 94.9 %);
+   - UnifiedQA;
+   - option-comparison models for multiple choice (Option Comparison Network, DCMN+) and text alignment (ESIM, decomposable attention), and how DACT adapts them;
+   - annotation artefacts and hypothesis-only baselines, linked to the TF-IDF baseline and the lexical head.
+
+   Five references were added to both `references.bib` files: `khashabi2020unifiedqa`, `ran2019option`, `zhang2020dcmn`, `parikh2016decomposable`, `poliak2018hypothesis`.
+3. **Figure 3 redrawn as highlighted text** (`report/make_figures.py` → `report/figures/attention_cases.pdf`). It is built from the attention data the notebook saved (`outputs/figures/confident_wrong_747.png.json`, `uncertain_1724.png.json`):
+   - each solution token is shaded by its pooling weight, and differing tokens are bold;
+   - text is white on dark shading;
+   - this replaces the cropped strips with rotated, very small labels.
+
+**Checks:**
+- The PDF compiles with no errors or undefined references. It is 7 pages in total.
+- The main text ends on page 6, within the limit; Team Contributions and the references follow.
+- The new PDF was copied to `CITS4012_69_submission/`.
+- `main` was not changed. The branch `report-polish` is pushed for the group to review and merge.

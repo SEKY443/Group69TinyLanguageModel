@@ -66,18 +66,71 @@ fig.savefig(f"{OUT}/attention_controls.pdf", bbox_inches="tight")
 plt.close(fig)
 
 
-# ---------------------------------------------------------------- 3. pooling strips of two test cases
-def crop_top(src, dst):
-    """Keeps the two pooling strips (top of the saved figure) and trims the white margins."""
-    from PIL import ImageOps
-    im = Image.open(src).convert("RGB")
-    w, h = im.size
-    im = im.crop((0, int(0.035 * h), w, int(0.30 * h)))
-    im.crop(ImageOps.invert(im).getbbox()).save(dst)
+# ---------------------------------------------------------------- 3. pooling attention of two test cases
+# Drawn from the attention data the notebook saves next to each figure (outputs/figures/*.png.json), as
+# highlighted text: each solution token is shaded by its pooling weight, differing tokens are bold.
+import json  # noqa: E402
+
+CASES = [("confident_wrong_747", "Adding scents to lotion bars"),
+         ("uncertain_1724", "To safely sleep with your baby in your bed")]
+WIDTH = 7.0                          # inches (full text width)
+LINE = 0.19                          # inches per text line
+cmap = plt.get_cmap("Oranges")
 
 
-crop_top("outputs/figures/confident_wrong_747.png", f"{OUT}/case_747_pooling.png")
-crop_top("outputs/figures/uncertain_1724.png", f"{OUT}/case_1724_pooling.png")
+def option_lines(fig, ax, tokens, weights, diff, x0, max_x):
+    """Lays out tokens left to right with wrapping; returns the drawn rows as lists of (x, token, w, bold)."""
+    renderer = fig.canvas.get_renderer()
+    rows, row, x = [], [], x0
+    for tok, w, d in zip(tokens, weights, diff):
+        text = tok[2:] if tok.startswith("##") else tok
+        glue = tok.startswith("##") or text in ".,;:!?)"
+        t = ax.text(0, 0, text, fontsize=7.2, weight="bold" if d else "normal", family="serif")
+        tw = t.get_window_extent(renderer).width / fig.dpi
+        t.remove()
+        gap = 0.0 if (glue or not row) else 0.045
+        if row and x + gap + tw > max_x:
+            rows.append(row)
+            row, x, gap = [], x0, 0.0
+        row.append((x + gap, text, w, d, tw))
+        x += gap + tw
+    rows.append(row)
+    return rows
+
+
+blocks = []
+for name, goal in CASES:
+    d = json.load(open(f"outputs/figures/{name}.png.json", encoding="utf-8"))
+    for k, o in enumerate(d["options"]):
+        toks = [o["tokens"][i] for i in o["sol_pos"]]
+        tag = " (gold)" if d["label"] == k else ""
+        blocks.append((goal if k == 0 else None, f"Option {k + 1}{tag}, p = {d['probs'][k]:.2f}", toks, o["pool"], o["diff"]))
+
+fig = plt.figure(figsize=(WIDTH, 4.0))
+ax = fig.add_axes([0, 0, 1, 1])
+ax.set_xlim(0, WIDTH)
+ax.axis("off")
+laid = [option_lines(fig, ax, b[2], b[3], b[4], 1.45, WIDTH - 0.05) for b in blocks]
+n_lines = sum(len(rows) for rows in laid) + 2 * len(CASES)
+height = n_lines * LINE + 0.1
+fig.set_size_inches(WIDTH, height)
+ax.set_ylim(height, 0)
+y = 0.05
+for (goal, label, *_), rows in zip(blocks, laid):
+    if goal:
+        ax.text(0.02, y + 0.13, f"Goal: {goal}", fontsize=7.6, style="italic", family="serif")
+        y += LINE + 0.04
+    ax.text(0.02, y + 0.13, label, fontsize=7.2, family="serif", color="#333333")
+    for row in rows:
+        for x, text, w, bold, tw in row:
+            shade = 0.04 + 0.86 * min(1.0, w / 0.15)
+            ax.add_patch(plt.Rectangle((x - 0.012, y + 0.015), tw + 0.024, LINE - 0.03, color=cmap(shade), lw=0))
+            ax.text(x, y + 0.13, text, fontsize=7.2, family="serif", weight="bold" if bold else "normal",
+                    color="white" if shade > 0.6 else "black")
+        y += LINE
+    y += 0.06
+fig.savefig(f"{OUT}/attention_cases.pdf", bbox_inches="tight")
+plt.close(fig)
 
 # sanity: the numbers used above must match the saved result files
 with open("outputs/results/final_results.csv", encoding="utf-8") as f:

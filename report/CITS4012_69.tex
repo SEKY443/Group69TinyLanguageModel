@@ -28,6 +28,8 @@ PIQA asks which of two near-identical solutions achieves an everyday physical go
 \section{Introduction}
 Physical commonsense, knowing that \emph{baby wipes} rather than \emph{index cards} remove chalk dust, is easy for people and hard for machines. PIQA \citep{bisk2020piqa} tests it with a goal and two candidate solutions, exactly one of which is physically sensible. The task matters for assistants that give practical instructions and for robots that must choose feasible actions. Its key difficulty is that the two solutions are usually near-duplicates: in our training split the median share of differing solution tokens is 15\%, so the answer hinges on a few substituted words whose plausibility requires world knowledge.
 
+\paragraph{Related work.} On PIQA, pretrained models are far from people: \citet{bisk2020piqa} report 77.1\% for RoBERTa-large against 94.9\% for humans, and multi-format QA training improves pretrained models further \citep{khashabi2020unifiedqa}. Our setting differs, because the main model must learn from scratch. The closest architectural ideas come from multiple-choice reading comprehension and inference. The Option Comparison Network \citep{ran2019option} and DCMN+ \citep{zhang2020dcmn} compare candidate answers with each other instead of scoring them independently, and ESIM \citep{chen2017esim} and the decomposable attention model \citep{parikh2016decomposable} align two texts token by token and build comparison features. \dact{} adapts these ideas to two near-identical solutions: difference tags and cross-solution attention make the alignment explicit, and difference-guided pooling focuses the decision on the substituted words. Finally, work on annotation artefacts shows that shallow lexical cues can solve many items without reasoning \citep{gururangan2018annotation,poliak2018hypothesis}; our TF-IDF baseline and lexical head make this effect measurable on PIQA.
+
 Our aim was a model that is trained from scratch but built around this structure. \dact{} (Section~\ref{sec:method}) makes the difference between the solutions explicit at every stage: in the input, in the comparison and in the summary vector, and it adds a lexical head that scores which words make a solution plausible. We compare it with five baselines, from majority vote to a zero-shot LLM, run eight ablations with three seeds each, and analyse the attention with controls and probes.
 
 Our main findings are: (i) \dact{} is the best from-scratch model and at least as good as a strong lexical baseline; (ii) its attention concentrates on the differing words, and controls show this focus is learned; (iii) errors come from \emph{judging} those words without physical knowledge, which only pretraining supplies. Section~\ref{sec:history} documents what worked and what did not during development.
@@ -141,9 +143,8 @@ vanilla (all of the above removed) & $-$2.5 & $-$2.4 \\
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.98\textwidth]{figures/case_747_pooling.png}\\[3pt]
-\includegraphics[width=0.98\textwidth]{figures/case_1724_pooling.png}
-\caption{Pooling attention (bright = high; red = differing tokens). Top: \emph{adding scents to lotion bars}, a confident error (p = 0.99 for option 1). Bottom: \emph{to safely sleep with your baby in your bed}, the most uncertain item (p = 0.50; option 2 is gold).}
+\includegraphics[width=0.98\textwidth]{figures/attention_cases.pdf}
+\caption{Pooling attention over each solution (darker = higher weight; \textbf{bold} = tokens that differ between the two options). Top: \emph{adding scents to lotion bars}, a confident error (p = 0.99 for option 1). Bottom: \emph{to safely sleep with your baby in your bed}, the most uncertain item (p = 0.50; option 2 is gold).}
 \label{fig:cases}
 \end{figure*}
 
@@ -170,7 +171,13 @@ The final model is the result of four complete runs (and three aborted ones); al
 \paragraph{Limitations.} Improvements of about one point are within seed and test-sample noise; hyper-parameters were selected with one seed; the lexical head is over-confident on long differing spans; the test comparison with TF-IDF is not fully clean (Section~\ref{sec:history}); one test item overlaps with the training data; the difference tags depend on option order; and ablations that remove modules also change parameter counts. Natural next steps are an explicit goal--solution matching term, length-normalised lexical scores, and combining the difference-aware design with pretrained representations.
 
 \section*{Team Contributions}
-The work was divided among the three members, Ali, Salah and Bayron. Each member implemented and tested his own part of the code, and each member wrote the sections of this report that describe his own work.
+The work was divided among the three members; each implemented and tested his own part of the code and wrote the report sections that describe it.
+
+\textbf{Bayron:} original DACT pipeline (data processing, model, training and evaluation code, baselines B0--B4), the original A100 run, the final A100 runs of both versions and their comparison, and integration of the final notebook and report.
+
+\textbf{Ali:} model revision (difference-aware truncation, lexical head and its validation pilot), attention controls and diagnostics, three-seed RoBERTa baseline, the free-T4 runs, and the first draft of the report.
+
+\textbf{Salah:} evidence audit of the original run (training/test overlap, order-dependent alignment, test exposure), robustness and provenance code (validation, determinism, prediction export), and the local replication of the original model.
 
 \bibliography{references}
 
