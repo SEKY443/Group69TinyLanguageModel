@@ -1,0 +1,10 @@
+{
+ "time": "2026-10-03 16:25:50",
+ "commit": "b880108",
+ "step": "train",
+ "run": "b2_bilstm_seed44",
+ "seed": 44,
+ "epoch": 15,
+ "val_acc": 0.5918,
+ "best_val_acc": 0.5962
+}

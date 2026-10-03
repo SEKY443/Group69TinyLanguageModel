@@ -52,7 +52,7 @@ plt.close(fig)
 
 # ---------------------------------------------------------------- 2. attention controls
 labels = ["uniform\n(reference)", "untrained\n(init. bias)", "trained,\ntag bias = 0", "trained\n(full)"]
-values = [24.8, 38.9, 75.1, 85.9]   # printed by the notebook (Section 3.3) in the final run
+values = [24.8, 38.9, 62.0, 78.0]   # printed by the notebook in the final run (outputs/results/analysis_numbers.csv)
 fig, ax = plt.subplots(figsize=(3.1, 1.55))
 bars = ax.bar(range(4), values, color=["#bbbbbb", "#9ecae1", "#fdae6b", "#e6550d"], width=0.62)
 for b, v in zip(bars, values):
@@ -72,7 +72,7 @@ plt.close(fig)
 import json  # noqa: E402
 
 CASES = [("confident_wrong_747", "Adding scents to lotion bars"),
-         ("uncertain_1724", "To safely sleep with your baby in your bed")]
+         ("uncertain_1516", "How to make a small but cheap home easily?")]
 WIDTH = 7.0                          # inches (full text width)
 LINE = 0.19                          # inches per text line
 cmap = plt.get_cmap("Oranges")
@@ -135,5 +135,5 @@ plt.close(fig)
 # sanity: the numbers used above must match the saved result files
 with open("outputs/results/final_results.csv", encoding="utf-8") as f:
     rows = {r["model"]: r for r in csv.DictReader(f)}
-assert abs(float(rows["DACT (full)"]["test acc"]) - 0.6157) < 1e-3
+assert abs(float(rows["DACT (full)"]["test acc"]) - 0.6186) < 1e-3   # the final T4 run of b880108
 print("figures written to", OUT, sorted(os.listdir(OUT)))

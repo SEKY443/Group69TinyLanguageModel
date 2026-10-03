@@ -1506,3 +1506,55 @@ Source: section 4 of the upgrade prompt and `FUTURE_FIXES_NOTES.md` (C12, C15, D
 - `check_test_access.py`: OK;
 - `check_report_numbers.py`: tables 49 / 0 errors, prose 42 / 0 errors;
 - `pytest`: **32 tests pass** (31 fast in 67 s, plus the notebook end-to-end test in 2 min 27 s, which now opens Step 5 through `final_eval` on synthetic data).
+
+## 40. Final run of `main` on a free T4; report and notebook updated to it (2026-10-03/04, branch `t4-rerun-b880108`)
+Ali asked for a fresh Colab run of the merged `main` (`b880108`), because seven saved outputs had been cleared when the upgrades changed their cells, and then for the report to be updated to this run.
+
+**Run:**
+- `colab new --gpu A100` was rejected (no compute units), so nothing was charged; the run used a free **T4** session (`group69`), kept alive in Brave.
+- `setup_vm.py` cloned `main` at `b880108` and downloaded PIQA. The notebook was executed with `colab exec -f CITS4012_69.ipynb --env GROUP69_COMMIT=b880108`, 23:14–01:06 AWST.
+- The CLI's output stream stalled after the first minute (as in section 24). The run was followed through `outputs/progress.json`, the heartbeat added in section 36, which reported every experiment and seed. RoBERTa does not write the heartbeat, so its log files were watched instead.
+- **Result:**
+  - the executed notebook has 0 error cells, and its code cells are identical to `b880108`;
+  - the consistency check printed `OK: 15 result rows, 33 training runs with logs, 71 log files`;
+  - the version check flagged tokenizers 0.23.2 and transformers 5.17.0 against the lock (0.23.1 and 5.16.1); scipy, numpy and scikit-learn match.
+- `outputs.tgz` (no checkpoints) was downloaded and the session stopped; `colab sessions` showed none left.
+
+**Test-label access:** `outputs/test_access.log` has exactly two lines, both from commit `b880108`: the notebook's single `final_eval` (Step 5), and `tools/rescore_without_duplicate.py` re-scoring the saved test predictions for the duplicate disclosure. `tests/test_eval_hygiene.py` asserts this.
+
+**Files:**
+- The previous `outputs/` (A100 run of `0d70cdc`) was moved unchanged to `experiments/a100_run_0d70cdc/outputs/` (with a README).
+- `outputs/` now holds this run; predictions are gzip-compressed, as before.
+- `CITS4012_69.ipynb` is the executed notebook.
+- `tools/export_analysis_numbers.py`, `tools/verify_audit_claims.py` and `tools/rescore_without_duplicate.py` were re-run on it. `verify_audit_claims.py` had a bug that this run exposed: its glob also matched the new `*_mlm.jsonl` warm-up logs. Fixed.
+
+**What changed compared with the A100 run** (all numbers from `outputs/results/`):
+
+| | A100 (`0d70cdc`) | T4 (`b880108`) |
+|---|---|---|
+| Grid choice (1 seed) | small, 61.5 | **small + MLM warm-up, 61.85** (base 61.79, small 61.41) |
+| DACT val / test | 61.2 ± 0.4 / 61.6 ± 0.1 | 61.3 ± 0.5 / 61.9 ± 0.3 |
+| TF-IDF val / test, McNemar p | 59.2 / 61.2, p = 0.88 | 59.2 / 61.2, p = 0.62 |
+| RoBERTa val / test | 68.0 ± 1.9 / 66.7 ± 1.1 | **59.2 ± 5.8 / 57.3 ± 6.9** |
+| Qwen zero-shot | 78.1 / 75.4 | 78.2 / 75.1 |
+| Ablation Δ tags / cross / lexical / pointwise / vanilla | −1.3/−0.9, −0.7/−0.8, −1.8/−0.4, −0.7/0.0, −2.5/−2.4 | −0.2/−1.3, +0.6/−0.6, −2.3/−0.3, −1.7/−1.4, −3.7/−4.3 |
+| Attention on differing tokens: trained / bias 0 / untrained | 85.9 / 75.1 / 38.9 % | 78.0 / 62.0 / 38.9 % |
+| Wrong vs correct predictions | 87.7 vs 84.7 %, p < 0.001 | 79.0 vs 77.4 %, p = 0.03 |
+
+- **RoBERTa:** the declared restart rule fired: seed 42 was at 50.7 % after epoch 1 and was replaced by seed 1042, which learned (65.3 % val). Seeds 43 and 44 passed the 52 % threshold after epoch 1 (53.8, 52.2 %) and then stalled with their training loss at ln 2 (best 53.8 and 58.4 % val). This is reported as a failed baseline, with the A100 values as reference. Re-running only RoBERTa would be selective and was not done; a stricter rule or a lower learning rate must be declared before any new run.
+- **Ablations:** what survives both runs is the combined effect (vanilla), the lexical head on validation, and the forced-choice objective. Cross-solution attention and the tags no longer help consistently on both splits. The report and notebook now say so instead of the A100 run's stronger claims.
+
+**Report** (`report/CITS4012_69.tex`, rebuilt PDF: 8 pages, main text ends on page 6, no overfull boxes):
+- **Updated to this run:** abstract, findings, Training paragraph (grid, selected configuration, fp16 on T4), Tables 1–3 (with a RoBERTa footnote, a new *− MLM warm-up* row, and A100 run 4 and the final T4 run in the history), ablation paragraph (nine comparisons), complementary errors, attention controls, H1/H2, case studies, history paragraphs, conclusion and limitations.
+- **Case studies:**
+  - lotion bars, a confident error in both runs;
+  - the new uncertain item, *shipping* vs *shopping* container;
+  - the camping lantern;
+  - the new most confident error, an exotic trip, which replaces the tea kettle.
+- **Figures:** `report/make_figures.py` rebuilt with the new attention-control values and cases.
+- **Number checks:**
+  - `check_report_numbers.py` was updated to the new text: Table 2 has the MLM row; Table 3 has run 4 (archived) and the final run; there are 50 prose claims.
+  - It caught two rounding errors in my first draft: the selected grid value is 61.848, so 61.8 not 61.9, a margin of 0.06 over base; and the entropy p is 0.985, so 0.98.
+  - **Result:** tables 53 values / 0 errors, prose 50 claims / 0 errors, loose 0 mismatches.
+
+**Notebook text:** the Readme (code version, logs, runtime), the quantitative discussion (cell 43) and the qualitative discussion (cell 52) were rewritten from this run's printed outputs, including the RoBERTa failure, the grid instability and the new cases.

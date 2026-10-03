@@ -7,6 +7,7 @@
     "local_zip_glob": "*.zip",
     "data_dir": "data/piqa",
     "out_dir": "outputs",
+    "persist_dir": "./Group69/runs/main",
     "seed": 42,
     "val_frac": 0.1,
     "vocab_size": 8000,
@@ -26,10 +27,11 @@
     "pool_mode": "diff_attn",
     "tag_bias_init": 1.0,
     "use_lexical": true,
+    "use_goal_matching": false,
     "lex_buckets": 262144,
     "lex_lr": 0.01,
     "objective": "pairwise",
-    "mlm_epochs": 0,
+    "mlm_epochs": 10,
     "batch_size": 128,
     "lr": 0.0003,
     "weight_decay": 0.05,
@@ -50,50 +52,50 @@
     {
       "seed": 42,
       "ckpt": "outputs/checkpoints/abl1_seed42.pt",
-      "val_acc": 0.5986352357320099,
-      "val_loss": 0.7481242418289185,
+      "val_acc": 0.6259305210918115,
+      "val_loss": 0.770180881023407,
       "n_params": 1778756,
       "epochs": 12
     },
     {
       "seed": 43,
       "ckpt": "outputs/checkpoints/abl1_seed43.pt",
-      "val_acc": 0.6129032258064516,
-      "val_loss": 0.687419593334198,
+      "val_acc": 0.6203473945409429,
+      "val_loss": 0.7902693152427673,
       "n_params": 1778756,
-      "epochs": 9
+      "epochs": 12
     },
     {
       "seed": 44,
       "ckpt": "outputs/checkpoints/abl1_seed44.pt",
-      "val_acc": 0.6035980148883374,
-      "val_loss": 0.6715272665023804,
+      "val_acc": 0.6098014888337469,
+      "val_loss": 0.7421057820320129,
       "n_params": 1778756,
-      "epochs": 8
+      "epochs": 11
     }
   ],
   "val": {
-    "mean": 0.6050454921422664,
-    "std": 0.007243291930577752,
+    "mean": 0.618693134822167,
+    "std": 0.00819077846167844,
     "runs": [
-      0.5986352357320099,
-      0.6129032258064516,
-      0.6035980148883374
+      0.6259305210918115,
+      0.6203473945409429,
+      0.6098014888337469
     ]
   },
   "test": {
-    "mean": 0.6073630758070366,
-    "std": 0.006066640799302796,
+    "mean": 0.612259702575263,
+    "std": 0.0067590297981806845,
     "runs": [
-      0.602829162132753,
-      0.6142546245919478,
-      0.6050054406964092
+      0.6164309031556039,
+      0.6158868335146899,
+      0.6044613710554951
     ],
-    "best_val_seed": 43,
-    "best_val_seed_acc": 0.6142546245919478,
+    "best_val_seed": 42,
+    "best_val_seed_acc": 0.6164309031556039,
     "ci95": [
-      0.5919341675734494,
-      0.6360174102285092
+      0.5946681175190425,
+      0.6387513601741023
     ]
   }
 }

@@ -54,9 +54,14 @@ def test_tools_read_test_labels_only_with_a_log(tiny_setup, tmp_path):
     assert json.loads((tmp_path / "test_access.log").read_text())["reason"] == "tool test"
 
 
-def test_no_test_access_log_in_repository():
-    """Deliverable 7: no new test evaluation was made in the upgrade (the repository has no test_access.log)."""
-    assert not os.path.exists(os.path.join(ROOT, "outputs", "test_access.log"))
+def test_test_access_log_lists_only_authorised_reads():
+    """Every read of the test labels in the submitted run is logged: the notebook's single final_eval of the final run
+    and the duplicate re-scoring of its saved predictions, both from the same commit."""
+    lines = [json.loads(l) for l in open(os.path.join(ROOT, "outputs", "test_access.log"), encoding="utf-8")]
+    assert [r["reason"] for r in lines] == ["Step 5: final results of the models selected on validation",
+                                            "rescore_without_duplicate.py: saved test predictions"]
+    run = json.load(open(os.path.join(ROOT, "outputs", "run_config.json"), encoding="utf-8"))
+    assert all(r["commit"] == run["commit"] == "b880108" for r in lines)
 
 
 def test_calibration_metric():
@@ -71,9 +76,14 @@ def test_calibration_metric():
 
 
 def test_report_deltas_use_unrounded_means():
-    """Table 2 must use differences of the unrounded means (the rounded convention gave -1.0 here, not -0.9)."""
+    """Every Table 2 delta is the difference of the unrounded means, rounded once (not of rounded means)."""
     import csv
+    import re
     fr = {r["model"]: r for r in csv.DictReader(open(os.path.join(ROOT, "outputs", "results", "final_results.csv"), encoding="utf-8"))}
-    d = round(100 * (float(fr["− difference tags"]["test acc"]) - float(fr["DACT (full)"]["test acc"])), 1)
     tex = open(os.path.join(ROOT, "report", "CITS4012_69.tex"), encoding="utf-8").read()
-    assert f"$-$ difference tags & $-$1.3 & $-${abs(d):.1f}" in tex and d == -0.9
+    fmt = lambda d: ("$-$" if d < 0 else "+") + f"{abs(d):.1f}" if d != 0 else "0.0"  # noqa: E731
+    rows = {"$-$ difference tags": "− difference tags", "$-$ lexical head": "− lexical head",
+            "$-$ cross-solution attention": "− cross-solution attention", "$-$ MLM warm-up": "− MLM warm-up"}
+    for label, model in rows.items():
+        dv, dt = (round(100 * (float(fr[model][c]) - float(fr["DACT (full)"][c])), 1) for c in ("val acc", "test acc"))
+        assert re.search(re.escape(f"{label} & {fmt(dv)} & {fmt(dt)}"), tex), (label, dv, dt)

@@ -1,0 +1,16 @@
+quantity,value,source
+items_only_dact_solves_vs_tfidf,205,CITS4012_69.ipynb outputs
+tag_bias_other_shared_diff,0. -0.019 1.019,CITS4012_69.ipynb outputs
+attention_mass_differing_trained,0.859,CITS4012_69.ipynb outputs
+attention_mass_uniform_reference,0.248,CITS4012_69.ipynb outputs
+attention_mass_correct_predictions,0.847,CITS4012_69.ipynb outputs
+attention_mass_wrong_predictions,0.877,CITS4012_69.ipynb outputs
+attention_mass_correct_vs_wrong_mannwhitney_p,1.595e-05,CITS4012_69.ipynb outputs
+attention_mass_trained_tag_bias_0,0.751,CITS4012_69.ipynb outputs
+attention_mass_untrained,0.389,CITS4012_69.ipynb outputs
+pooling_entropy_mean_correct_wrong_p,0.487 0.492 0.479 0.183,CITS4012_69.ipynb outputs
+case_confident_correct_1123_probabilities_option1_option2,0.0104 0.9896,outputs\figures\confident_correct_1123.png.json
+case_confident_correct_993_probabilities_option1_option2,0.0034 0.9966,outputs\figures\confident_correct_993.png.json
+case_confident_wrong_1282_probabilities_option1_option2,0.0052 0.9948,outputs\figures\confident_wrong_1282.png.json
+case_confident_wrong_747_probabilities_option1_option2,0.9926 0.0074,outputs\figures\confident_wrong_747.png.json
+case_uncertain_1724_probabilities_option1_option2,0.5007 0.4993,outputs\figures\uncertain_1724.png.json
