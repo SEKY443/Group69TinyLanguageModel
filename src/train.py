@@ -10,7 +10,7 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
-from config import Config, JsonlLogger, amp_dtype, environment_info  # nb-skip
+from config import Config, JsonlLogger, amp_dtype, environment_info, write_progress  # nb-skip
 from data import MASK, PAD  # nb-skip
 
 N_SPECIAL = 5  # ids < 5 are special tokens and are never masked
@@ -125,6 +125,8 @@ def train_qa(model, train_loader, val_loader, cfg: Config, device, run_name, ver
         rec = logger.log(event="epoch", epoch=epoch, train_loss=tot_loss / n, train_acc=tot_correct / n,
                          val_acc=val_acc, val_loss=val["loss"], lr=sched.get_last_lr()[0], seconds=round(time.time() - t0, 2))
         history.append(rec)
+        write_progress(cfg, step="train", run=run_name, seed=cfg.run_seed, epoch=epoch, val_acc=round(val_acc, 4),
+                       best_val_acc=round(max(best_acc, val_acc), 4))
         if verbose:
             print(f"[{run_name}] ep {epoch:02d} loss {rec['train_loss']:.4f} train_acc {rec['train_acc']:.4f} "
                   f"val_acc {val_acc:.4f} ({rec['seconds']}s)")

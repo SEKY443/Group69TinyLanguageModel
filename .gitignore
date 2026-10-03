@@ -9,3 +9,5 @@ CHANGELOG.local.md
 .DS_Store
 tmp/
 experiments/goal_matching/run_*/checkpoints/
+Group69/runs/
+.pytest_cache/

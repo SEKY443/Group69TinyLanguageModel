@@ -20,6 +20,7 @@ class Config:
     local_zip_glob: str = "*.zip"                               # fallback when running outside Colab
     data_dir: str = "data/piqa"
     out_dir: str = "outputs"
+    persist_dir: str = ""       # e.g. MyDrive/Group69/runs/<run_id>: finished experiments are copied here and restored on a new VM
 
     # ---- data ----
     seed: int = 42              # seed for the train/validation split (kept fixed across runs)
@@ -122,6 +123,31 @@ def amp_dtype(device):
     if device.type != "cuda":
         return None
     return torch.bfloat16 if torch.cuda.is_bf16_supported(including_emulation=False) else torch.float16
+
+
+def git_commit():
+    """Short commit of the code being run, or 'unknown' (e.g. a notebook uploaded without its repository)."""
+    import subprocess
+    try:
+        out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=5)
+        return out.stdout.strip() or os.environ.get("GROUP69_COMMIT", "unknown")
+    except Exception:
+        return os.environ.get("GROUP69_COMMIT", "unknown")
+
+
+def write_progress(cfg, **fields):
+    """Heartbeat: overwrites <out_dir>/progress.json (and the persistent copy) so a run can be monitored cheaply."""
+    record = {"time": time.strftime("%Y-%m-%d %H:%M:%S"), "commit": git_commit(), **fields}
+    for root in filter(None, (cfg.out_dir, cfg.persist_dir)):
+        try:
+            os.makedirs(root, exist_ok=True)
+            tmp = os.path.join(root, "progress.json.tmp")
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(record, f, indent=1)
+            os.replace(tmp, os.path.join(root, "progress.json"))     # atomic: a reader never sees half a file
+        except OSError:
+            pass                                                     # monitoring must never break training
+    return record
 
 
 class JsonlLogger:

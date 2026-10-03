@@ -1349,3 +1349,31 @@ The main text now ends at the top of the right column of page 6, about half a co
 - **`tools/check_report_numbers.py`** now also checks **Table 3 row by row** against each run's own results file, plus the TF-IDF caption.
 - **Result:** the strict check covers **49 values with 0 errors**, and the traceability check finds 0 mismatches (121 distinct numbers).
 - The PDF compiles with no errors, undefined references or overfull boxes. It is 7 pages; the main text ends on page 6.
+
+## 36. Upgrade 1: robustness to interruption (2026-10-03, branch `upgrade/robustness` from `main` `e52e087`)
+Source: section 1 of the upgrade prompt and `FUTURE_FIXES_NOTES.md` (A1, A2). Free Colab VMs were reclaimed in 4 of 7 full attempts, and `resume` only worked inside one VM because `outputs/` is local. No result number changed; no test split was evaluated.
+
+**Changes:**
+- **`Config.persist_dir`** (`src/config.py`): a persistent run folder. The notebook sets it to `/content/drive/MyDrive/Group69/runs/<RUN_ID>` when Drive is *already* mounted (`drive.mount()` waits for a login and hangs CLI runs), otherwise `./Group69/runs/<RUN_ID>`. `RUN_ID` comes from `GROUP69_RUN_ID` (default `main`, or `smoke` in smoke mode).
+- **Per-seed persistence** (`src/experiments.py`): after each seed, a completion marker `results/<run>_done.json` (run summary + config) is written and the seed's log, MLM log, validation predictions, checkpoint and sidecar are copied to `persist_dir`. After the last seed the experiment summary is copied too. Copies never overwrite an existing file.
+- **Resume across VMs:** `run_experiment(resume=True)` first restores the experiment's files from `persist_dir`, then loads a finished experiment, or finished seeds of a half-finished one. Checkpoint paths are resolved against the current `out_dir`. Experiment identity ignores `run_seed`, `out_dir` and `persist_dir`.
+- **Evidence is never overwritten:**
+  - the files of an interrupted seed are renamed to `*.partial-<time>.*` (for example `logs/dact_seed43.partial-20261003_201500.jsonl`) before that seed restarts;
+  - a finished seed or summary with a *different* config raises `FileExistsError` ("use a new out_dir / RUN_ID");
+  - a summary with the same config that cannot be resumed (missing checkpoint) is kept as `*_val.stale-<time>.json`.
+- **Heartbeat** (`write_progress` in `src/config.py`): `progress.json` in `out_dir` and `persist_dir` is replaced atomically at the start of every seed and after every epoch, with time, git commit (or `GROUP69_COMMIT`), step, experiment/run, seed, epoch, val_acc and best val_acc. Monitoring failures never stop training.
+- **Notebook:** module cells re-synced with `tools/sync_notebook.py`; the config cell sets `persist_dir`. (On this branch only; the submitted notebook on `main` is unchanged.)
+
+**Acceptance test** (`tests/test_resume.py`, synthetic PIQA-format data, CPU, deterministic, about 40 s):
+1. an uninterrupted 2-seed run gives the reference table;
+2. the same run is "reclaimed" after epoch 1 of seed 2: seed 1 is already in the persistent folder, seed 2 is not, and `progress.json` shows seed 2;
+3. a restart on the same VM trains only seed 2, keeps its partial log (1 epoch) under a `.partial-` name, and gives a table identical to the reference (seeds, val acc, val loss, epochs, mean/std);
+4. a new VM (empty `out_dir`) trains nothing and gives the identical table;
+5. extra tests: a restart on a new VM after the interruption trains only the missing seed; persistence never overwrites; a different config is refused; `persist_dir` is not part of the identity.
+
+**Notebook evidence** (`CITS4012_69.ipynb` of this branch, smoke mode, synthetic data, CPU, RoBERTa/Qwen stubbed by the external harness):
+- run 1 (fresh): all code cells ran, exit 0, 293 s, 27 training epochs logged; the persistent folder `./Group69/runs/smoke` received every experiment;
+- run 2 ("new VM": `outputs_nbsmoke/` moved away, persistent folder kept): exit 0, 44 s, 16 "already finished, loaded" messages, 0 training epochs;
+- `final_results.csv`, `error_overlap.csv` and `diff_probe_by_layer.csv` of the two runs are byte-identical (`cmp`).
+
+**Not covered:** a real Colab VM loss with Google Drive. The code path is the same (`persist_dir` is just a folder), but Drive sync latency was not tested.
