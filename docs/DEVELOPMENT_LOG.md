@@ -1612,3 +1612,29 @@ Ali asked to run the pre-registered RoBERTa test (`experiments/roberta_stability
 - **Table 1 footnote:** added "A separate validation-only re-run on a T4 trained all three seeds (69.0% validation), so the failure was chance, not the hardware." The 69.0 is the mean of `experiments/roberta_stability/run_20261004/control_lr2e-5_seed*.json` (section 42) and is checked by a new strict claim in `check_report_numbers.py` (51 claims, 0 errors). No test number changed.
 - **Figure 1 legend:** it said the orange components are "ablated in Table 3"; the ablations are in Table 2. Fixed in `report/make_figures.py`, and the figure was rebuilt.
 - **PDF:** rebuilt; 8 pages, main text ends on page 6, no overfull boxes.
+
+## 44. Report: framing and precision pass (2026-10-04, branch `report/rhetoric-pass`)
+Ali asked for drop-in replacement text, then for it to be applied. No result changed, and nothing was invented. Each new number is a strict claim in `tools/check_report_numbers.py`, built from a named file.
+
+**Replaced:**
+- the abstract's result sentence;
+- the grid part of Training (seed sensitivity, the top-3 spread of 0.43 points against the seed std of 0.5);
+- the B3 baseline sentence (125 M parameters; the validation-only re-run);
+- Table 1: a new row, "validation re-run 69.0 ± 0.6 / --", and a rewritten caption;
+- Overall comparison: the TF-IDF lead on validation in both runs, the test tie in both runs (p = 0.62 / 0.88), the parameter ratios (65× RoBERTa, about 800× Qwen) and the pretraining gaps (about 8 points on validation, 13.2 on test);
+- "Complementary errors" became "Where the design succeeds": the vanilla gap in both runs (3.7 / 4.3 and 2.5 / 2.4), the error overlap and the minimal pairs;
+- one clause in H1/H2;
+- the seed-sensitivity sentence in "What did not";
+- the first paragraph of the Conclusion;
+- the start of Limitations.
+
+**Not written,** because the data does not support it: that DACT beats TF-IDF on test; that DACT is more parameter-efficient than TF-IDF (TF-IDF's feature count was never measured); a test number for the RoBERTa re-run.
+
+**The checker caught one error in the drafted text:** the top-3 grid spread is 61.848 − 61.414 = 0.43, not 0.44 (it had been computed from rounded values). Corrected before committing. "About 800" uses Qwen2.5-1.5B's nominal size, because its exact parameter count was not logged.
+
+**Layout:**
+- two redundant sentences were cut, and the new Table 1 row label was shortened (it was 5 pt overfull);
+- PDF: 8 pages, no overfull boxes;
+- the main text through the Conclusion ends on page 6; the Limitations section now starts on page 7, which the ACL rules exclude from the page limit.
+
+**Checks:** strict tables 53 / 0 errors, strict prose 57 claims / 0 errors, loose 0 mismatches; 42 fast tests pass.
