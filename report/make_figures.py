@@ -45,7 +45,7 @@ box(ax, 0.05, 4.1, 11.75, 0.55, r"lexical head: learned weights of hashed sol$_k
 ax.text(13.0, 4.37, r"$z_k = s_k + \ell_k$", ha="center", va="center", fontsize=7.5)
 ax.text(13.0, 2.2, "softmax\n" + r"$(z_1, z_2)$", ha="center", va="center", fontsize=7.5)
 arrow(ax, 11.8, 4.37, 12.35, 4.37)
-ax.text(0.05, 0.2, "orange: our PIQA-specific components (ablated in Table 3); blue: standard components",
+ax.text(0.05, 0.2, "orange: our PIQA-specific components (ablated in Table 2); blue: standard components",
         fontsize=6.5, color="#555555")
 fig.savefig(f"{OUT}/architecture.pdf", bbox_inches="tight")
 plt.close(fig)
