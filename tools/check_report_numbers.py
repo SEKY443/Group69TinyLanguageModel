@@ -52,6 +52,10 @@ DOCUMENTED = {
     "1545": "index of the duplicated test item (audit_checks.csv)", "26": "count from the baby-wipes analysis (section 16)",
     "100": "probe accuracy 100 % / percentages",
     "33": "training runs with logs in the final run (notebook consistency-check cell: '33 training runs with logs')",
+    "69.6": "RoBERTa validation re-run, seed 42 (experiments/roberta_stability; checked as a strict claim)",
+    "125": "RoBERTa-base parameters in millions (124,646,401 in outputs/logs/B3_*.jsonl)",
+    "800": "parameter ratio Qwen2.5-1.5B / DACT, about 1.5e9 / 1.93e6 (model name; checked as a strict claim)",
+    "65": "parameter ratio RoBERTa / DACT, 124.6 M / 1.93 M (checked as a strict claim)",
     "52": "RoBERTa restart threshold, 52 % validation accuracy after epoch 1 (declared rule, notebook Step 4)",
 }
 
@@ -213,6 +217,19 @@ def prose_claims():
             b3_seeds[f] = max(r["val_acc"] for r in recs if r.get("event") == "epoch")
     b3_ci = [float(x) for x in re.findall(r"[\d.]+", fr[b3]["test 95% CI"])]
     pval = lambda m: float(fr[m]["McNemar p vs DACT"])  # noqa: E731
+    rerun = [100 * _json(f"experiments/roberta_stability/run_20261004/control_lr2e-5_seed{s}.json")["best_val_acc"]
+             for s in (42, 43, 44)]
+    rerun_mean = sum(rerun) / 3
+    rerun_std = (sum((x - rerun_mean) ** 2 for x in rerun) / 2) ** 0.5
+    n_dact = _json("outputs/results/dact_full_val.json")["runs"][0]["n_params"]
+    n_roberta = next(json.loads(l)["n_params"] for l in open(os.path.join(ROOT, "outputs", "logs", "B3_roberta-base_seed43.jsonl"))
+                     if '"event": "start"' in l)
+    ratio_roberta = round(n_roberta / n_dact)                    # Qwen2.5-1.5B: about 1.5e9 / 1.93e6, from its name
+    ratio_qwen = round(1.5e9 / n_dact, -2)
+    run4_vanilla = [round(100 * (float(run4["vanilla Transformer"][c]) - float(run4[D][c])), 1) for c in ("val acc", "test acc")]
+    hp_top3 = sorted(hp, reverse=True)[:3]
+    llm_gap = float(delta('B4 Qwen2.5-1.5B (zero-shot)', 'test acc'))
+    roberta_gap = rerun_mean - 100 * float(fr[D]["val acc"])
     p_wrong = float(an["attention_mass_correct_vs_wrong_mannwhitney_p"])
     tags_test = delta("− difference tags", "test acc")
     return {
@@ -220,7 +237,8 @@ def prose_claims():
         "abstract: vanilla gap (rounded)": f"beat a vanilla Transformer by about {round((float(delta('vanilla Transformer', 'val acc')) + float(delta('vanilla Transformer', 'test acc'))) / 2):.0f} points",
         "abstract: DACT val": f"model on validation ({v(D)}\\%, 3 seeds)",
         "abstract: DACT vs TF-IDF test, p": f"({t(D)} vs.\\ {t(B1)}\\%, McNemar $p{{=}}{pval(B1):.2f}$)",
-        "abstract: LLM gap (rounded)": f"a zero-shot pretrained LLM is {float(delta('B4 Qwen2.5-1.5B (zero-shot)', 'test acc')):.0f} points better",
+        "abstract: TF-IDF lead / pretraining gaps": f"ahead of a TF-IDF baseline by {float(delta(B1, 'val acc')):.0f} points in two independent runs",
+        "abstract: parameter ratios and gaps": f"with {ratio_roberta}--{ratio_qwen:.0f} times more parameters and web-scale pretraining, are {roberta_gap:.0f}--{llm_gap:.0f} points better",
         "duplicate: re-scoring change": f"changes accuracy by about {abs(float(rs['dact_full']['difference_points'])):.2f} points",
         "duplicate: DACT": f"{100 * float(rs['dact_full']['test_acc_all_1838']):.2f}\\,$\\to$\\,{100 * float(rs['dact_full']['test_acc_without_duplicate_1837']):.2f}\\%",
         "duplicate: TF-IDF": f"{100 * float(rs['B1_tfidf_lr']['test_acc_all_1838']):.2f}\\,$\\to$\\,{100 * float(rs['B1_tfidf_lr']['test_acc_without_duplicate_1837']):.2f}\\%",
@@ -232,16 +250,17 @@ def prose_claims():
         "grid: selection margin": f"{100 * (hp[4] - hp[0]):.2f} points ahead of base",
         "params: DACT": f"{_json('outputs/results/dact_full_val.json')['runs'][0]['n_params'] / 1e6:.2f}\\,M parameters",
         "params: BiLSTM": f"({_json('outputs/results/b2_bilstm_val.json')['runs'][0]['n_params'] / 1e6:.1f}\\,M parameters)",
-        "vs BiLSTM": f"+{delta(B2, 'val acc')} / +{delta(B2, 'test acc')} points over the BiLSTM (not significant on test, McNemar $p{{=}}{pval(B2):.2f}$)",
+        "vs BiLSTM": f"+{delta(B2, 'val acc')} / +{delta(B2, 'test acc')} points over the BiLSTM (McNemar $p{{=}}{pval(B2):.2f}$ on test)",
+        "tie in both runs": f"statistically tied ($p{{=}}{pval(B1):.2f}$; $p{{=}}{float(run4[B1]['McNemar p vs DACT']):.2f}$ in the A100 run)",
         "vs TF-IDF": f"+{delta(B1, 'val acc')} / +{delta(B1, 'test acc')} over TF-IDF",
         "tied on test": f"statistically tied ({t(D)} vs.\\ {t(B1)}\\%, McNemar $p{{=}}{pval(B1):.2f}$)",
-        "pretraining gap (test)": f"the zero-shot LLM is {delta('B4 Qwen2.5-1.5B (zero-shot)', 'test acc')} points above",
-        "B3 working seed (val)": f"the third reaches {p1(max(b3_seeds.values()))}\\% validation (test 95\\% CI {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f})",
-        "B3 working seed (prose)": f"test 95\\% CI of {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f}, above \\dact{{}}'s {t(D)}\\%",
-        "B3 A100 reference": f"all seeds trained: {p1(run4[b3]['val acc'])} / {p1(run4[b3]['test acc'])}",
-        "B3 T4 validation re-run": "trained all three seeds ({:.1f}\\% validation)".format(100 * sum(
-            _json(f"experiments/roberta_stability/run_20261004/control_lr2e-5_seed{s}.json")["best_val_acc"]
-            for s in (42, 43, 44)) / 3),
+        "pretraining gap (test)": f"the zero-shot LLM (about {ratio_qwen:.0f} times more parameters) is {delta('B4 Qwen2.5-1.5B (zero-shot)', 'test acc')} points above",
+        "RoBERTa gap (validation re-run)": f"RoBERTa ({ratio_roberta} times more parameters), when its fine-tuning succeeds, is about {roberta_gap:.0f} points above on validation ({rerun_mean:.1f} vs.\\ {v(D)}\\%)",
+        "grid: top-3 spread and seed std": f"lie within {hp_top3[0] * 100 - hp_top3[2] * 100:.2f} points, less than one seed std of the final model ({100 * float(fr[D]['val std']):.1f})",
+        "B3 working seed (caption)": f"the working seed reaches {p1(max(b3_seeds.values()))}\\% (test CI {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f})",
+        "B3 A100 reference": f"An A100 run gave {p1(run4[b3]['val acc'])} / {p1(run4[b3]['test acc'])}",
+        "B3 re-run seeds (caption)": "all three seeds trained ({:.1f} / {:.1f} / {:.1f})".format(*rerun),
+        "B3 re-run table row": f"validation re-run$^\\ddagger$ & {rerun_mean:.1f}\\,$\\pm$\\,{rerun_std:.1f} & --",
         "ablation: vanilla": f"together costs {cost('vanilla Transformer')} points, the largest drop and the only significant one on test ($p{{=}}{pval('vanilla Transformer'):.3f}$)",
         "ablation: lexical": f"removing the lexical head costs {cost('− lexical head')}.",
         "ablation: pointwise": f"(independent binary scoring: {cost('pointwise objective')})",
@@ -249,7 +268,9 @@ def prose_claims():
         "ablation: cross": f"cross-solution attention (removing it gives {delta('− cross-solution attention', 'val acc', sign=True)} / $-${delta('− cross-solution attention', 'test acc')})",
         "ablation: mean pooling": f"attention pooling ({delta('mean pooling', 'test acc', sign=True)} on test with mean pooling)",
         "ablation: MLM warm-up": f"the MLM warm-up ({delta('− MLM warm-up', 'val acc', sign=True)} / $-${delta('− MLM warm-up', 'test acc')})",
-        "errors: agreement": f"agree on {p1(eo[B1]['agreement'])}\\% of test items",
+        "errors: agreement": f"agree on only {p1(eo[B1]['agreement'])}\\% of test items",
+        "design succeeds: vanilla, both runs": f"costs {cost('vanilla Transformer')} points, the only significant ablation on test ($p{{=}}{pval('vanilla Transformer'):.3f}$), and the same comparison cost {abs(run4_vanilla[0]):.1f} / {abs(run4_vanilla[1]):.1f} in the A100 run",
+        "conclusion: vanilla": f"the robust contribution ({cost('vanilla Transformer')} points over a vanilla Transformer)",
         "errors: only DACT": f"alone solves {p1(eo[B1]['only DACT'])}\\% ({an['items_only_dact_solves_vs_tfidf']} items)",
         "errors: only TF-IDF / oracle": f"TF-IDF alone {p1(eo[B1]['only other'])}\\%, for an oracle accuracy of {p1(eo[B1]['oracle'])}\\%",
         "errors: oracle vs RoBERTa": f"the oracle rises to {p1(eo[b3]['oracle'])}\\%",
