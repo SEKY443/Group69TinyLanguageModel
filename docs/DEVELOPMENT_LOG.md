@@ -1638,3 +1638,17 @@ Ali asked for drop-in replacement text, then for it to be applied. No result cha
 - the main text through the Conclusion ends on page 6; the Limitations section now starts on page 7, which the ACL rules exclude from the page limit.
 
 **Checks:** strict tables 53 / 0 errors, strict prose 57 claims / 0 errors, loose 0 mismatches; 42 fast tests pass.
+
+## 45. Report: main content fitted into 6 pages (2026-10-04, branch `report/limitations-fit`)
+Ali asked to cut the Limitations section so that it fits in 6 pages.
+
+- **Limitations:** now keeps only the points stated nowhere else:
+  - the over-confident lexical head;
+  - fast overfitting (85–92 % training against about 61 % validation accuracy at the selected epoch);
+  - ablations changing parameter counts;
+  - next steps.
+
+  Seed sensitivity, the test-protocol caveat and the option-order dependence are referred to as "above". The over-one-point noise, one-seed grid, RoBERTa instability and the training/test overlap were removed, because Sections 3–5 already state them.
+- **Protocol paragraph:** the sentence on the lexical head's test exposure was removed, because the "Validity of the test numbers" paragraph in Section 3 says the same thing.
+- **Qualitative analysis:** the "baby wipes" example was removed. It came from an earlier run; the paragraph's other cases are from the final run.
+- **Result:** the abstract through Limitations ends on page 6; Team Contributions and the references start page 7. No overfull boxes. Strict checks: 53 table values and 57 prose claims, 0 errors.
