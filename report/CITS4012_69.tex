@@ -102,7 +102,7 @@ B3 RoBERTa-base, fine-tuned$^\dagger$ & 59.2\,$\pm$\,5.8 & 57.3\,$\pm$\,6.9 \\
 B4 Qwen2.5-1.5B, zero-shot & 78.2 & 75.1 \\
 \bottomrule
 \end{tabular}
-\caption{Accuracy (\%), mean $\pm$ std over 3 seeds; B0, B1 and B4 are deterministic single runs. \dact{} test 95\% CI: 59.6--64.0. $^\dagger$Two of three RoBERTa seeds did not learn on the T4 (training loss stayed at $\ln 2$); the third reaches 65.3\% validation (test 95\% CI 62.4--66.6). In an A100 run of the same code all seeds trained: 68.0 / 66.7.}
+\caption{Accuracy (\%), mean $\pm$ std over 3 seeds; B0, B1 and B4 are deterministic single runs. \dact{} test 95\% CI: 59.6--64.0. $^\dagger$Two of three RoBERTa seeds did not learn on the T4 (training loss stayed at $\ln 2$); the third reaches 65.3\% validation (test 95\% CI 62.4--66.6). In an A100 run of the same code all seeds trained: 68.0 / 66.7. A separate validation-only re-run on a T4 trained all three seeds (69.0\% validation), so the failure was chance, not the hardware.}
 \label{tab:main}
 \end{table}
 

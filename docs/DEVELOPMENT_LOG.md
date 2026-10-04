@@ -1607,3 +1607,8 @@ Ali asked to run the pre-registered RoBERTa test (`experiments/roberta_stability
   - **Session 2:** used one `colab exec` per seed, with each result downloaded immediately, and the PC kept awake. It was reclaimed during the last seed.
   - **Session 3:** ran that seed alone. That is a documented deviation from "same session"; it cannot change the outcome, because the decision was fixed once the control had 3 of 3 learning seeds.
 - **Evidence:** `experiments/roberta_stability/RESULTS.md` and `run_20261004/`.
+
+## 43. Report: RoBERTa footnote and a figure reference (2026-10-04, branch `report/roberta-footnote`)
+- **Table 1 footnote:** added "A separate validation-only re-run on a T4 trained all three seeds (69.0% validation), so the failure was chance, not the hardware." The 69.0 is the mean of `experiments/roberta_stability/run_20261004/control_lr2e-5_seed*.json` (section 42) and is checked by a new strict claim in `check_report_numbers.py` (51 claims, 0 errors). No test number changed.
+- **Figure 1 legend:** it said the orange components are "ablated in Table 3"; the ablations are in Table 2. Fixed in `report/make_figures.py`, and the figure was rebuilt.
+- **PDF:** rebuilt; 8 pages, main text ends on page 6, no overfull boxes.

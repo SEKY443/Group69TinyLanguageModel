@@ -239,6 +239,9 @@ def prose_claims():
         "B3 working seed (val)": f"the third reaches {p1(max(b3_seeds.values()))}\\% validation (test 95\\% CI {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f})",
         "B3 working seed (prose)": f"test 95\\% CI of {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f}, above \\dact{{}}'s {t(D)}\\%",
         "B3 A100 reference": f"all seeds trained: {p1(run4[b3]['val acc'])} / {p1(run4[b3]['test acc'])}",
+        "B3 T4 validation re-run": "trained all three seeds ({:.1f}\\% validation)".format(100 * sum(
+            _json(f"experiments/roberta_stability/run_20261004/control_lr2e-5_seed{s}.json")["best_val_acc"]
+            for s in (42, 43, 44)) / 3),
         "ablation: vanilla": f"together costs {cost('vanilla Transformer')} points, the largest drop and the only significant one on test ($p{{=}}{pval('vanilla Transformer'):.3f}$)",
         "ablation: lexical": f"removing the lexical head costs {cost('− lexical head')}.",
         "ablation: pointwise": f"(independent binary scoring: {cost('pointwise objective')})",
