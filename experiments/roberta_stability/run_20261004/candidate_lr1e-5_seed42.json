@@ -1,0 +1,21 @@
+{
+ "arm": "candidate_lr1e-5",
+ "lr": 1e-05,
+ "seed_requested": 42,
+ "seed_used": 42,
+ "restarted_from": [],
+ "best_val_acc": 0.651985111662531,
+ "learned": false,
+ "train_loss_by_epoch": [
+  0.6939,
+  0.6934,
+  0.6826,
+  0.6571
+ ],
+ "val_acc_by_epoch": [
+  0.5509,
+  0.6129,
+  0.652,
+  0.6514
+ ]
+}

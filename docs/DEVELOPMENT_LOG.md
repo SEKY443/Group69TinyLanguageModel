@@ -1589,3 +1589,21 @@ Source: `TRAINING_UPGRADE_PROMPT.md` (the generic QLoRA/SFT/W&B prompt rewritten
 - new log fields present.
 
 The full suite has **43 tests**, passing in 1 min 51 s on CPU.
+
+
+## 42. RoBERTa stability test: lower learning rate rejected (2026-10-04, branch `upgrade/roberta-stability`)
+Ali asked to run the pre-registered RoBERTa test (`experiments/roberta_stability/PREREGISTRATION.md`, committed in `482f904` before any run). It ran on a free T4 with code `2db3f51`, validation only.
+
+| Arm | Val acc (%) seeds 42/43/44 | Mean ± std | Learned (loss < 0.68 by epoch 2) |
+|---|---|---|---|
+| control, lr 2e-5 | 69.60 / 68.49 / 68.80 | 68.96 ± 0.58 | 3/3 |
+| candidate, lr 1e-5 | 65.20 / 67.99 / 68.24 | 67.14 ± 1.69 | 2/3 |
+
+- **Decision: rejected.** The candidate has fewer learning seeds and a lower mean. The learning rate stays 2e-5.
+- **Finding:** the unchanged settings trained all three seeds on a T4. The final run's failure (2 of 3 seeds at ln 2, mean 59.2 %) was bad luck, not a systematic fp16 problem. A stricter restart rule would have caught it (e.g. also restart when the loss has not left ln 2 after epoch 2). That rule should be declared before any future run.
+- **Report:** its test numbers for B3 are unchanged, because no test prediction was made here.
+- **Runs:** three sessions were needed.
+  - **Session 1:** reclaimed after the first seed, most likely because the PC slept overnight; that seed is not used.
+  - **Session 2:** used one `colab exec` per seed, with each result downloaded immediately, and the PC kept awake. It was reclaimed during the last seed.
+  - **Session 3:** ran that seed alone. That is a documented deviation from "same session"; it cannot change the outcome, because the decision was fixed once the control had 3 of 3 learning seeds.
+- **Evidence:** `experiments/roberta_stability/RESULTS.md` and `run_20261004/`.

@@ -1,0 +1,35 @@
+/usr/local/lib/python3.13/dist-packages/huggingface_hub/utils/_auth.py:138: UserWarning: 
+Error while fetching `HF_TOKEN` secret value from your vault: 'Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.'.
+  warnings.warn(f"\nError while fetching `HF_TOKEN` secret value from your vault: '{str(e)}'.")
+config.json:   0%|          | 0.00/481 [00:00<?, ?B/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+tokenizer_config.json:   0%|          | 0.00/25.0 [00:00<?, ?B/s]
+vocab.json:   0%|          | 0.00/899k [00:00<?, ?B/s]
+merges.txt:   0%|          | 0.00/456k [00:00<?, ?B/s]
+tokenizer.json:   0%|          | 0.00/1.36M [00:00<?, ?B/s]
+model.safetensors: reconstructing file:   0%|          |  0.00B /  499MB        
+model.safetensors: downloading bytes:           |  0.00B            
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]
+[transformers] [1mRobertaForMultipleChoice LOAD REPORT[0m from: FacebookAI/roberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.dense.bias          | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+lm_head.bias                | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+lm_head.dense.weight        | UNEXPECTED | 
+classifier.weight           | MISSING    | 
+classifier.bias             | MISSING    | 
+roberta.pooler.dense.bias   | MISSING    | 
+roberta.pooler.dense.weight | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[B3 FacebookAI/roberta-base] ep 1 loss 0.6911 val_acc 0.6507 (166.8s)
+[B3 FacebookAI/roberta-base] ep 2 loss 0.6554 val_acc 0.6625 (171.4s)
+[B3 FacebookAI/roberta-base] ep 3 loss 0.6101 val_acc 0.6805 (171.0s)
+[B3 FacebookAI/roberta-base] ep 4 loss 0.5765 val_acc 0.6824 (170.9s)
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
+RESULT {"arm": "candidate_lr1e-5", "lr": 1e-05, "seed_requested": 44, "seed_used": 44, "restarted_from": [], "best_val_acc": 0.6823821339950372, "learned": true, "train_loss_by_epoch": [0.6911, 0.6554, 0.6101, 0.5765], "val_acc_by_epoch": [0.6507, 0.6625, 0.6805, 0.6824]}

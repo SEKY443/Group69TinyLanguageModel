@@ -1,0 +1,18 @@
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]
+[transformers] [1mRobertaForMultipleChoice LOAD REPORT[0m from: FacebookAI/roberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.bias                | UNEXPECTED | 
+lm_head.dense.weight        | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+lm_head.dense.bias          | UNEXPECTED | 
+classifier.weight           | MISSING    | 
+classifier.bias             | MISSING    | 
+roberta.pooler.dense.bias   | MISSING    | 
+roberta.pooler.dense.weight | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[B3 FacebookAI/roberta-base] ep 1 loss 0.6914 val_acc 0.6563 (171.8s)
