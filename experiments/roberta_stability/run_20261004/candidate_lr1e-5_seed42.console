@@ -1,0 +1,23 @@
+Loading weights:   0%|          | 0/197 [00:00<?, ?it/s]
+[transformers] [1mRobertaForMultipleChoice LOAD REPORT[0m from: FacebookAI/roberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.bias                | UNEXPECTED | 
+lm_head.dense.weight        | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+lm_head.dense.bias          | UNEXPECTED | 
+classifier.weight           | MISSING    | 
+classifier.bias             | MISSING    | 
+roberta.pooler.dense.bias   | MISSING    | 
+roberta.pooler.dense.weight | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[B3 FacebookAI/roberta-base] ep 1 loss 0.6939 val_acc 0.5509 (172.0s)
+[B3 FacebookAI/roberta-base] ep 2 loss 0.6934 val_acc 0.6129 (171.0s)
+[B3 FacebookAI/roberta-base] ep 3 loss 0.6826 val_acc 0.6520 (171.0s)
+[B3 FacebookAI/roberta-base] ep 4 loss 0.6571 val_acc 0.6514 (170.9s)
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]
+RESULT {"arm": "candidate_lr1e-5", "lr": 1e-05, "seed_requested": 42, "seed_used": 42, "restarted_from": [], "best_val_acc": 0.651985111662531, "learned": false, "train_loss_by_epoch": [0.6939, 0.6934, 0.6826, 0.6571], "val_acc_by_epoch": [0.5509, 0.6129, 0.652, 0.6514]}

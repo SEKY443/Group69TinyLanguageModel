@@ -1,0 +1,12 @@
+14:08 setup
+train.jsonl
+train-labels.lst
+SETUP OK
+skip control_lr2e-5 42
+skip control_lr2e-5 43
+skip control_lr2e-5 44
+skip candidate_lr1e-5 42
+skip candidate_lr1e-5 43
+14:08 start candidate_lr1e-5 seed 44
+14:20 RESULT {"arm":"candidate_lr1e-5","lr":1e-05,"seed_requested":44,"seed_used":44,"restarted_from":[],"best_val_acc":0.6823821339950372,"learned":true,"train_loss_by_epoch":[0.6911,0.6554,0.6101,0.5765],"val_acc_by_epoch":[0.6507,0.6625,0.6805,0.6824]}
+14:20 ALLDONE

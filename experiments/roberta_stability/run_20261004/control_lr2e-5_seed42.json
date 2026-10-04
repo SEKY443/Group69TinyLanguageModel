@@ -1,0 +1,21 @@
+{
+ "arm": "control_lr2e-5",
+ "lr": 2e-05,
+ "seed_requested": 42,
+ "seed_used": 42,
+ "restarted_from": [],
+ "best_val_acc": 0.6960297766749379,
+ "learned": true,
+ "train_loss_by_epoch": [
+  0.6903,
+  0.6497,
+  0.577,
+  0.5254
+ ],
+ "val_acc_by_epoch": [
+  0.6241,
+  0.6774,
+  0.6942,
+  0.696
+ ]
+}
