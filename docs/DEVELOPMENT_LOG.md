@@ -1694,3 +1694,14 @@ Ali confirmed that the group's assigned ID is 73. Changed:
 - the submission files, now named `CITS4012_73.pdf` and `CITS4012_73.ipynb` as the specification requires.
 
 The Google Drive folder names in the code (`MyDrive/Group69/...`) and the repository's file names were left unchanged: they are storage paths, not the group identity, and changing them would make the code differ from the saved run.
+
+## 48. Clean-test run stopped; report cuts applied (2026-10-05)
+- **Clean-test protocol** (branch `protocol/clean-test`, `f11d5fe`, `experiments/clean_test/PROTOCOL.md`): the code and protocol are committed, but the Colab run was stopped on Ali's request during the first grid candidate. `final_eval` was never reached, so the new test split remains unevaluated and can still be used cleanly. The branch is not merged.
+- **Report cuts**, applied as agreed and shortening only repeated or anecdotal text:
+  - shorter abstract; Related Work sentence merged;
+  - shorter Table 1 footnotes; probe sentence tightened;
+  - exotic-trip example cut to one clause;
+  - Experimental Stability without the truncation and bf16 anecdotes;
+  - Conclusion without the repeated parameter ratios.
+- **One sentence added to Limitations:** a replacement test split, held out of the training file and never evaluated on, has been prepared but not yet run. This is true at this commit; no clean-test result is claimed.
+- **Checks:** strict tables 37 / 0 errors, prose 50 claims / 0 errors. The main text ends mid-column on page 6; references alone on page 8.

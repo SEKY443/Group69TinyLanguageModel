@@ -211,7 +211,6 @@ def prose_claims():
     return {
         "abstract: DACT val": f"among the models trained from scratch ({v(D)}\\%)",
         "abstract: DACT vs TF-IDF test, p": f"({t(D)} vs.\\ {t(B1)}\\%, McNemar $p{{=}}{pval(B1):.2f}$)",
-        "conclusion: parameter ratios and accuracies": f"models with {ratio_roberta}--{ratio_qwen:.0f} times more parameters and pretraining reach {rerun_mean:.0f}--{100 * float(fr['B4 Qwen2.5-1.5B (zero-shot)']['test acc']):.0f}\\%",
         "duplicate: re-scoring change": f"changes accuracy by about {abs(float(rs['dact_full']['difference_points'])):.2f} points",
         "duplicate: DACT": f"{100 * float(rs['dact_full']['test_acc_all_1838']):.2f}\\,$\\to$\\,{100 * float(rs['dact_full']['test_acc_without_duplicate_1837']):.2f}\\%",
         "duplicate: TF-IDF": f"{100 * float(rs['B1_tfidf_lr']['test_acc_all_1838']):.2f}\\,$\\to$\\,{100 * float(rs['B1_tfidf_lr']['test_acc_without_duplicate_1837']):.2f}\\%",
@@ -256,7 +255,7 @@ def prose_claims():
         "case: lotion bars (747), text": f"the model prefers this option with p = {case['747']:.2f}",
         "case: small cheap home (1516)": f"the most uncertain item (p = {case['1516']:.2f}; option 1 is correct)",
         "case: LED (993)": f"wins with p = {case['993']:.2f} against",
-        "case: exotic trip (841)": f"(p = {case['841']:.2f} for a strict itinerary",
+        "case: exotic trip (841)": f"(\\emph{{an exotic trip}}, p = {case['841']:.2f})",
         "history: goal matching": f"it lost {100 * (float(goal['control_main_model']['val_mean']) - float(goal['goal_matching']['val_mean'])):.1f} points on validation",
         "history: run 4 vs final spread": f"moved by up to {moved:.1f} points",
         "tags help on test (consistency)": f"$-$ difference tags & $-${delta('− difference tags', 'val acc')} & $-${tags_test}",
