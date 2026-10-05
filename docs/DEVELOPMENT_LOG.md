@@ -1686,3 +1686,11 @@ No result number changed.
 - no overfull boxes.
 
 **Checker:** `tools/check_report_numbers.py` was updated: Table 1's label is now "(main model)"; the Table 3 row checks were removed; the claims were re-pointed to the new wording. Result: tables 37 values / 0 errors, prose 51 claims / 0 errors, loose 0 mismatches. 42 fast tests pass.
+
+## 47. Group number set to 73 (2026-10-05)
+Ali confirmed that the group's assigned ID is 73. Changed:
+- the report's `uthor{Group 73}` (PDF rebuilt; layout unchanged);
+- the notebook title line "Group 73 · Dataset: PIQA …";
+- the submission files, now named `CITS4012_73.pdf` and `CITS4012_73.ipynb` as the specification requires.
+
+The Google Drive folder names in the code (`MyDrive/Group69/...`) and the repository's file names were left unchanged: they are storage paths, not the group identity, and changing them would make the code differ from the saved run.
