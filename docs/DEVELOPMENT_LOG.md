@@ -1652,3 +1652,45 @@ Ali asked to cut the Limitations section so that it fits in 6 pages.
 - **Protocol paragraph:** the sentence on the lexical head's test exposure was removed, because the "Validity of the test numbers" paragraph in Section 3 says the same thing.
 - **Qualitative analysis:** the "baby wipes" example was removed. It came from an earlier run; the paragraph's other cases are from the final run.
 - **Result:** the abstract through Limitations ends on page 6; Team Contributions and the references start page 7. No overfull boxes. Strict checks: 53 table values and 57 prose claims, 0 errors.
+
+## 46. Report rewritten as a technical project report with IEEE numbered references (2026-10-05, branch `report/ieee-report-style`)
+Ali asked for the report to be revised from research-paper style into a university technical report, keeping the ACL template, the "Group 69" author line and the 6-page content limit, with IEEE numbered citations and the references on a standalone final page. The official specification is `CITS4012_A2_2026.pdf`, which requires the ACL template in `[final]` mode, only the group number as author, at most six pages of content (Team Contributions and references excluded) and BibTeX.
+
+**Structure:**
+- Introduction: Background and Motivation, Project Objectives, Related Work.
+- Methodology: Task Formulation, Input Representation and Difference Tags, Shared Transformer Encoder, Cross-Solution Attention, Difference-Guided Attention Pooling, Lexical Scoring Component, Prediction and Training Objective.
+- Experimental Setup: Dataset and Data Split, Data Preprocessing, Training Configuration, Baseline Models, Evaluation Metrics, Experimental Protocol.
+- Results and Analysis: Overall Performance, Ablation Study, Attention Analysis, Qualitative Analysis, Experimental Stability, Limitations.
+- Conclusion; Team Contributions; References.
+
+The rhetorical title, abstract phrasing and question-style headings were replaced. Table 3 (development history) was folded into "Experimental Stability". The training configuration is a paragraph, so Table 1 = results and Table 2 = ablations. The 1,838 labelled development items are called the "evaluation split" throughout, because PIQA's official test labels are not public.
+
+**Facts checked against the code before restating them:**
+- whitespace collapsing (`load_split`), NFKC and lower-casing (tokenizer);
+- AdamW betas (0.9, 0.98), MLM masking (15 %, 80/10/10);
+- the final configuration (`outputs/results/dact_full_val.json`: d=128, 2 layers, 4 heads, FFN 512, MLM warm-up 10 epochs at 5e-4).
+
+No result number changed.
+
+**Citations:**
+- natbib is switched to `numbers,square,sort&compress` via `\PassOptionsToPackage` before `\usepackage[final]{acl}`. `acl.sty`'s own `\bibliographystyle{acl_natbib}` call is suspended while the package loads, and `\bibliographystyle{IEEEtran}` is used. `acl.sty`, the page geometry, fonts and columns are unchanged.
+- References are numbered by first appearance.
+- The one `\citet` became "Bisk et al.~\cite{...}", because IEEE numeric entries carry no author-year data and natbib printed "(author?)".
+- All 23 entries are cited, with no undefined citations and no BibTeX warnings.
+- Venue names use IEEE abbreviations ("Proc.", "Conf.", "Assoc. Comput. Linguistics", …) in both identical copies of `references.bib`, so that the list fits on one page.
+
+**Layout:**
+- the content (title through Conclusion) is on pages 1–6;
+- Team Contributions is on pages 6–7;
+- `\clearpage`, then References alone on page 8;
+- no overfull boxes.
+
+**Checker:** `tools/check_report_numbers.py` was updated: Table 1's label is now "(main model)"; the Table 3 row checks were removed; the claims were re-pointed to the new wording. Result: tables 37 values / 0 errors, prose 51 claims / 0 errors, loose 0 mismatches. 42 fast tests pass.
+
+## 47. Group number set to 73 (2026-10-05)
+Ali confirmed that the group's assigned ID is 73. Changed:
+- the report's `uthor{Group 73}` (PDF rebuilt; layout unchanged);
+- the notebook title line "Group 73 · Dataset: PIQA …";
+- the submission files, now named `CITS4012_73.pdf` and `CITS4012_73.ipynb` as the specification requires.
+
+The Google Drive folder names in the code (`MyDrive/Group69/...`) and the repository's file names were left unchanged: they are storage paths, not the group identity, and changing them would make the code differ from the saved run.
