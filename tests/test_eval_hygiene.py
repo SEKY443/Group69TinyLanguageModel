@@ -7,7 +7,8 @@ import pytest
 import torch
 
 import experiments
-from data import HIDDEN_LABEL, load_piqa, load_piqa_with_test_labels, load_split
+from data import test_labels as read_test_labels   # alias: pytest would collect a name starting with test_
+from data import HIDDEN_LABEL, load_piqa, load_piqa_with_test_labels, load_split, split_indices, item_key
 from evaluate import calibration
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -18,8 +19,7 @@ def test_test_labels_are_not_loaded(tiny_setup):
     assert all(r["label"] == HIDDEN_LABEL for r in data["test"])
     assert set(data["test_ds"].labels) == {HIDDEN_LABEL}
     assert data["test_labels_loaded"] is False
-    real = load_split(cfg.data_dir, "test")
-    assert len(set(r["label"] for r in real)) == 2, "the synthetic test file does have both labels"
+    assert len(set(read_test_labels(cfg))) == 2, "the real test labels do contain both classes"
 
 
 def test_test_experiment_needs_final_eval(tiny_setup, monkeypatch):
@@ -36,7 +36,7 @@ def test_final_eval_loads_labels_and_logs(tiny_setup, tmp_path, monkeypatch):
     data = prepare_everything(c)
     monkeypatch.setitem(experiments.__dict__, "FINAL_EVAL", False)
     yte = experiments.final_eval(data, c, reason="unit test")
-    real = [r["label"] for r in load_split(cfg.data_dir, "test")]
+    real = read_test_labels(cfg)
     assert list(yte) == real and data["test_ds"].labels == real and data["test_labels_loaded"]
     assert experiments.FINAL_EVAL is True
     for root in ("out", "drive"):
@@ -50,7 +50,7 @@ def test_tools_read_test_labels_only_with_a_log(tiny_setup, tmp_path):
     _, _, hidden = load_piqa(cfg)
     assert all(r["label"] == HIDDEN_LABEL for r in hidden)
     _, _, test = load_piqa_with_test_labels(cfg, "tool test", str(tmp_path))
-    assert [r["label"] for r in test] == [r["label"] for r in load_split(cfg.data_dir, "test")]
+    assert [r["label"] for r in test] == read_test_labels(cfg)
     assert json.loads((tmp_path / "test_access.log").read_text())["reason"] == "tool test"
 
 
@@ -87,3 +87,23 @@ def test_report_deltas_use_unrounded_means():
     for label, model in rows.items():
         dv, dt = (round(100 * (float(fr[model][c]) - float(fr["DACT (full)"][c])), 1) for c in ("val acc", "test acc"))
         assert re.search(re.escape(f"{label} & {fmt(dv)} & {fmt(dt)}"), tex), (label, dv, dt)
+
+
+def test_clean_test_split(tiny_setup):
+    """train_holdout protocol: validation unchanged, test held out of the training file, disjoint, no duplicates."""
+    cfg, _ = tiny_setup
+    full = load_split(cfg.data_dir, "train")
+    tr_o, va_o, te_o = split_indices(full, cfg.but(test_source="dev"))
+    tr, va, te = split_indices(full, cfg)
+    assert te_o is None and len(te) == cfg.test_holdout_size
+    assert list(va) == list(va_o)                                         # validation identical to earlier runs
+    assert set(tr) | set(te) == set(tr_o) and not set(tr) & set(te)      # test taken from the old training part only
+    keys = [item_key(full[i]) for i in range(len(full))]
+    assert all(keys.count(keys[i]) == 1 for i in te)                     # no copy of a test item anywhere else
+
+
+def test_dev_protocol_still_available(tiny_setup):
+    cfg, _ = tiny_setup
+    old = cfg.but(test_source="dev")
+    _, _, test = load_piqa(old)
+    assert len(test) == len(load_split(cfg.data_dir, "test")) and read_test_labels(old) == [r["label"] for r in load_split(cfg.data_dir, "test")]

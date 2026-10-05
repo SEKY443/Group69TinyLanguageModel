@@ -121,27 +121,66 @@ def load_split(data_dir, split, with_labels=True):
     return rows
 
 
+def item_key(r):
+    """An item regardless of option order (a duplicate may list the two solutions the other way round)."""
+    return (r["goal"], frozenset((r["sol1"], r["sol2"])))
+
+
+def split_indices(full_train, cfg: Config):
+    """Indices into the training file: train, validation and (train_holdout protocol) test.
+
+    Validation is split off exactly as in every earlier run (stratified, cfg.seed), so it is unchanged. The test
+    split is then drawn, stratified with cfg.test_split_seed, from the remaining items whose goal and solutions occur
+    only once in the whole training file, so that no copy of a test item is trained on.
+    """
+    labels = [r["label"] for r in full_train]
+    tr_idx, va_idx = train_test_split(np.arange(len(full_train)), test_size=cfg.val_frac, random_state=cfg.seed,
+                                      stratify=labels)
+    if getattr(cfg, "test_source", "dev") != "train_holdout":
+        return tr_idx, va_idx, None
+    counts = {}
+    for r in full_train:
+        counts[item_key(r)] = counts.get(item_key(r), 0) + 1
+    eligible = np.array([i for i in tr_idx if counts[item_key(full_train[i])] == 1])
+    _, te_idx = train_test_split(eligible, test_size=cfg.test_holdout_size, random_state=cfg.test_split_seed,
+                                 stratify=[labels[i] for i in eligible])
+    held_out = set(te_idx.tolist())
+    return np.array([i for i in tr_idx if i not in held_out]), va_idx, te_idx
+
+
 def load_piqa(cfg: Config):
-    """Returns train / validation (held out from the official training file) / test.
+    """Returns train / validation / test, all three from the official training file under the train_holdout
+    protocol (cfg.test_source); under the earlier "dev" protocol the test split is the PIQA development file.
 
     The test split is returned WITHOUT its labels (placeholder HIDDEN_LABEL); experiments.final_eval() reads them.
     """
     data_dir = prepare_data(cfg)
     full_train = load_split(data_dir, "train")
-    test = load_split(data_dir, "test", with_labels=False)
-    idx = np.arange(len(full_train))
-    tr_idx, va_idx = train_test_split(idx, test_size=cfg.val_frac, random_state=cfg.seed,
-                                      stratify=[r["label"] for r in full_train])
+    tr_idx, va_idx, te_idx = split_indices(full_train, cfg)
     train = [full_train[i] for i in tr_idx]
     val = [full_train[i] for i in va_idx]
+    if te_idx is None:
+        test = load_split(data_dir, "test", with_labels=False)
+    else:
+        test = [dict(full_train[i], label=HIDDEN_LABEL) for i in te_idx]
     return train, val, test
+
+
+def test_labels(cfg: Config):
+    """The real test labels, in test-split order. Only experiments.final_eval() and load_piqa_with_test_labels()
+    call this, and both log the access."""
+    if getattr(cfg, "test_source", "dev") != "train_holdout":
+        return load_labels(cfg.data_dir, "test")
+    full_train = load_split(prepare_data(cfg), "train")
+    _, _, te_idx = split_indices(full_train, cfg)
+    return [full_train[i]["label"] for i in te_idx]
 
 
 def load_piqa_with_test_labels(cfg: Config, reason, log_root):
     """load_piqa() with the real test labels, for evaluation tools outside the notebook. Each call is logged in
     <log_root>/test_access.log, like the notebook's final_eval()."""
     train, val, test = load_piqa(cfg)
-    for r, y in zip(test, load_labels(cfg.data_dir, "test")):
+    for r, y in zip(test, test_labels(cfg)):
         r["label"] = y
     log_test_access((log_root,), reason, len(test))
     return train, val, test
@@ -316,7 +355,8 @@ def prepare_everything(cfg: Config):
     """Loads the splits, learns the BPE tokenizer on the training split and pre-tokenises every split."""
     train, val, test = load_piqa(cfg)
     tok = train_tokenizer(train, cfg, path=os.path.join(cfg.out_dir, "tokenizer.json"))
-    manifest = {"split_seed": cfg.seed, "val_frac": cfg.val_frac, "files": {}, "splits": {}}
+    manifest = {"split_seed": cfg.seed, "val_frac": cfg.val_frac, "files": {}, "splits": {},
+                "test_source": getattr(cfg, "test_source", "dev"), "test_split_seed": getattr(cfg, "test_split_seed", None)}
     for fname in EXPECTED_FILES:
         with open(os.path.join(cfg.data_dir, fname), "rb") as stream:
             manifest["files"][fname] = hashlib.sha256(stream.read()).hexdigest()

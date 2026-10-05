@@ -10,7 +10,7 @@ import torch
 
 from baselines import BiLSTMAttention  # nb-skip
 from config import Config, get_device, log_test_access, set_seed, write_progress  # nb-skip
-from data import load_labels, make_loader, prepare_everything  # nb-skip
+from data import make_loader, prepare_everything, test_labels  # nb-skip
 from evaluate import accuracy, bootstrap_ci, summarise_seeds, save_predictions  # nb-skip
 from model import DACT, count_parameters  # nb-skip
 from train import mlm_warmup, predict, train_qa  # nb-skip
@@ -184,9 +184,10 @@ def run_experiment(name, cfg, arch, data, device, seeds, verbose=True, resume=Tr
 
 
 def final_eval(data, cfg, reason):
-    """The ONLY place where test labels are read: loads test-labels.lst into the test rows and dataset, appends a
-    line (time, commit, reason) to test_access.log in out_dir and the persistent run folder, and opens the guard."""
-    labels = load_labels(cfg.data_dir, "test")
+    """The ONLY place where test labels are read (data.test_labels): loads them into the test rows and dataset,
+    appends a line (time, commit, reason) to test_access.log in out_dir and the persistent run folder, and opens the
+    guard."""
+    labels = test_labels(cfg)
     rows, ds = data["test"], data["test_ds"]
     for i, r in enumerate(rows):          # rows may be a prefix of the file (smoke mode)
         r["label"] = labels[i]

@@ -16,7 +16,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 nb = json.load(open(os.path.join(ROOT, "CITS4012_69.ipynb"), encoding="utf-8"))
 TOUCH = re.compile(r'DATA\["test(_ds)?"\]|test_ds|\byte\b|test_pred|test_experiment\(|\b_te\b|test_loader|FINAL_EVAL')
-LABELS = re.compile(r'\byte\b|test_experiment\(|final_eval\(|load_labels\(|test-labels|for split in \("train", "val", "test"\).*labels|DATA\[f"\{split\}_ds"\]\.labels')
+LABELS = re.compile(r'\byte\b|test_experiment\(|final_eval\(|load_labels\(|test_labels\(|test-labels|for split in \("train", "val", "test"\).*labels|DATA\[f"\{split\}_ds"\]\.labels')
 
 final_cell = None
 problems = []

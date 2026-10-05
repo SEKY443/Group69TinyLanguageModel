@@ -25,6 +25,13 @@ class Config:
     # ---- data ----
     seed: int = 42              # seed for the train/validation split (kept fixed across runs)
     val_frac: float = 0.10
+    # Test split (protocol of 2026-10-05, experiments/clean_test/PROTOCOL.md): "train_holdout" takes the test items
+    # from the training file, after validation is split off exactly as before; they were never evaluated on, so no
+    # decision was ever based on them. "dev" is the earlier protocol (the PIQA development file, exposed during
+    # development).
+    test_source: str = "train_holdout"
+    test_holdout_size: int = 1838
+    test_split_seed: int = 2026
     vocab_size: int = 8000
     min_frequency: int = 2
     max_goal_len: int = 40      # BPE tokens

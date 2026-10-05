@@ -50,5 +50,5 @@ def tiny_setup(tmp_path_factory):
     cfg = Config(data_dir=write_synthetic_piqa(str(root / "data")), out_dir=str(root / "prep"), vocab_size=300,
                  min_frequency=1, d_model=32, n_heads=2, n_layers=1, d_ff=64, max_len=64, max_goal_len=16,
                  max_sol_len=24, batch_size=32, epochs=2, patience=2, lex_buckets=2 ** 10, num_workers=0,
-                 amp=False, deterministic=True)
+                 amp=False, deterministic=True, test_holdout_size=30)
     return cfg, prepare_everything(cfg)
