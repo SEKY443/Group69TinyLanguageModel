@@ -1897,8 +1897,9 @@ nothing except two exact duplicates was deleted. `archive/README.md` lists every
 - **References updated** in the live tools, tests, `report/build.sh`, the requirements comments, `README.md` and the
   final documents. Historical documents keep the paths of their time.
 - Records of AI assistance (this log, `docs/history/NOTE_FOR_SALAH.md`, commit trailers) were left unchanged.
-- **Snapshot:** `submission/` rebuilt from the committed sources (`SHA256SUMS`, `MANIFEST.json`), and an annotated
-  git tag marks the snapshot commit.
+- **Snapshot:** `submission/` rebuilt from commit `89a4d96` (`SHA256SUMS`, `MANIFEST.json`) and committed as
+  `2453438`. The annotated tag `submission-group73-2026-10-06` was created on that commit, but this session could not
+  push tags (only the working branch); push it with `git push origin submission-group73-2026-10-06`.
 - **Checks:** 79 tests pass; the notebook sync, test-access, report-number (46 / 53, 0 errors) and submission-format
   checks pass; the report builds with 8 pages, main content on pages 1–6, no warnings.
 
