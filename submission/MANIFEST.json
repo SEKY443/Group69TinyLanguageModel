@@ -1,0 +1,100 @@
+{
+  "group": "73",
+  "built": "2026-10-06 08:03:16 UTC",
+  "source_commit": "5ba0d1e00388087e77e2ec19a6d6fa8a513d3b7d",
+  "branch": "claude/inspiring-mayer-t5ckuv",
+  "working_tree_clean_for_sources": true,
+  "files": {
+    "CITS4012_73.pdf": {
+      "sha256": "15b498bd4734f9ae65e8f8af55833604ac4e5891c1ffa7de5b74c4d630fbebdf",
+      "source": "report/CITS4012_69.pdf",
+      "bytes": 313514
+    },
+    "CITS4012_73.ipynb": {
+      "sha256": "869b228ad05b056a5d93160726d51d2a89daea947c59c28430de52b47b4340b5",
+      "source": "CITS4012_69.ipynb",
+      "bytes": 1537644
+    }
+  },
+  "report_source_sha256": "5f11559aefd5d3ad5638eb07bc64356b13736f462c7eebdb21b14953066d73be",
+  "notebook": {
+    "cells": 59,
+    "code_cells": 33,
+    "code_cells_with_outputs": 24,
+    "error_outputs": 0
+  },
+  "report": {
+    "pdf_pages": 8,
+    "team_contributions_page": 7,
+    "main_content_last_page": 6
+  },
+  "reported_run": {
+    "commit": "b880108",
+    "time": "2026-10-03 15:14:26",
+    "environment": {
+      "python": "3.13.15",
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+      "packages": {
+        "torch": "2.11.0+cu130",
+        "numpy": "2.1.3",
+        "scikit-learn": "1.6.1",
+        "scipy": "1.16.3",
+        "pandas": "2.2.3",
+        "matplotlib": "3.10.0",
+        "tokenizers": "0.23.2",
+        "transformers": "5.17.0"
+      },
+      "device": "cuda",
+      "cuda": "13.0",
+      "gpu": "Tesla T4",
+      "deterministic": false
+    },
+    "data_sha256": {
+      "train.jsonl": "f805f9c96518d7b59f2f870d90f712457cda949979469d9fa3fd706ce22e0a1a",
+      "train-labels.lst": "df8ae080c41f02f88e81f6932d425f4b7ee72f433ad552e6a30d45e358e8f8bb",
+      "test.jsonl": "93503cc97c679e459b065c3d13e848282e44b2a25213985bed3e5d458abef72d",
+      "test-labels.lst": "b4192dc3a2a0363d9d60ccf79800cbbe2f32ebb17726efdde6970e0b8131bceb"
+    },
+    "tokenizer_sha256": "0c4c50b2cb9c0ddd4fc56703bba7508421ebf1ad5e0cdc0e77f4c5e941f22b26"
+  },
+  "results_sha256": {
+    "outputs/results/abl0_test.json": "d7763406439149f65a2ccc81093e690cc7d80937bddc3dea08ff7a3b639ee952",
+    "outputs/results/abl0_val.json": "6138e7c42af1d94d8856203d5437fbb6112c7c4a8a76a49b916b1da7a06dc840",
+    "outputs/results/abl1_test.json": "0637a2e432764927f687d4b67dbeb272d15604423fd22b83fc708594403a2110",
+    "outputs/results/abl1_val.json": "788a30d8cdb12c02a20bc0117bdb56fbde722c1604522aa75bc921ba94229164",
+    "outputs/results/abl2_test.json": "12d07e89054a194baa7cb470e0faf1ff45f5a01af7f02ae80eb27484e1704f24",
+    "outputs/results/abl2_val.json": "1d1ee936eeae417003df502b5fc0e6d16d4ba3b533792f9ad0add6813696d40a",
+    "outputs/results/abl3_test.json": "ebd15dd5c065f98a62bab7f5bbba9c1574fb921f9df5b31503dc9ed95b77c704",
+    "outputs/results/abl3_val.json": "c863ffd3c9c8e909fbb8dc753acb611d84417aa18ba8366eae0f66fcd002fb8c",
+    "outputs/results/abl4_test.json": "b1e575451476c827c6e4213c958ac22f0f7cf3b885bd44b9f2434b1c6594262c",
+    "outputs/results/abl4_val.json": "395200b46ff93080582c00f766db44723457baa53c9b841b028ebded337a6987",
+    "outputs/results/abl5_test.json": "d6e2707f37e544e68b9975f6d4e290c628184ff76e3db9d8a4400eb8dcf67e36",
+    "outputs/results/abl5_val.json": "9cc7a8103b362608232997a1deb9078fca8b8d49fdc2f0e80556bfb546abe5a1",
+    "outputs/results/abl6_test.json": "e54ce00e2041ce1a1a257098b86f4794b21527869e26f6ec06d8c85ebf394de8",
+    "outputs/results/abl6_val.json": "f6b35298122593212492b9b200a40e59e7e1d8eb2c4d2d70a3755596aaba6498",
+    "outputs/results/abl7_test.json": "1ffa83b1353337f48a0d1f51c33b42f2077cc376d3bda67f3e15646d00fee9fb",
+    "outputs/results/abl7_val.json": "b27801cb849d447dd3c7295d9c7e8da5fa9dede490e5a55f105a9d9df832d998",
+    "outputs/results/abl8_test.json": "ab9bb3275c71ed7e5f814e9ddb4b99205bd5834f1b848cd9349f3d5d331d8418",
+    "outputs/results/abl8_val.json": "fb8df4d73c988b487f5a3b5594d1996773ff658bac84f8c31056c367f2315cce",
+    "outputs/results/ablation_significance.csv": "c9d06a7a74042561660db12fe382e60db65982b211e3454f62a25c222c2fe572",
+    "outputs/results/analysis_numbers.csv": "de328c043e9abb53415f73731515d7acb6eba13b51f3c5fd373d7d5324594332",
+    "outputs/results/audit_checks.csv": "18cfa08b346e4c0b6857922e5bbf6a352fb8ffedeaf0ed6220c5f9f7558e26cb",
+    "outputs/results/b2_bilstm_test.json": "7bf4f5b55db64e095034d7c629359eda2c992622132cf86efb1075fae6f6e00c",
+    "outputs/results/b2_bilstm_val.json": "cabe2a7453e2ec5c5b29bef6a83aa3c6b246613c3128c987b7d2d89908f0389c",
+    "outputs/results/dact_full_test.json": "cf937444247d814c84209ed8e6b523cf130081901cb9bda542eb3a5d8729a97e",
+    "outputs/results/dact_full_val.json": "b3c0fca896d765eae1bf8c5f95ac64c99d0bc89176e21b9cdfd5993e3081c915",
+    "outputs/results/diff_probe_by_layer.csv": "b17053a9c79f6f82798c090debed05bd9f9d6e0af97fdb2cbe7e8e4d30c43fbc",
+    "outputs/results/error_overlap.csv": "fd8109380f5a3260e4e8b2a22e8b3ef11b9343451dd9505eb47f4f66e23bf098",
+    "outputs/results/final_results.csv": "2a1032ae410c927feaf67ea8311f7e5ef14f87c9e20809d3c57b1be1961cf83c",
+    "outputs/results/hp0_val.json": "1e62cac23df1cffe7c5a6222871334f26da3fe0d9a3cff1adb4158bf0a3aea09",
+    "outputs/results/hp1_val.json": "4083362aaa0da90d4eed4c6bdbab800f84edde985643ea7e2bd87c5a729864a7",
+    "outputs/results/hp2_val.json": "eb26d4177ab6d3c45e52cf9519443fe233832f514caed5af7b42b9cfa2103b0b",
+    "outputs/results/hp3_val.json": "09636727918cab0c0361e9bb6b29de33e7d305b19cdd1eb0a273b141dabf63a5",
+    "outputs/results/hp4_val.json": "1b6bc6f177a5507693c7f8bb8dcf604a6e0b476fe98a075feff41a5e3d33f5d1",
+    "outputs/results/rescore_without_duplicate.csv": "7125ca372c68b84c6e05d18da1f7480debaa729473ea4efa61e8dc73d2aa6ad4"
+  },
+  "build_environment": {
+    "python": "3.13.16",
+    "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39"
+  }
+}
