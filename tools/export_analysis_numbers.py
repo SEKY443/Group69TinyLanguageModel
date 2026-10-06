@@ -1,7 +1,7 @@
 """Exports the analysis numbers that the executed notebook PRINTS (but does not save as CSV) to
 outputs/results/analysis_numbers.csv, so that every number in the report is traceable to a results file.
 
-Sources: the saved outputs of CITS4012_69.ipynb (attention controls, entropy, items only DACT solves) and the
+Sources: the saved outputs of CITS4012_73.ipynb (attention controls, entropy, items only DACT solves) and the
 attention data saved next to the case figures (outputs/figures/*.png.json). Nothing is recomputed.
 Usage: python tools/export_analysis_numbers.py
 """
@@ -12,7 +12,7 @@ import os
 import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-nb = json.load(open(os.path.join(ROOT, "CITS4012_69.ipynb"), encoding="utf-8"))
+nb = json.load(open(os.path.join(ROOT, "CITS4012_73.ipynb"), encoding="utf-8"))
 text = "\n".join("".join(o.get("text", "")) or "".join(o.get("data", {}).get("text/plain", ""))
                  for c in nb["cells"] if c["cell_type"] == "code" for o in c.get("outputs", []))
 
@@ -33,7 +33,7 @@ for name, pat in PATTERNS.items():
     m = re.search(pat, text)
     if not m:
         raise SystemExit(f"pattern not found in notebook outputs: {name}")
-    rows.append({"quantity": name, "value": " ".join(" ".join(m.groups()).split()), "source": "CITS4012_69.ipynb outputs"})
+    rows.append({"quantity": name, "value": " ".join(" ".join(m.groups()).split()), "source": "CITS4012_73.ipynb outputs"})
 for f in sorted(glob.glob(os.path.join(ROOT, "outputs", "figures", "*.png.json"))):
     d = json.load(open(f, encoding="utf-8"))
     rows.append({"quantity": f"case_{os.path.basename(f)[:-9]}_probabilities_option1_option2",

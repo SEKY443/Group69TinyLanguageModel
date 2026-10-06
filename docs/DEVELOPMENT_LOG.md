@@ -43,6 +43,9 @@ S1–S3. Parallel track on `main`: evidence audit and replication (Salah Elshafe
 41–43. Training hardening; RoBERTa stability test; RoBERTa footnote
 44–48. Report passes, group number 73, clean-test run stopped
 49. Final audit and submission preparation (2026-10-06)
+50. Repository reorganisation and submission snapshot (2026-10-06)
+51. Report revision: numeric citations, standalone references, formal edit (2026-10-06)
+52. Branch replayed onto main and merged (2026-10-06)
 
 ---
 
@@ -1877,3 +1880,88 @@ carry a `Co-Authored-By` trailer. The full assessment is in `docs/FINAL_MARKING_
 - `tools/check_report_numbers.py`: 46 / 53, 0 errors.
 - `tools/build_submission.py --check-only`: OK.
 - Retraining required: **no**. Report changes: **yes** (listed above).
+
+## 50. Repository reorganisation and submission snapshot (2026-10-06)
+The group asked for a cleaner repository before submission. Every move used `git mv`, so file histories are kept;
+nothing except two exact duplicates was deleted. `archive/README.md` lists every old and new path.
+
+- **Deliverables renamed to the group ID:** `CITS4012_69.ipynb` → `CITS4012_73.ipynb`, `report/CITS4012_69.tex/.pdf`
+  → `report/CITS4012_73.tex/.pdf`. The report text is unchanged (the rebuilt PDF has the same text; only its build
+  timestamp differs). Two notebook markdown references were updated (`docs/history/PROJECT_AUDIT.md`,
+  `report/references.bib`); no output was touched.
+- **Superseded material moved to `archive/`:** the original A100 run (`evidence/historical/`), development notebooks
+  (`evidence/`), the audit track's notes on the original model (`report_support/`), retired tools and ten
+  audit-track tools from `tools/`. Several of these tools regenerate or overwrite files (for example
+  `review_historical_notebook.py` rewrote the submission notebook), so they no longer sit beside the live tools.
+- **Earlier audits and notes** moved to `docs/history/`.
+- **Removed duplicates:** the root `references.bib` (identical to `report/references.bib`) and `requirements-a100.txt`
+  (it only included `requirements-lock.txt`; its test assertion was removed).
+- **References updated** in the live tools, tests, `report/build.sh`, the requirements comments, `README.md` and the
+  final documents. Historical documents keep the paths of their time.
+- Records of AI assistance (this log, `docs/history/NOTE_FOR_SALAH.md`, commit trailers) were left unchanged.
+- **Snapshot:** `submission/` rebuilt from commit `89a4d96` (`SHA256SUMS`, `MANIFEST.json`) and committed as
+  `2453438`. The annotated tag `submission-group73-2026-10-06` was created on that commit, but this session could not
+  push tags (only the working branch); push it with `git push origin submission-group73-2026-10-06`.
+- **Checks:** 79 tests pass; the notebook sync, test-access, report-number (46 / 53, 0 errors) and submission-format
+  checks pass; the report builds with 8 pages, main content on pages 1–6, no warnings.
+
+## 51. Report revision: numeric citations, standalone references, formal edit (2026-10-06)
+Requested by the group: numeric citations, references on a page of their own, Group 73 throughout, and a formal
+academic wording of every paragraph. This pass was carried out with Claude Code, as in §49.
+
+- **Citations.** Numeric (`[n]`, sorted and compressed) through natbib's own `numbers,square,sort&compress` options.
+  The template files (`acl.sty`, `acl_natbib.bst`) are used unmodified; no bibliography style is overridden. The
+  reference list is numbered in the template's alphabetical order.
+- **References.** Start on a new page (`\clearpage` after Team Contributions). Conference names use their standard
+  short form ("Proceedings of ACL", "Proceedings of NAACL-HLT", …), so that the list fits on one page. Authors,
+  titles, volumes and pages are unchanged.
+- **Wording.** Every paragraph was edited for formal academic register. Numbers, claims and their hedging are
+  unchanged.
+- **Content added for the brief.**
+  - a summary of the main findings in the Introduction (§1.2, now "Objectives and Main Findings");
+  - the assumptions of the difference tags in §2.2;
+  - one sentence giving the hypothesis behind each group of ablations (§4.2);
+  - the main lesson in the Conclusion.
+- **Figures.**
+  - The four-bar attention-control chart was removed: its four values are all stated in §4.3, and it cost about 16
+    column lines.
+  - The attention-case figure (now Figure 2) shows the correct and the incorrect prediction. The most uncertain item
+    is discussed in §4.4 and plotted in the notebook.
+- **Terminology.** Tables label the two splits "Val." and "Eval.", matching the prose ("evaluation split").
+- **Layout.** 8 pages: abstract to Conclusion on pages 1–6 (3 lines of measured slack), Team Contributions on
+  page 7, references alone on page 8. No overfull boxes, LaTeX or BibTeX warnings.
+- **Checker.** `tools/check_report_numbers.py` claim texts updated to the new wording (numbers still built from the
+  result files): 46 table values, 53 prose claims, 0 errors, 0 untraceable numbers.
+- **Group 73 in the notebook code.**
+  - Drive folders (`MyDrive/Group73/...`) and environment variables (`GROUP73_COMMIT`, `GROUP73_RUN_ID`,
+    `GROUP73_STRICT_VERSIONS`) renamed in `src/config.py` and the notebook code cells; the smoke test and comments
+    were updated to match.
+  - The saved output of the configuration cell still shows the run-time folder name; the Readme cell says so. No
+    saved output was edited.
+  - The repository itself is still named `Group69TinyLanguageModel`; renaming it is a GitHub setting for its owner.
+- **Verification.** The post-run equivalence proof was re-run (weights and predictions bit-identical), and all
+  checks pass.
+- **Snapshot.** Rebuilt from commit `8617728` and committed as `16ea77f`. The local tag
+  `submission-group73-2026-10-06`, never pushed, was moved to that commit; push it with
+  `git push origin submission-group73-2026-10-06`.
+
+## 52. Branch replayed onto main and merged (2026-10-06)
+Pull request #1 merged this branch into `main` up to commit `227d9fb`. The later commits (§50–§51) were then replayed
+onto the merge commit `7900887`, as the workflow requires after a merge. The resulting files are byte-identical to
+those before the replay. The commit hashes quoted in §50–§51 changed as follows:
+
+| Commit | Before | After |
+|---|---|---|
+| Reorganise repository; deliverables named CITS4012_73 | `89a4d96` | `54219fb` |
+| Submission snapshot for Group 73 | `2453438` | `c3ad43e` |
+| Development log: snapshot commit and tag status | `6b1e3cd` | `a5e1c97` |
+| Report: numeric citations, standalone references, formal wording; Group 73 in notebook code | `8617728` | `fee1c98` |
+| Submission snapshot for Group 73 (revised report) | `16ea77f` | `2d94528` |
+| Development log: snapshot and tag of the revised report | `45943fa` | `ed3f3a7` |
+
+- The snapshot in `submission/` was rebuilt on the replayed branch; `submission/MANIFEST.json` records its source
+  commit.
+- The local tag `submission-group73-2026-10-06` was moved to the new snapshot commit.
+- The branch was then merged into `main` through a second pull request, at the group's request, so that `main` shows
+  `CITS4012_73.ipynb` and `report/CITS4012_73.tex/.pdf`.
+

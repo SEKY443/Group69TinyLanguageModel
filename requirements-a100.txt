@@ -1,2 +1,0 @@
-# Kept for old references; the exact versions now live in one place.
--r requirements-lock.txt

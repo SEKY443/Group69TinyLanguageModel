@@ -1,9 +1,9 @@
 """Checks every number in the report's main text against logged result files. Exit code 1 on any mismatch.
 
-A number in report/CITS4012_69.tex (abstract to the end of the Limitations; citations, labels and figure paths are
+A number in report/CITS4012_73.tex (abstract to the end of the Limitations; citations, labels and figure paths are
 ignored) passes if it equals, at the precision written in the report, one of:
   - a value in outputs/results/*.csv or *.json (the final run), as stored or x100 (percentages);
-  - a value in the archived earlier runs (experiments/*/outputs/results, evidence/historical/a100_outputs/results)
+  - a value in the archived earlier runs (experiments/*/outputs/results, archive/original_a100_run/a100_outputs/results)
     or in experiments/*/*.csv (pilot and timing records) -- used by the development-history section;
   - a best-epoch validation accuracy in outputs/logs/B3_*.jsonl (RoBERTa seed range);
   - a difference between two models of outputs/results/final_results.csv (val or test, x100), or between a model
@@ -19,14 +19,14 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEX = os.path.join(ROOT, "report", "CITS4012_69.tex")
+TEX = os.path.join(ROOT, "report", "CITS4012_73.tex")
 
 # Numbers that are not experimental results; each has a stated source.
 DOCUMENTED = {
     # dataset and split (README / notebook dataset cell)
     "16113": "PIQA training file size", "14501": "TRAIN size", "1612": "VAL size", "1838": "TEST (dev) size",
     "14.5": "TRAIN size in thousands (14,501)",
-    "103": "order-dependent test items in the ORIGINAL pipeline (docs/PROJECT_AUDIT.md, audit track)",
+    "103": "order-dependent test items in the ORIGINAL pipeline (docs/history/PROJECT_AUDIT.md, audit track)",
     "10": "validation share 10 %", "50": "chance level 50 %", "50.0": "TRAIN label-1 share (notebook statistics cell)",
     "0.3": "dropout of the grid candidate 'base, dropout 0.3' (notebook Step 1)", "15": "median share of differing tokens (notebook statistics)",
     "1.6": "share of test solutions longer than 96 BPE tokens (DEVELOPMENT_LOG section 5)",
@@ -70,7 +70,7 @@ def collect_values():
     files = glob.glob(os.path.join(ROOT, "outputs", "results", "*.csv"))
     files += glob.glob(os.path.join(ROOT, "experiments", "**", "results", "*.csv"), recursive=True)
     files += glob.glob(os.path.join(ROOT, "experiments", "*", "*.csv"))
-    files += glob.glob(os.path.join(ROOT, "evidence", "historical", "a100_outputs", "results", "*.csv"))
+    files += glob.glob(os.path.join(ROOT, "archive", "original_a100_run", "a100_outputs", "results", "*.csv"))
     for f in files:
         for row in csv.reader(open(f, encoding="utf-8")):
             for cell in row:
@@ -242,31 +242,31 @@ def prose_claims():
         "grid: selection margin": f"{100 * (hp[4] - hp[0]):.2f} points ahead of base",
         "params: DACT": f"{_json('outputs/results/dact_full_val.json')['runs'][0]['n_params'] / 1e6:.2f}\\,M parameters",
         "params: BiLSTM": f"({_json('outputs/results/b2_bilstm_val.json')['runs'][0]['n_params'] / 1e6:.1f}\\,M parameters)",
-        "vs BiLSTM": f"+{delta(B2, 'val acc')} / +{delta(B2, 'test acc')} points over the BiLSTM (McNemar $p{{=}}{pval(B2):.2f}$ on test)",
+        "vs BiLSTM": f"the BiLSTM by +{delta(B2, 'val acc')} / +{delta(B2, 'test acc')} points (McNemar $p{{=}}{pval(B2):.2f}$ on the evaluation split)",
         "tie in both runs": f"detected ($p{{=}}{pval(B1):.2f}$; $p{{=}}{float(run4[B1]['McNemar p vs DACT']):.2f}$ in the A100 run)",
-        "vs TF-IDF": f"+{delta(B1, 'val acc')} / +{delta(B1, 'test acc')} over TF-IDF",
-        "pretraining gap (test)": f"the zero-shot LLM (about {ratio_qwen:.0f} times more parameters) is {delta('B4 Qwen2.5-1.5B (zero-shot)', 'test acc')} points above",
-        "RoBERTa gap (validation re-run)": f"RoBERTa ({ratio_roberta} times more parameters), when its fine-tuning succeeds, is about {roberta_gap:.0f} points above on validation ({rerun_mean:.1f} vs.\\ {v(D)}\\%)",
+        "vs TF-IDF": f"TF-IDF by +{delta(B1, 'val acc')} / +{delta(B1, 'test acc')} points",
+        "pretraining gap (test)": f"the zero-shot language model (about {ratio_qwen:.0f} times more parameters) is {delta('B4 Qwen2.5-1.5B (zero-shot)', 'test acc')} points above",
+        "RoBERTa gap (validation re-run)": f"RoBERTa ({ratio_roberta} times more parameters) is about {roberta_gap:.0f} points above on validation when its fine-tuning succeeds ({rerun_mean:.1f} vs.\\ {v(D)}\\%)",
         "grid: top-3 spread and seed std": f"lie within {hp_top3[0] * 100 - hp_top3[2] * 100:.2f} points, less than one seed std of the final model ({100 * float(fr[D]['val std']):.1f})",
-        "B3 working seed (caption)": f"the working seed reaches {p1(max(b3_seeds.values()))}\\% on validation (test 95\\% CI {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f})",
-        "B3 A100 reference": f"An A100 run gave {p1(run4[b3]['val acc'])} / {p1(run4[b3]['test acc'])}",
-        "B3 re-run seeds (caption)": "all three seeds trained ({:.1f} / {:.1f} / {:.1f})".format(*rerun),
+        "B3 working seed (caption)": f"the successful seed reaches {p1(max(b3_seeds.values()))}\\% on validation (evaluation 95\\% CI {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f})",
+        "B3 A100 reference": f"An earlier A100 run gave {p1(run4[b3]['val acc'])} / {p1(run4[b3]['test acc'])}",
+        "B3 re-run seeds (caption)": "all three seeds trained successfully ({:.1f} / {:.1f} / {:.1f})".format(*rerun),
         "B3 re-run table row": f"validation re-run$^\\ddagger$ & {rerun_mean:.1f}\\,$\\pm$\\,{rerun_std:.1f} & --",
-        "ablation: vanilla, significance": f"reduced accuracy by {cost('vanilla Transformer')} points, the largest drop and the only one with $p{{<}}0.05$ (McNemar; validation {float(sig['vanilla Transformer']['val_mcnemar_p']):.3f}, test {float(sig['vanilla Transformer']['test_mcnemar_p']):.3f}), although neither survives a Holm correction over the nine ablations ({float(sig['vanilla Transformer']['val_mcnemar_p_holm']):.2f} / {float(sig['vanilla Transformer']['test_mcnemar_p_holm']):.2f})",
+        "ablation: vanilla, significance": f"reduced accuracy by {cost('vanilla Transformer')} points, the largest drop and the only one with $p{{<}}0.05$ (McNemar; validation {float(sig['vanilla Transformer']['val_mcnemar_p']):.3f}, evaluation {float(sig['vanilla Transformer']['test_mcnemar_p']):.3f}), although neither survives a Holm correction over the nine ablations ({float(sig['vanilla Transformer']['val_mcnemar_p_holm']):.2f} / {float(sig['vanilla Transformer']['test_mcnemar_p_holm']):.2f})",
         "ablation: vanilla, consistency": "every vanilla seed is below every full-model seed on both splits" if vanilla_below_on_both else "CONSISTENCY CLAIM FALSE",
         "ablation: vanilla, A100 run": f"the A100 run showed {abs(run4_vanilla[0]):.1f} / {abs(run4_vanilla[1]):.1f}",
         "ablation: vanilla, parameters": f"the vanilla model also has {100 * -int(sig['vanilla Transformer']['delta_params']) / n_dact:.0f}\\% fewer parameters",
         "ablation: lexical": f"(removing it costs {cost('− lexical head')} points)",
         "ablation: pointwise": f"(independent binary scoring: {cost('pointwise objective')})",
-        "ablation: tags": f"The difference tags help on test only ({cost('− difference tags')})",
+        "ablation: tags": f"The difference tags help on the evaluation split only ({cost('− difference tags')})",
         "ablation: cross": f"cross-solution attention (removing it gives {delta('− cross-solution attention', 'val acc', sign=True)} / $-${delta('− cross-solution attention', 'test acc')})",
-        "ablation: mean pooling": f"attention pooling ({delta('mean pooling', 'test acc', sign=True)} on test with mean pooling)",
+        "ablation: mean pooling": f"attention pooling ({delta('mean pooling', 'test acc', sign=True)} on the evaluation split with mean pooling)",
         "ablation: MLM warm-up": f"the MLM warm-up ({delta('− MLM warm-up', 'val acc', sign=True)} / $-${delta('− MLM warm-up', 'test acc')})",
-        "errors: agreement": f"agree on only {p1(eo[B1]['agreement'])}\\% of test items",
+        "errors: agreement": f"agree on only {p1(eo[B1]['agreement'])}\\% of the evaluation items",
         "conclusion: vanilla": f"the clearest improvement ({cost('vanilla Transformer')} points over a vanilla Transformer)",
         "errors: only DACT": f"alone solves {p1(eo[B1]['only DACT'])}\\% ({an['items_only_dact_solves_vs_tfidf']} items)",
-        "errors: only TF-IDF / oracle": f"TF-IDF alone {p1(eo[B1]['only other'])}\\%, for an oracle accuracy of {p1(eo[B1]['oracle'])}\\%",
-        "errors: oracle vs RoBERTa": f"the oracle rises to {p1(eo[b3]['oracle'])}\\%",
+        "errors: only TF-IDF / oracle": f"TF-IDF alone {p1(eo[B1]['only other'])}\\%, giving an oracle accuracy of {p1(eo[B1]['oracle'])}\\%",
+        "errors: oracle vs RoBERTa": f"the oracle accuracy rises to {p1(eo[b3]['oracle'])}\\%",
         "attention: trained / share": f"puts {p1(an['attention_mass_differing_trained'])}\\% of its pooling attention on differing tokens, which make up {p1(an['attention_mass_uniform_reference'])}\\%",
         "attention: untrained": f"untrained model reaches only {p1(an['attention_mass_untrained'])}\\%",
         "attention: bias 0": f"set to 0 still reaches {p1(an['attention_mass_trained_tag_bias_0'])}\\%",

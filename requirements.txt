@@ -1,4 +1,4 @@
-# Development / audit environment. Exact tested versions are recorded in report_support/sanity_checks.json.
+# Version ranges for development. The exact versions used for the reported results are in requirements-lock.txt.
 # Use requirements-lock.txt (exact versions of the final A100 run) to reproduce the reported numbers.
 torch>=2.11,<3
 numpy>=2.1,<3

@@ -1,4 +1,4 @@
-"""Copies the modules in src/ into their code cells in CITS4012_69.ipynb.
+"""Copies the modules in src/ into their code cells in CITS4012_73.ipynb.
 
 Each module cell is found by the module docstring on its first line. Lines ending in `# nb-skip` (imports between
 modules and the local smoke test) are dropped, because in the notebook every module shares one namespace.
@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-NOTEBOOK = ROOT / "CITS4012_69.ipynb"
+NOTEBOOK = ROOT / "CITS4012_73.ipynb"
 MODULES = ["config", "data", "model", "baselines", "train", "evaluate", "experiments", "viz"]
 
 

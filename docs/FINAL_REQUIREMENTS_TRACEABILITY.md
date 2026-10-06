@@ -17,7 +17,7 @@ Verification commands are run from the repository root in the locked environment
 | A3 | Use RNN / LSTM / GRU / Transformer for sequence modelling | 2-layer pre-LN Transformer encoder shared by both candidates (selected config d=128, 4 heads, FFN 512) | PASS | – | – | `src/model.py` `EncoderLayer`, `outputs/results/dact_full_val.json` config |
 | A4 | Must incorporate an attention mechanism; explain its role | Self-attention, cross-solution multi-head attention (keys = rival solution tokens + rival [CLS]), difference-guided additive pooling. Attention weights are proper distributions over allowed keys only, receive QA gradient and change the prediction | PASS | – | – | `test_attention_weights_are_distributions_over_allowed_keys`, `test_qa_loss_sends_gradient_through_every_attention_component`, `test_pooling_attention_changes_the_prediction`, `test_explicit_attention_equals_fused_kernel` |
 | A5 | Originality: thoughtful task-specific adaptations, not a stock architecture; justify with respect to the dataset | Difference-tag embedding, cross-solution comparison of the two PIQA candidates (ESIM fusion adapted), tag-biased pooling, jointly trained hashed lexical head; motivated by the 15 % median share of differing tokens (recomputed: 0.150 on train) | PASS | Medium: individual components show no consistent effect (honestly reported) | – | Report §1.1, §2, Table 2; notebook §2.1 design table |
-| A6 | Complete technical description: notation, equations, architecture diagram; enough detail to reproduce; distinguish own design from adapted work; cite; state assumptions/limitations | Report §2 (Eq. 1–4), Figure 1 (redrawn), §2 opening paragraph separates adapted vs project-specific parts; §3.3 hyper-parameters; equations now match the code (LayerNorm on cross-attention queries and fusion input) | PASS | Low | – | Code ↔ equation review (log §49); `report/CITS4012_69.tex` |
+| A6 | Complete technical description: notation, equations, architecture diagram; enough detail to reproduce; distinguish own design from adapted work; cite; state assumptions/limitations | Report §2 (Eq. 1–4), Figure 1 (redrawn), §2 opening paragraph separates adapted vs project-specific parts; §3.3 hyper-parameters; equations now match the code (LayerNorm on cross-attention queries and fusion input) | PASS | Low | – | Code ↔ equation review (log §49); `report/CITS4012_73.tex` |
 
 ## B. Experiments
 
@@ -38,18 +38,18 @@ Verification commands are run from the repository root in the locked environment
 |---|---|---|---|---|---|---|
 | C1 | Overall comparison of main model vs baselines in tables/figures, discuss principal findings | Table 1 + §4.1; every value recomputed from saved predictions/results | PASS | – | – | `tools/check_report_numbers.py` (46 table values, 53 prose claims, 0 errors) |
 | C2 | Ablation results: discuss whether they support the design | §4.2: combined design supported (all vanilla seeds below all full-model seeds on both splits); single components not consistently supported, said explicitly; Holm-corrected p-values | PASS | – | – | `tools/ablation_significance.py` |
-| C3 | Qualitative attention analysis with informative visualisations of **successful and failed** predictions, giving inputs, expected answers and predictions | Report Figure 3: correct (mindfulness, p = 0.99), incorrect (lotion bars, p = 0.96), most uncertain (shipping/shopping, p = 0.50), each with gold and predicted option; notebook §3.3: 2 successes, 2 failures, 1 uncertain case with full attention maps; quantitative controls (Figure 2) | PASS | – | – | Figures rebuilt from `outputs/figures/*.png.json` (`report/make_figures.py`) |
+| C3 | Qualitative attention analysis with informative visualisations of **successful and failed** predictions, giving inputs, expected answers and predictions | Report Figure 2: correct (mindfulness, p = 0.99) and incorrect (lotion bars, p = 0.96), each with gold and predicted option; most uncertain item (shipping/shopping, p = 0.50) discussed in §4.4; notebook §3.3: 2 successes, 2 failures, 1 uncertain case with full attention maps; quantitative learned-vs-built-in controls in §4.3 | PASS | – | – | Figures rebuilt from `outputs/figures/*.png.json` (`report/make_figures.py`) |
 | C4 | Critical discussion of limitations and unexpected findings; evidence-supported explanations | §4.4–4.6: RoBERTa instability, seed sensitivity, errors attend *more* to differing tokens, lexical over-confidence on long spans, tokenizer/GPU nondeterminism, test exposure; causal attention claims avoided | PASS | – | – | Report text review (log §49) |
 
 ## D. Report format
 
 | ID | Official requirement | Repository evidence | Status | Risk | Required action | Verification |
 |---|---|---|---|---|---|---|
-| D1 | LaTeX with the **official ACL template** | `report/acl.sty` and `acl_natbib.bst` from acl-org; the IEEE citation override was removed so citations and the reference list use the template's own author-year style | PASS | Low | – | `report/CITS4012_69.tex` preamble |
+| D1 | LaTeX with the **official ACL template** | `report/acl.sty` and `acl_natbib.bst` from acl-org, both unmodified; numeric citations (the group's choice) through natbib's own `numbers` option, with no redefinition of the template's bibliography style; references on a standalone page | PASS | Low | – | `report/CITS4012_73.tex` preamble |
 | D2 | `\usepackage[final]{acl}` | Present | PASS | – | – | `tools/build_submission.py --check-only` |
 | D3 | Only the group number in `\author` (e.g. `\author{Group 12}`), no names | `\author{Group 73}` (group ID confirmed by the group on 2026-10-06) | PASS | – | – | same |
-| D4 | ≤ 6 pages of content incl. figures/tables; Team Contributions and References excluded | pdflatex (TeX Live 2023): abstract–Conclusion on pages 1–6, Team Contributions from page 7, references after; 3 lines of measured slack | PASS | Low: a different TeX distribution could shift lines; rebuild with `report/build.sh` and re-run the check | Re-check if rebuilt elsewhere | `tools/build_submission.py --check-only` (page rule), slack test (log §49) |
-| D5 | References generated with BibTeX | `report/references.bib` (23 entries, all cited, all primary sources) | PASS | – | – | `bibtex` log: 0 errors (2 benign volume/number warnings) |
+| D4 | ≤ 6 pages of content incl. figures/tables; Team Contributions and References excluded | pdflatex (TeX Live 2023): abstract–Conclusion on pages 1–6, Team Contributions on page 7, references alone on page 8; 3 lines of measured slack | PASS | Low: a different TeX distribution could shift lines; rebuild with `report/build.sh` and re-run the check | Re-check if rebuilt elsewhere | `tools/build_submission.py --check-only` (page rule), slack test (log §49) |
+| D5 | References generated with BibTeX | `report/references.bib` (23 entries, all cited, all primary sources) | PASS | – | – | `bibtex` log: 0 errors, 0 warnings |
 | D6 | Team Contributions section describing each member | Present (Bayron, Ali, Salah) | NOT VERIFIED | Medium | **Each member must confirm their paragraph is true** | Team |
 | D7 | Report accurately describes the implemented system and experiments | Equations aligned with code; numbers machine-checked; architecture figure matches `DACT.forward` | PASS | – | – | `tools/check_report_numbers.py`; code review |
 
@@ -74,6 +74,6 @@ Verification commands are run from the repository root in the locked environment
 
 ## Notes
 - AI-assistance disclosure: the brief does not mention it, but `docs/DEVELOPMENT_LOG.md` (§19, §22, §27) and
-  `docs/NOTE_FOR_SALAH.md` record extensive AI-assisted work (Claude Code) and that an AI-use paragraph was removed
+  `docs/history/NOTE_FOR_SALAH.md` record extensive AI-assisted work (Claude Code) and that an AI-use paragraph was removed
   from the report at a member's request. Whether a declaration is required is a unit-policy question for the group;
   nothing in that record was removed by this audit.

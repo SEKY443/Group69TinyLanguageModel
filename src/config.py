@@ -16,11 +16,11 @@ class Config:
     # ---- paths ----
     # PIQA sub-folder of the unit's shared A2 dataset folder; on Colab the data is downloaded from here automatically
     data_folder_url: str = "https://drive.google.com/drive/folders/1lxEsHLbRsgOHh8rOAd75QHUZds7ybKtT"
-    drive_zip: str = "/content/drive/MyDrive/Group69/PIQA.zip"  # Colab location of the provided data
+    drive_zip: str = "/content/drive/MyDrive/Group73/PIQA.zip"  # Colab location of the provided data
     local_zip_glob: str = "*.zip"                               # fallback when running outside Colab
     data_dir: str = "data/piqa"
     out_dir: str = "outputs"
-    persist_dir: str = ""       # e.g. MyDrive/Group69/runs/<run_id>: finished experiments are copied here and restored on a new VM
+    persist_dir: str = ""       # e.g. MyDrive/Group73/runs/<run_id>: finished experiments are copied here and restored on a new VM
 
     # ---- data ----
     seed: int = 42              # seed for the train/validation split (kept fixed across runs)
@@ -132,9 +132,9 @@ def git_commit():
     import subprocess
     try:
         out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=5)
-        return out.stdout.strip() or os.environ.get("GROUP69_COMMIT", "unknown")
+        return out.stdout.strip() or os.environ.get("GROUP73_COMMIT", "unknown")
     except Exception:
-        return os.environ.get("GROUP69_COMMIT", "unknown")
+        return os.environ.get("GROUP73_COMMIT", "unknown")
 
 
 def write_progress(cfg, **fields):

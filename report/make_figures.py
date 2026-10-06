@@ -70,33 +70,15 @@ if PREVIEW:
     fig.savefig(f"{PREVIEW}/architecture.png", bbox_inches="tight", dpi=200)
 plt.close(fig)
 
-# ---------------------------------------------------------------- 2. attention controls
-labels = ["uniform\n(reference)", "untrained\n(init. bias)", "trained,\ntag bias = 0", "trained\n(full)"]
-values = [24.8, 38.9, 62.0, 78.0]   # printed by the notebook in the final run (outputs/results/analysis_numbers.csv)
-fig, ax = plt.subplots(figsize=(3.1, 1.55))
-bars = ax.bar(range(4), values, color=["#bbbbbb", "#9ecae1", "#fdae6b", "#e6550d"], width=0.62)
-for b, v in zip(bars, values):
-    ax.text(b.get_x() + b.get_width() / 2, v + 1.5, f"{v:.1f}", ha="center", fontsize=8)
-ax.set_xticks(range(4))
-ax.set_xticklabels(labels, fontsize=7.5)
-ax.set_ylabel("pooling mass on\ndiffering tokens (%)", fontsize=8)
-ax.tick_params(axis="y", labelsize=7.5)
-ax.set_ylim(0, 100)
-ax.spines[["top", "right"]].set_visible(False)
-fig.savefig(f"{OUT}/attention_controls.pdf", bbox_inches="tight")
-plt.close(fig)
-
-
-# ---------------------------------------------------------------- 3. pooling attention of three test cases
+# ---------------------------------------------------------------- 2. pooling attention of two test cases
 # Drawn from the attention data the notebook saves next to each figure (outputs/figures/*.png.json), as
 # highlighted text: each solution token is shaded by its pooling weight, differing tokens are bold.
 import json  # noqa: E402
 
-CASES = [("confident_correct_1300", "Correct prediction"), ("confident_wrong_747", "Incorrect prediction"),
-         ("uncertain_1516", "Most uncertain item")]
+CASES = [("confident_correct_1300", "Correct prediction"), ("confident_wrong_747", "Incorrect prediction")]
 WIDTH = 7.0                          # inches (full text width)
-LINE = 0.195                         # inches per text line
-FONT = 7.6                           # token font size (pt)
+LINE = 0.19                          # inches per text line
+FONT = 7.4                           # token font size (pt)
 cmap = plt.get_cmap("Oranges")
 
 

@@ -1,8 +1,7 @@
 """Builds and checks the two files the brief requires: submission/CITS4012_<ID>.pdf and submission/CITS4012_<ID>.ipynb.
 
-The working files keep their repository names (report/CITS4012_69.pdf, CITS4012_69.ipynb; "Group69" is the
-repository name). The group's assigned ID is 73, so the submitted copies are named CITS4012_73.*. Before copying,
-this tool checks the format rules of the brief that can be checked mechanically:
+The working files are CITS4012_73.ipynb and report/CITS4012_73.pdf; submission/ holds a frozen copy of both with
+their SHA-256 (the snapshot that is uploaded). Before copying, this tool checks the format rules of the brief that can be checked mechanically:
   notebook: valid nbformat, the template's three section titles unchanged, no error outputs, module cells equal src/,
             the group ID in the title cell;
   report:   \\usepackage[final]{acl}, \\author{Group <ID>} as the only author, main content (abstract to the end of
@@ -24,9 +23,9 @@ import sys
 import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-NOTEBOOK = os.path.join(ROOT, "CITS4012_69.ipynb")
-TEX = os.path.join(ROOT, "report", "CITS4012_69.tex")
-PDF = os.path.join(ROOT, "report", "CITS4012_69.pdf")
+NOTEBOOK = os.path.join(ROOT, "CITS4012_73.ipynb")
+TEX = os.path.join(ROOT, "report", "CITS4012_73.tex")
+PDF = os.path.join(ROOT, "report", "CITS4012_73.pdf")
 OUT = os.path.join(ROOT, "submission")
 TEMPLATE_SECTIONS = ("# 1.Dataset Processing", "# 2. Model Implementation", "# 3.Testing and Evaluation")
 
@@ -136,7 +135,7 @@ def main():
     manifest = {
         "group": args.group, "built": time.strftime("%Y-%m-%d %H:%M:%S %Z"),
         "source_commit": git("rev-parse", "HEAD"), "branch": git("rev-parse", "--abbrev-ref", "HEAD"),
-        "working_tree_clean_for_sources": git("status", "--porcelain", "--", "CITS4012_69.ipynb", "report", "src") == "",
+        "working_tree_clean_for_sources": git("status", "--porcelain", "--", "CITS4012_73.ipynb", "report", "src") == "",
         "files": {name: {"sha256": h, "source": os.path.relpath(targets[name], ROOT), "bytes": os.path.getsize(targets[name])}
                   for name, h in sums.items()},
         "report_source_sha256": sha256(TEX), "notebook": nb_stats, "report": rep_stats,

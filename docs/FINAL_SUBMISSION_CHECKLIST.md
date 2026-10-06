@@ -7,8 +7,8 @@ Re-run everything with: `python tools/build_submission.py` (checks + package) an
 
 | Item | Status | Evidence |
 |---|---|---|
-| `CITS4012_73.pdf` | PASS | `submission/CITS4012_73.pdf` = `report/CITS4012_69.pdf` (SHA-256 in `submission/SHA256SUMS`) |
-| `CITS4012_73.ipynb` | PASS | `submission/CITS4012_73.ipynb` = `CITS4012_69.ipynb` (SHA-256 in `submission/SHA256SUMS`) |
+| `CITS4012_73.pdf` | PASS | `report/CITS4012_73.pdf`; frozen copy `submission/CITS4012_73.pdf` (SHA-256 in `submission/SHA256SUMS`) |
+| `CITS4012_73.ipynb` | PASS | `CITS4012_73.ipynb`; frozen copy `submission/CITS4012_73.ipynb` (SHA-256 in `submission/SHA256SUMS`) |
 
 ## Main model
 
@@ -46,8 +46,8 @@ Re-run everything with: `python tools/build_submission.py` (checks + package) an
 | Item | Status | Evidence |
 |---|---|---|
 | Quantitative / technical validation | PASS | distributions, masking, gradient, effect tests; learned vs built-in controls |
-| Success example | PASS | Figure 3 top (mindfulness, p = 0.99); notebook #993, #1300 |
-| Failure example | PASS | Figure 3 middle (lotion bars, p = 0.96); notebook #747, #841 |
+| Success example | PASS | Figure 2 top (mindfulness, p = 0.99); notebook #993, #1300 |
+| Failure example | PASS | Figure 2 bottom (lotion bars, p = 0.96); notebook #747, #841 |
 | Expected answer shown | PASS | gold option marked in every case |
 | Prediction shown | PASS | predicted option and probability in every case |
 | No unsupported causal interpretation | PASS | report §4.3/§4.4 and notebook discussion use descriptive, hedged wording |
@@ -70,8 +70,8 @@ Re-run everything with: `python tools/build_submission.py` (checks + package) an
 
 | Item | Status | Evidence |
 |---|---|---|
-| LaTeX | PASS | `report/CITS4012_69.tex` |
-| Official ACL template | PASS | `acl.sty`, `acl_natbib.bst` (template citation style restored) |
+| LaTeX | PASS | `report/CITS4012_73.tex` |
+| Official ACL template | PASS | `acl.sty`, `acl_natbib.bst` unmodified; numeric citations via natbib options |
 | Final mode | PASS | `\usepackage[final]{acl}` |
 | `\author{Group 73}` only | PASS | `tools/build_submission.py --check-only` |
 | ≤ 6 pages of content | PASS | content pages 1–6, 3 lines of slack |
@@ -82,8 +82,8 @@ Re-run everything with: `python tools/build_submission.py` (checks + package) an
 | Equations | PASS | Eq. 1–4 |
 | Baselines | PASS | §3.4, Table 1 |
 | Ablations | PASS | §4.2, Table 2 |
-| Attention | PASS | §4.3, Figure 2 |
-| Success/failure analysis | PASS | §4.4, Figure 3 |
+| Attention | PASS | §4.3 |
+| Success/failure analysis | PASS | §4.4, Figure 2 |
 | Limitations | PASS | §4.6 |
 | Conclusion | PASS | §5 |
 | Accurate implementation description | PASS | code review + number checker |
@@ -97,7 +97,7 @@ Re-run everything with: `python tools/build_submission.py` (checks + package) an
 | report == notebook | PASS | every reported number appears in notebook outputs (main run or labelled supplementary cell) |
 | report == logs | PASS | `tools/check_report_numbers.py` |
 | tables == prediction artifacts | PASS | `tests/test_evidence_consistency.py` |
-| figures == real experiments | PASS | Figures 2–3 built from `outputs/` (`report/make_figures.py`) |
+| figures == real experiments | PASS | Figure 2 built from `outputs/` (`report/make_figures.py`) |
 | hyper-parameters == executed configuration | PASS | `outputs/results/dact_full_val.json` |
 | final commit == executed version | PARTIAL | outputs from `b880108`; later module-cell changes proven not to alter weights/predictions (`post_run_equivalence.json`); data-acquisition change tested |
 

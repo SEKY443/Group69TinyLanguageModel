@@ -1,4 +1,4 @@
-"""End-to-end run of CITS4012_69.ipynb in smoke mode on synthetic data (CPU), with RoBERTa and Qwen stubbed.
+"""End-to-end run of CITS4012_73.ipynb in smoke mode on synthetic data (CPU), with RoBERTa and Qwen stubbed.
 
 Every code cell is executed in order in one namespace, like a kernel. Then the notebook is run again in a fresh
 output folder with the same persistent run folder, as on a new Colab VM: nothing may be retrained and the final
@@ -37,7 +37,7 @@ def run_notebook(workdir, monkeypatch):
     monkeypatch.chdir(workdir)
     monkeypatch.setenv("PIQA_SMOKE", "1")
     monkeypatch.setitem(sys.modules, "transformers", types.SimpleNamespace(__version__="stub"))
-    nb = json.load(open(os.path.join(ROOT, "CITS4012_69.ipynb"), encoding="utf-8"))
+    nb = json.load(open(os.path.join(ROOT, "CITS4012_73.ipynb"), encoding="utf-8"))
     ns = {"display": lambda x: None, "__name__": "__nb__"}
     trained = []
     for i, c in enumerate(nb["cells"]):
@@ -62,7 +62,7 @@ def test_notebook_end_to_end_and_new_vm(tmp_path, monkeypatch):
     assert trained, "the first run must train"
     assert ns["FINAL_EVAL"] is True
     first = (tmp_path / "outputs_nbsmoke" / "results" / "final_results.csv").read_bytes()
-    assert (tmp_path / "Group69" / "runs" / "smoke" / "run_config.json").is_file()
+    assert (tmp_path / "Group73" / "runs" / "smoke" / "run_config.json").is_file()
     for name in ("B1_tfidf_lr_val.jsonl", "B3_roberta_seed42_val.jsonl", "B4_qwen_zero_shot_val.jsonl"):
         assert (tmp_path / "outputs_nbsmoke" / "predictions" / name).is_file()
 
