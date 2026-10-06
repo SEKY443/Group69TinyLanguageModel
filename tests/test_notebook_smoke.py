@@ -1,4 +1,4 @@
-"""End-to-end run of CITS4012_69.ipynb in smoke mode on synthetic data (CPU), with RoBERTa and Qwen stubbed.
+"""End-to-end run of CITS4012_73.ipynb in smoke mode on synthetic data (CPU), with RoBERTa and Qwen stubbed.
 
 Every code cell is executed in order in one namespace, like a kernel. Then the notebook is run again in a fresh
 output folder with the same persistent run folder, as on a new Colab VM: nothing may be retrained and the final
@@ -37,7 +37,7 @@ def run_notebook(workdir, monkeypatch):
     monkeypatch.chdir(workdir)
     monkeypatch.setenv("PIQA_SMOKE", "1")
     monkeypatch.setitem(sys.modules, "transformers", types.SimpleNamespace(__version__="stub"))
-    nb = json.load(open(os.path.join(ROOT, "CITS4012_69.ipynb"), encoding="utf-8"))
+    nb = json.load(open(os.path.join(ROOT, "CITS4012_73.ipynb"), encoding="utf-8"))
     ns = {"display": lambda x: None, "__name__": "__nb__"}
     trained = []
     for i, c in enumerate(nb["cells"]):

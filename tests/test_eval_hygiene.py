@@ -80,7 +80,7 @@ def test_report_deltas_use_unrounded_means():
     import csv
     import re
     fr = {r["model"]: r for r in csv.DictReader(open(os.path.join(ROOT, "outputs", "results", "final_results.csv"), encoding="utf-8"))}
-    tex = open(os.path.join(ROOT, "report", "CITS4012_69.tex"), encoding="utf-8").read()
+    tex = open(os.path.join(ROOT, "report", "CITS4012_73.tex"), encoding="utf-8").read()
     fmt = lambda d: ("$-$" if d < 0 else "+") + f"{abs(d):.1f}" if d != 0 else "0.0"  # noqa: E731
     rows = {"$-$ difference tags": "− difference tags", "$-$ lexical head": "− lexical head",
             "$-$ cross-solution attention": "− cross-solution attention", "$-$ MLM warm-up": "− MLM warm-up"}

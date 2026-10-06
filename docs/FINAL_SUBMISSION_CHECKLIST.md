@@ -7,8 +7,8 @@ Re-run everything with: `python tools/build_submission.py` (checks + package) an
 
 | Item | Status | Evidence |
 |---|---|---|
-| `CITS4012_73.pdf` | PASS | `submission/CITS4012_73.pdf` = `report/CITS4012_69.pdf` (SHA-256 in `submission/SHA256SUMS`) |
-| `CITS4012_73.ipynb` | PASS | `submission/CITS4012_73.ipynb` = `CITS4012_69.ipynb` (SHA-256 in `submission/SHA256SUMS`) |
+| `CITS4012_73.pdf` | PASS | `report/CITS4012_73.pdf`; frozen copy `submission/CITS4012_73.pdf` (SHA-256 in `submission/SHA256SUMS`) |
+| `CITS4012_73.ipynb` | PASS | `CITS4012_73.ipynb`; frozen copy `submission/CITS4012_73.ipynb` (SHA-256 in `submission/SHA256SUMS`) |
 
 ## Main model
 
@@ -70,7 +70,7 @@ Re-run everything with: `python tools/build_submission.py` (checks + package) an
 
 | Item | Status | Evidence |
 |---|---|---|
-| LaTeX | PASS | `report/CITS4012_69.tex` |
+| LaTeX | PASS | `report/CITS4012_73.tex` |
 | Official ACL template | PASS | `acl.sty`, `acl_natbib.bst` (template citation style restored) |
 | Final mode | PASS | `\usepackage[final]{acl}` |
 | `\author{Group 73}` only | PASS | `tools/build_submission.py --check-only` |

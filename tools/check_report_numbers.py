@@ -1,9 +1,9 @@
 """Checks every number in the report's main text against logged result files. Exit code 1 on any mismatch.
 
-A number in report/CITS4012_69.tex (abstract to the end of the Limitations; citations, labels and figure paths are
+A number in report/CITS4012_73.tex (abstract to the end of the Limitations; citations, labels and figure paths are
 ignored) passes if it equals, at the precision written in the report, one of:
   - a value in outputs/results/*.csv or *.json (the final run), as stored or x100 (percentages);
-  - a value in the archived earlier runs (experiments/*/outputs/results, evidence/historical/a100_outputs/results)
+  - a value in the archived earlier runs (experiments/*/outputs/results, archive/original_a100_run/a100_outputs/results)
     or in experiments/*/*.csv (pilot and timing records) -- used by the development-history section;
   - a best-epoch validation accuracy in outputs/logs/B3_*.jsonl (RoBERTa seed range);
   - a difference between two models of outputs/results/final_results.csv (val or test, x100), or between a model
@@ -19,14 +19,14 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEX = os.path.join(ROOT, "report", "CITS4012_69.tex")
+TEX = os.path.join(ROOT, "report", "CITS4012_73.tex")
 
 # Numbers that are not experimental results; each has a stated source.
 DOCUMENTED = {
     # dataset and split (README / notebook dataset cell)
     "16113": "PIQA training file size", "14501": "TRAIN size", "1612": "VAL size", "1838": "TEST (dev) size",
     "14.5": "TRAIN size in thousands (14,501)",
-    "103": "order-dependent test items in the ORIGINAL pipeline (docs/PROJECT_AUDIT.md, audit track)",
+    "103": "order-dependent test items in the ORIGINAL pipeline (docs/history/PROJECT_AUDIT.md, audit track)",
     "10": "validation share 10 %", "50": "chance level 50 %", "50.0": "TRAIN label-1 share (notebook statistics cell)",
     "0.3": "dropout of the grid candidate 'base, dropout 0.3' (notebook Step 1)", "15": "median share of differing tokens (notebook statistics)",
     "1.6": "share of test solutions longer than 96 BPE tokens (DEVELOPMENT_LOG section 5)",
@@ -70,7 +70,7 @@ def collect_values():
     files = glob.glob(os.path.join(ROOT, "outputs", "results", "*.csv"))
     files += glob.glob(os.path.join(ROOT, "experiments", "**", "results", "*.csv"), recursive=True)
     files += glob.glob(os.path.join(ROOT, "experiments", "*", "*.csv"))
-    files += glob.glob(os.path.join(ROOT, "evidence", "historical", "a100_outputs", "results", "*.csv"))
+    files += glob.glob(os.path.join(ROOT, "archive", "original_a100_run", "a100_outputs", "results", "*.csv"))
     for f in files:
         for row in csv.reader(open(f, encoding="utf-8")):
             for cell in row:

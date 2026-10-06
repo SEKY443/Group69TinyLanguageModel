@@ -43,6 +43,7 @@ S1–S3. Parallel track on `main`: evidence audit and replication (Salah Elshafe
 41–43. Training hardening; RoBERTa stability test; RoBERTa footnote
 44–48. Report passes, group number 73, clean-test run stopped
 49. Final audit and submission preparation (2026-10-06)
+50. Repository reorganisation and submission snapshot (2026-10-06)
 
 ---
 
@@ -1877,3 +1878,27 @@ carry a `Co-Authored-By` trailer. The full assessment is in `docs/FINAL_MARKING_
 - `tools/check_report_numbers.py`: 46 / 53, 0 errors.
 - `tools/build_submission.py --check-only`: OK.
 - Retraining required: **no**. Report changes: **yes** (listed above).
+
+## 50. Repository reorganisation and submission snapshot (2026-10-06)
+The group asked for a cleaner repository before submission. Every move used `git mv`, so file histories are kept;
+nothing except two exact duplicates was deleted. `archive/README.md` lists every old and new path.
+
+- **Deliverables renamed to the group ID:** `CITS4012_69.ipynb` → `CITS4012_73.ipynb`, `report/CITS4012_69.tex/.pdf`
+  → `report/CITS4012_73.tex/.pdf`. The report text is unchanged (the rebuilt PDF has the same text; only its build
+  timestamp differs). Two notebook markdown references were updated (`docs/history/PROJECT_AUDIT.md`,
+  `report/references.bib`); no output was touched.
+- **Superseded material moved to `archive/`:** the original A100 run (`evidence/historical/`), development notebooks
+  (`evidence/`), the audit track's notes on the original model (`report_support/`), retired tools and ten
+  audit-track tools from `tools/`. Several of these tools regenerate or overwrite files (for example
+  `review_historical_notebook.py` rewrote the submission notebook), so they no longer sit beside the live tools.
+- **Earlier audits and notes** moved to `docs/history/`.
+- **Removed duplicates:** the root `references.bib` (identical to `report/references.bib`) and `requirements-a100.txt`
+  (it only included `requirements-lock.txt`; its test assertion was removed).
+- **References updated** in the live tools, tests, `report/build.sh`, the requirements comments, `README.md` and the
+  final documents. Historical documents keep the paths of their time.
+- Records of AI assistance (this log, `docs/history/NOTE_FOR_SALAH.md`, commit trailers) were left unchanged.
+- **Snapshot:** `submission/` rebuilt from the committed sources (`SHA256SUMS`, `MANIFEST.json`), and an annotated
+  git tag marks the snapshot commit.
+- **Checks:** 79 tests pass; the notebook sync, test-access, report-number (46 / 53, 0 errors) and submission-format
+  checks pass; the report builds with 8 pages, main content on pages 1–6, no warnings.
+

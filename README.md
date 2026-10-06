@@ -11,8 +11,8 @@ group's assigned ID is **73**.)
 
 | Required file | In this repository | Source |
 |---|---|---|
-| `CITS4012_73.pdf` | `submission/CITS4012_73.pdf` | byte copy of `report/CITS4012_69.pdf` |
-| `CITS4012_73.ipynb` | `submission/CITS4012_73.ipynb` | byte copy of `CITS4012_69.ipynb` |
+| `CITS4012_73.pdf` | `report/CITS4012_73.pdf` | frozen copy in `submission/` |
+| `CITS4012_73.ipynb` | `CITS4012_73.ipynb` | frozen copy in `submission/` |
 
 `python tools/build_submission.py` checks the brief's format rules (course template, `\author{Group 73}`, final
 mode, six-page limit, no error outputs, notebook = `src/`) and rebuilds `submission/` with `SHA256SUMS` and a freeze
@@ -37,24 +37,24 @@ evaluated in earlier development runs, so it is not an untouched estimate (repor
 ## Repository layout
 
 ```text
-CITS4012_69.ipynb      executed submission notebook (course template; outputs of the reported run)
-report/                ACL report: CITS4012_69.tex/.pdf, acl.sty, references.bib, figures/, make_figures.py, build.sh
+CITS4012_73.ipynb      executed submission notebook (course template; outputs of the reported run)
+report/                ACL report: CITS4012_73.tex/.pdf, acl.sty, references.bib, figures/, make_figures.py, build.sh
 submission/            the two files to upload (CITS4012_73.*), SHA256SUMS, MANIFEST.json
 src/                   model, data, training, baselines, evaluation, experiment and visualisation modules
                        (embedded verbatim in the notebook; tools/sync_notebook.py keeps them identical)
 outputs/               reported run: logs/, predictions/ (gzip), results/, figures/, tokenizer, run_config, test_access.log
 tests/                 pytest suite (model properties, evidence consistency, evaluation hygiene, resume, notebook smoke run)
-tools/                 checking, verification, analysis and packaging scripts (tools/retired/: superseded audit tools)
+tools/                 checking, verification, analysis and packaging scripts
 experiments/           archived earlier runs and separate pre-registered experiments (each folder has its own record)
 docs/                  development log, final audit, requirements traceability, submission checklist, earlier audits
-evidence/              historical notebooks and sources of the original A100 run (unchanged)
-report_support/        audit-track notes and tables about the ORIGINAL model (historical)
+archive/               superseded material: original A100 run, development notebooks, notes on the original model,
+                       audit-track and retired tools (see archive/README.md)
 templates/             the official, unmodified course notebook template
 ```
 
 ## Running the notebook (clean Google Colab)
 
-1. Open `CITS4012_69.ipynb` (or `submission/CITS4012_73.ipynb`) in Colab and select a GPU runtime.
+1. Open `CITS4012_73.ipynb` in Colab and select a GPU runtime.
 2. `Runtime → Run all`: about 1 h 50 min on a free T4, 30–35 min on an A100.
    - **Data:** the four PIQA files are downloaded from the unit's shared folder. If that fails, the official PIQA
      release is downloaded from GitHub and used only if its SHA-256 equals the unit's files. The last fallback is
@@ -115,5 +115,5 @@ sh report/build.sh              # pdflatex + BibTeX; prints pages, overfull boxe
 ## History
 
 `docs/DEVELOPMENT_LOG.md` records every step, including failed experiments and earlier runs (archived in
-`experiments/` and `evidence/`). The final audit is `docs/FINAL_MARKING_AUDIT.md`, with
+`experiments/` and `archive/`). The final audit is `docs/FINAL_MARKING_AUDIT.md`, with
 `docs/FINAL_REQUIREMENTS_TRACEABILITY.md` and `docs/FINAL_SUBMISSION_CHECKLIST.md`.

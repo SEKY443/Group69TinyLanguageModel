@@ -1,5 +1,5 @@
 # THE lock file: exact package versions of the A100 run (commit 0d70cdc), printed by its saved notebook. The final T4
-# run (commit b880108, the outputs of CITS4012_69.ipynb) matched them except tokenizers 0.23.2 and transformers 5.17.0
+# run (commit b880108, the saved outputs of the submission notebook) matched them except tokenizers 0.23.2 and transformers 5.17.0
 # (Colab's versions on 2026-10-03; its notebook prints the mismatch). The final audit (2026-10-06) ran its tests and
 # verification tools with exactly these versions.
 # The notebook's environment cell compares the running versions with this list and warns loudly on a mismatch

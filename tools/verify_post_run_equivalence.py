@@ -1,6 +1,6 @@
 """Proves that the code changes made after the final run cannot have changed its results.
 
-The saved outputs of CITS4012_69.ipynb were produced by commit b880108. Later commits changed the module cells
+The saved outputs of CITS4012_73.ipynb were produced by commit b880108. Later commits changed the module cells
 (training diagnostics, an off-by-default length-bucketing sampler, a B4 out-of-memory fallback, a B3 encoding
 helper). This tool trains DACT (masked-LM warm-up + QA training) and the BiLSTM with the b880108 sources and with
 the current src/, on the same synthetic data, the same fixed tokenizer and the same seed, deterministically on CPU,

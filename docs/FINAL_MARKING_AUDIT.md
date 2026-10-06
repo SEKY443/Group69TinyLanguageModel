@@ -1,8 +1,8 @@
 # Final marking audit (2026-10-06)
 
 Scope: the complete repository on branch `claude/inspiring-mayer-t5ckuv`, judged against the official brief
-(*CITS4012 Group Project*, September 2026). Earlier audits (`PROJECT_AUDIT.md`, `REFINEMENT_SUMMARY.md`,
-`TRAINING_AUDIT.md`, `DEVELOPMENT_LOG.md`) were used as leads only; every conclusion below was re-checked against code,
+(*CITS4012 Group Project*, September 2026). Earlier audits (`history/PROJECT_AUDIT.md`, `history/REFINEMENT_SUMMARY.md`,
+`history/TRAINING_AUDIT.md`, `DEVELOPMENT_LOG.md`) were used as leads only; every conclusion below was re-checked against code,
 artifacts, recomputation or the rendered PDF. The requirement-by-requirement matrix is in
 `FINAL_REQUIREMENTS_TRACEABILITY.md`; the submission checklist in `FINAL_SUBMISSION_CHECKLIST.md`; the work log in
 `DEVELOPMENT_LOG.md` §49.

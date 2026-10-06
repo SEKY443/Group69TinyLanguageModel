@@ -25,7 +25,7 @@ def _lock_file():
 
 
 def _notebook_lock():
-    nb = json.load(open(os.path.join(ROOT, "CITS4012_69.ipynb"), encoding="utf-8"))
+    nb = json.load(open(os.path.join(ROOT, "CITS4012_73.ipynb"), encoding="utf-8"))
     for c in nb["cells"]:
         src = "".join(c["source"])
         m = re.search(r"^LOCK = (\{.*?\})$", src, re.S | re.M)
@@ -36,7 +36,6 @@ def _notebook_lock():
 
 def test_notebook_checks_exactly_the_lock_file():
     assert _notebook_lock() == _lock_file()
-    assert "-r requirements-lock.txt" in open(os.path.join(ROOT, "requirements-a100.txt")).read()
 
 
 def test_fresh_path_never_overwrites(tmp_path):

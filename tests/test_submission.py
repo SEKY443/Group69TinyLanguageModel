@@ -25,8 +25,8 @@ def test_submission_format_checks_pass():
 def test_submitted_files_are_the_repository_files():
     sums = dict(line.split()[::-1] for line in open(os.path.join(SUB, "SHA256SUMS"), encoding="utf-8") if line.strip())
     assert set(sums) == {"CITS4012_73.pdf", "CITS4012_73.ipynb"}
-    sources = {"CITS4012_73.pdf": os.path.join(ROOT, "report", "CITS4012_69.pdf"),
-               "CITS4012_73.ipynb": os.path.join(ROOT, "CITS4012_69.ipynb")}
+    sources = {"CITS4012_73.pdf": os.path.join(ROOT, "report", "CITS4012_73.pdf"),
+               "CITS4012_73.ipynb": os.path.join(ROOT, "CITS4012_73.ipynb")}
     for name, digest in sums.items():
         for path in (os.path.join(SUB, name), sources[name]):
             assert hashlib.sha256(open(path, "rb").read()).hexdigest() == digest, f"{path} differs from SHA256SUMS"
