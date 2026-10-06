@@ -44,6 +44,7 @@ S1–S3. Parallel track on `main`: evidence audit and replication (Salah Elshafe
 44–48. Report passes, group number 73, clean-test run stopped
 49. Final audit and submission preparation (2026-10-06)
 50. Repository reorganisation and submission snapshot (2026-10-06)
+51. Report revision: numeric citations, standalone references, formal edit (2026-10-06)
 
 ---
 
@@ -1902,4 +1903,41 @@ nothing except two exact duplicates was deleted. `archive/README.md` lists every
   push tags (only the working branch); push it with `git push origin submission-group73-2026-10-06`.
 - **Checks:** 79 tests pass; the notebook sync, test-access, report-number (46 / 53, 0 errors) and submission-format
   checks pass; the report builds with 8 pages, main content on pages 1–6, no warnings.
+
+## 51. Report revision: numeric citations, standalone references, formal edit (2026-10-06)
+Requested by the group: numeric citations, references on a page of their own, Group 73 throughout, and a formal
+academic wording of every paragraph. This pass was carried out with Claude Code, as in §49.
+
+- **Citations.** Numeric (`[n]`, sorted and compressed) through natbib's own `numbers,square,sort&compress` options.
+  The template files (`acl.sty`, `acl_natbib.bst`) are used unmodified; no bibliography style is overridden. The
+  reference list is numbered in the template's alphabetical order.
+- **References.** Start on a new page (`\clearpage` after Team Contributions). Conference names use their standard
+  short form ("Proceedings of ACL", "Proceedings of NAACL-HLT", …), so that the list fits on one page. Authors,
+  titles, volumes and pages are unchanged.
+- **Wording.** Every paragraph was edited for formal academic register. Numbers, claims and their hedging are
+  unchanged.
+- **Content added for the brief.**
+  - a summary of the main findings in the Introduction (§1.2, now "Objectives and Main Findings");
+  - the assumptions of the difference tags in §2.2;
+  - one sentence giving the hypothesis behind each group of ablations (§4.2);
+  - the main lesson in the Conclusion.
+- **Figures.**
+  - The four-bar attention-control chart was removed: its four values are all stated in §4.3, and it cost about 16
+    column lines.
+  - The attention-case figure (now Figure 2) shows the correct and the incorrect prediction. The most uncertain item
+    is discussed in §4.4 and plotted in the notebook.
+- **Terminology.** Tables label the two splits "Val." and "Eval.", matching the prose ("evaluation split").
+- **Layout.** 8 pages: abstract to Conclusion on pages 1–6 (3 lines of measured slack), Team Contributions on
+  page 7, references alone on page 8. No overfull boxes, LaTeX or BibTeX warnings.
+- **Checker.** `tools/check_report_numbers.py` claim texts updated to the new wording (numbers still built from the
+  result files): 46 table values, 53 prose claims, 0 errors, 0 untraceable numbers.
+- **Group 73 in the notebook code.**
+  - Drive folders (`MyDrive/Group73/...`) and environment variables (`GROUP73_COMMIT`, `GROUP73_RUN_ID`,
+    `GROUP73_STRICT_VERSIONS`) renamed in `src/config.py` and the notebook code cells; the smoke test and comments
+    were updated to match.
+  - The saved output of the configuration cell still shows the run-time folder name; the Readme cell says so. No
+    saved output was edited.
+  - The repository itself is still named `Group69TinyLanguageModel`; renaming it is a GitHub setting for its owner.
+- **Verification.** The post-run equivalence proof was re-run (weights and predictions bit-identical), and all
+  checks pass.
 

@@ -152,16 +152,16 @@ item below was checked against `DACT.forward`.
 
 **Format.**
 
-- ACL template in final mode, with the template's own citation style (restored from an IEEE override).
+- ACL template in final mode; the template files are unmodified, and citations are numeric through natbib's `numbers` option (the group's choice).
 - `\author{Group 73}`.
-- 8 pages in total: content on pages 1–6, Team Contributions and references on 7–8.
+- 8 pages in total: content on pages 1–6, Team Contributions on page 7, references alone on page 8.
 - No overfull boxes, LaTeX warnings or BibTeX warnings.
 
 **Rendered pages.** All eight pages were inspected visually:
 
 - Figure 1 was redrawn: no clipped labels, the alignment → tags and lexical → softmax flows are shown, and the
   legend is legible.
-- Figure 2 and Figure 3 fonts were enlarged.
+- Figure 2 (attention cases) has larger fonts; a redundant bar chart of four numbers already given in the text was removed to keep the main content within six pages.
 - The orphan page that held only "model." was removed.
 
 **Content.**
@@ -230,7 +230,7 @@ Indicative bands, not a prediction of the mark.
 |---|---|---|
 | Model design and implementation | Strong: coherent, tested, clearly task-motivated, attention integrated at three levels | Individual components lack consistent empirical support; the design is an ensemble of known ideas rather than a new mechanism |
 | Experimental investigation | Strong: five baselines spanning chance to LLM, nine ablations × 3 seeds, pre-registered follow-ups, significance with multiplicity control | Historical test exposure; one-seed grid; confounded ablations |
-| Results and critical analysis | Strong: honest negative results, controls separating learned and built-in attention, probe, error overlap, success/failure/tie cases | Small effect sizes limit the conclusions |
+| Results and critical analysis | Strong: honest negative results, controls separating learned and built-in attention, probe, error overlap, success and failure cases, discussion of the most uncertain item | Small effect sizes limit the conclusions |
 | Writing and presentation | Good to strong: dense but coherent, all numbers traceable, readable figures | Six pages are tightly packed |
 | Engagement with research | Good: literature informs both design and interpretation | Related work is brief (space) |
 | Reproducibility (mandatory) | Good: complete logs, predictions, hashes, tests, equivalence proof | No fresh GPU run of the final cells; non-deterministic tokenizer |

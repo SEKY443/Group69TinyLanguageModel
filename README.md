@@ -58,7 +58,7 @@ templates/             the official, unmodified course notebook template
 2. `Runtime → Run all`: about 1 h 50 min on a free T4, 30–35 min on an A100.
    - **Data:** the four PIQA files are downloaded from the unit's shared folder. If that fails, the official PIQA
      release is downloaded from GitHub and used only if its SHA-256 equals the unit's files. The last fallback is
-     `MyDrive/Group69/PIQA.zip`. Every source is checked against the hashes of the reported run.
+     `MyDrive/Group73/PIQA.zip`. Every source is checked against the hashes of the reported run.
    - **Packages:** everything is pre-installed on Colab; the first cell compares versions with
      `requirements-lock.txt`.
    - **Checkpoints:** none are needed; every model is retrained.

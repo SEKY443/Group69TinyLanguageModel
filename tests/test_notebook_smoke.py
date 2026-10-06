@@ -62,7 +62,7 @@ def test_notebook_end_to_end_and_new_vm(tmp_path, monkeypatch):
     assert trained, "the first run must train"
     assert ns["FINAL_EVAL"] is True
     first = (tmp_path / "outputs_nbsmoke" / "results" / "final_results.csv").read_bytes()
-    assert (tmp_path / "Group69" / "runs" / "smoke" / "run_config.json").is_file()
+    assert (tmp_path / "Group73" / "runs" / "smoke" / "run_config.json").is_file()
     for name in ("B1_tfidf_lr_val.jsonl", "B3_roberta_seed42_val.jsonl", "B4_qwen_zero_shot_val.jsonl"):
         assert (tmp_path / "outputs_nbsmoke" / "predictions" / name).is_file()
 
