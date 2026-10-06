@@ -18,6 +18,17 @@ from torch.utils.data import DataLoader, Dataset
 from config import Config, log_test_access  # nb-skip
 
 EXPECTED_FILES = ("train.jsonl", "train-labels.lst", "test.jsonl", "test-labels.lst")
+# SHA-256 of the four files the unit supplied (recorded by the final run in outputs/data_manifest.json). The unit's
+# test files are byte-identical to the development files of the official PIQA release (Bisk et al., 2020).
+EXPECTED_SHA256 = {
+    "train.jsonl": "f805f9c96518d7b59f2f870d90f712457cda949979469d9fa3fd706ce22e0a1a",
+    "train-labels.lst": "df8ae080c41f02f88e81f6932d425f4b7ee72f433ad552e6a30d45e358e8f8bb",
+    "test.jsonl": "93503cc97c679e459b065c3d13e848282e44b2a25213985bed3e5d458abef72d",
+    "test-labels.lst": "b4192dc3a2a0363d9d60ccf79800cbbe2f32ebb17726efdde6970e0b8131bceb",
+}
+PIQA_RELEASE_URL = "https://raw.githubusercontent.com/ybisk/ybisk.github.io/master/piqa/data/"
+PIQA_RELEASE_NAMES = {"train.jsonl": "train.jsonl", "train-labels.lst": "train-labels.lst",
+                      "test.jsonl": "valid.jsonl", "test-labels.lst": "valid-labels.lst"}
 SPECIALS = ["[PAD]", "[UNK]", "[CLS]", "[SEP]", "[MASK]"]
 PAD, UNK, CLS, SEP, MASK = range(len(SPECIALS))
 
@@ -64,7 +75,7 @@ def download_piqa(cfg: Config):
             import gdown
         gdown.download_folder(url=cfg.data_folder_url, output=tmp, quiet=True)
     except Exception as e:  # missing package, network or Drive quota problems: fall back to the zip
-        print(f"Download from the shared folder failed ({e}); falling back to the data zip.")
+        print(f"Download from the shared folder failed ({e}); trying the official PIQA release.")
         return False
     found = {os.path.basename(p): p for p in glob.glob(os.path.join(tmp, "**", "*"), recursive=True)}
     if not set(EXPECTED_FILES) <= set(found):
@@ -77,12 +88,57 @@ def download_piqa(cfg: Config):
     return True
 
 
+def sha256_of(path):
+    with open(path, "rb") as stream:
+        return hashlib.sha256(stream.read()).hexdigest()
+
+
+def verify_piqa_files(data_dir):
+    """Compares the four files with the SHA-256 of the data used for the reported results; warns on a mismatch."""
+    bad = [f for f in EXPECTED_FILES if sha256_of(os.path.join(data_dir, f)) != EXPECTED_SHA256[f]]
+    if bad:
+        print("!" * 100 + f"\nWARNING: {bad} differ from the files used for the reported results (SHA-256 mismatch); "
+              "results are not comparable.\n" + "!" * 100)
+    else:
+        print("PIQA files: SHA-256 identical to the files used for the reported results")
+    return not bad
+
+
+def download_piqa_release(cfg: Config):
+    """Fallback: the same four files from the official PIQA release, accepted only if their SHA-256 matches."""
+    import urllib.request
+    tmp = cfg.data_dir + "_release"
+    try:
+        os.makedirs(tmp, exist_ok=True)
+        for fname, remote in PIQA_RELEASE_NAMES.items():
+            urllib.request.urlretrieve(PIQA_RELEASE_URL + remote, os.path.join(tmp, fname))
+    except Exception as e:  # network problems: fall back to the data zip
+        print(f"Download of the official PIQA release failed ({e}); falling back to the data zip.")
+        shutil.rmtree(tmp, ignore_errors=True)
+        return False
+    if any(sha256_of(os.path.join(tmp, f)) != EXPECTED_SHA256[f] for f in EXPECTED_FILES):
+        print("The official PIQA release does not match the unit's files (SHA-256); not used.")
+        shutil.rmtree(tmp, ignore_errors=True)
+        return False
+    os.makedirs(cfg.data_dir, exist_ok=True)
+    for fname in EXPECTED_FILES:
+        shutil.move(os.path.join(tmp, fname), os.path.join(cfg.data_dir, fname))
+    shutil.rmtree(tmp, ignore_errors=True)
+    print(f"Downloaded the official PIQA release (SHA-256 identical to the unit's files) -> {cfg.data_dir}")
+    return True
+
+
 def prepare_data(cfg: Config):
-    """Puts the four PIQA files into cfg.data_dir: existing copy, else (on Colab) the shared folder, else the zip."""
-    if all(os.path.isfile(os.path.join(cfg.data_dir, f)) for f in EXPECTED_FILES):
-        return cfg.data_dir
-    if _in_colab() and cfg.data_folder_url and download_piqa(cfg):
-        return cfg.data_dir
+    """Puts the four PIQA files into cfg.data_dir: existing copy, else (on Colab) the unit's shared folder, else the
+    official PIQA release (only if byte-identical), else the zip. The result is checked against EXPECTED_SHA256."""
+    if not all(os.path.isfile(os.path.join(cfg.data_dir, f)) for f in EXPECTED_FILES):
+        if not ((_in_colab() and cfg.data_folder_url and download_piqa(cfg)) or download_piqa_release(cfg)):
+            extract_zip(cfg)
+    verify_piqa_files(cfg.data_dir)
+    return cfg.data_dir
+
+
+def extract_zip(cfg: Config):
     zpath = _find_zip(cfg)
     os.makedirs(cfg.data_dir, exist_ok=True)
     with zipfile.ZipFile(zpath) as zf:

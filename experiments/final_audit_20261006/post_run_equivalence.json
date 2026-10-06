@@ -1,0 +1,33 @@
+{
+  "run_commit": "b880108",
+  "compared_with": "working tree src/",
+  "torch": "2.11.0+cu130",
+  "setting": "CPU, deterministic algorithms, seed 42, synthetic data",
+  "models": {
+    "dact": {
+      "parameters_bit_identical": true,
+      "validation_probabilities_identical": true,
+      "epochs": 4,
+      "max_abs_difference_per_logged_field": {
+        "epoch": 0,
+        "train_loss": 3.443823926030376e-08,
+        "train_acc": 0.0,
+        "val_acc": 0.0,
+        "val_loss": 0.0
+      }
+    },
+    "bilstm": {
+      "parameters_bit_identical": true,
+      "validation_probabilities_identical": true,
+      "epochs": 4,
+      "max_abs_difference_per_logged_field": {
+        "epoch": 0,
+        "train_loss": 1.8543667268389186e-08,
+        "train_acc": 0.0,
+        "val_acc": 0.0,
+        "val_loss": 0.0
+      }
+    }
+  },
+  "trained_models_and_predictions_identical": true
+}

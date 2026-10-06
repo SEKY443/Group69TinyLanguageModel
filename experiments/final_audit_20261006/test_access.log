@@ -1,0 +1,2 @@
+{"time": "2026-10-06 07:2x (approximate; entered manually afterwards)", "commit": "c701eba", "reason": "final audit: test-labels.lst read directly (not via the logging helper) to confirm that the gold labels stored in outputs/predictions/*_test.jsonl.gz equal the official labels; evaluation only, no decision depended on it", "n_items": 1838, "manual_entry": true}
+{"time": "2026-10-06 07:38:34", "commit": "c701eba", "reason": "verify_b1_reproduction.py: re-derive reported B1 test numbers", "n_items": 1838}

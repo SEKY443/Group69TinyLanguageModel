@@ -58,6 +58,10 @@ DOCUMENTED = {
     "800": "parameter ratio Qwen2.5-1.5B / DACT, about 1.5e9 / 1.93e6 (model name; checked as a strict claim)",
     "65": "parameter ratio RoBERTa / DACT, 124.6 M / 1.93 M (checked as a strict claim)",
     "52": "RoBERTa restart threshold, 52 % validation accuracy after epoch 1 (declared rule, notebook Step 4)",
+    "149": "parameters removed with cross-solution attention, in thousands (148,736; strict Table 2 check)",
+    "411": "parameters removed in the vanilla ablation, in thousands (411,264; strict Table 2 check)",
+    "0.4": "parameters removed with the tag embedding, in thousands (384; strict Table 2 check)",
+    "21": "vanilla parameter reduction in percent (411,264 / 1,927,492; strict prose claim)",
 }
 
 
@@ -99,8 +103,11 @@ def matches(text, vals):
 TABLE1 = {"B0 majority": "B0 majority", "B1 TF-IDF + LR": "B1 TF-IDF + LR",
           "B2 BiLSTM + attention": "B2 BiLSTM + attention", "(main model)": "DACT (full)",
           "B3 RoBERTa-base, fine-tuned": "B3 RoBERTa-base (fine-tuned)", "B4 Qwen2.5-1.5B, zero-shot": "B4 Qwen2.5-1.5B (zero-shot)"}
+ABLATION_NAMES = {"abl0": "− difference tags", "abl1": "− cross-solution attention", "abl2": "− diff bias in pooling",
+                  "abl3": "mean pooling", "abl4": "pointwise objective", "abl5": "vanilla Transformer",
+                  "abl6": "− lexical head", "abl7": "− MLM warm-up", "abl8": "diff-bias prior 0"}
 TABLE2 = {"difference tags": "− difference tags", "lexical head": "− lexical head",
-          "pointwise": "pointwise objective", "mean instead": "mean pooling",
+          "pointwise": "pointwise objective", "mean pooling": "mean pooling",
           "cross-solution attention": "− cross-solution attention", "tag bias in pooling": "− diff bias in pooling",
           "tag bias initialised at 0": "diff-bias prior 0", "$-$ MLM warm-up": "− MLM warm-up",
           "vanilla": "vanilla Transformer"}
@@ -124,7 +131,8 @@ def strict_tables(s):
     d = fr["DACT (full)"]
     for label, model in TABLE2.items():
         line = next(l for l in rows if label in l and "$\\Delta$" not in l)
-        cells = [float(x.replace("$-$", "-").replace("+", "")) for x in re.findall(r"(?:\$-\$|\+)?\d+\.\d", line)]
+        value_cells = [c.strip() for c in line.split("&")[1:]]
+        cells = [float(x.replace("$-$", "-").replace("+", "")) for x in value_cells[:2]]
         r = fr[model]
         # same convention as the notebook's key-numbers cell: difference of the UNROUNDED means, rounded once
         expect = [round(100 * (float(r[c]) - float(d[c])), 1) for c in ("val acc", "test acc")]
@@ -132,6 +140,14 @@ def strict_tables(s):
         checked += 2
         if [round(c, 1) for c in cells] != expect:
             errors.append(f"Table 2 '{label}': report {cells} vs results {expect}")
+        # parameter column: change in trainable parameters, from the n_params recorded by the run
+        name = next(n for n, m in ABLATION_NAMES.items() if m == model)
+        dp = _json(f"outputs/results/{name}_val.json")["runs"][0]["n_params"] - \
+            _json("outputs/results/dact_full_val.json")["runs"][0]["n_params"]
+        want = "0" if dp == 0 else ("$-$" if dp < 0 else "+") + (f"{abs(dp) / 1e3:.1f}k" if abs(dp) < 1e3 else f"{abs(dp) / 1e3:.0f}k")
+        checked += 1
+        if value_cells[2].rstrip("\\").strip() != want:
+            errors.append(f"Table 2 '{label}' parameter change: report {value_cells[2]!r} vs results {want!r}")
     # (Table 3, the development history, was folded into Section 4.5; its numbers are prose claims now)
     p = round(float(fr["B1 TF-IDF + LR"]["McNemar p vs DACT"]), 2)
     checked += 1
@@ -198,6 +214,10 @@ def prose_claims():
     rerun_mean = sum(rerun) / 3
     rerun_std = (sum((x - rerun_mean) ** 2 for x in rerun) / 2) ** 0.5
     n_dact = _json("outputs/results/dact_full_val.json")["runs"][0]["n_params"]
+    sig = _csv("outputs/results/ablation_significance.csv", "ablation")
+    below = {m for m, r in sig.items() if r["val_all_seeds_below_all_full_seeds"] == "True"
+             and r["test_all_seeds_below_all_full_seeds"] == "True"}
+    vanilla_below_on_both = "vanilla Transformer" in below
     n_roberta = next(json.loads(l)["n_params"] for l in open(os.path.join(ROOT, "outputs", "logs", "B3_roberta-base_seed43.jsonl"))
                      if '"event": "start"' in l)
     ratio_roberta = round(n_roberta / n_dact)                    # Qwen2.5-1.5B: about 1.5e9 / 1.93e6, from its name
@@ -228,11 +248,14 @@ def prose_claims():
         "pretraining gap (test)": f"the zero-shot LLM (about {ratio_qwen:.0f} times more parameters) is {delta('B4 Qwen2.5-1.5B (zero-shot)', 'test acc')} points above",
         "RoBERTa gap (validation re-run)": f"RoBERTa ({ratio_roberta} times more parameters), when its fine-tuning succeeds, is about {roberta_gap:.0f} points above on validation ({rerun_mean:.1f} vs.\\ {v(D)}\\%)",
         "grid: top-3 spread and seed std": f"lie within {hp_top3[0] * 100 - hp_top3[2] * 100:.2f} points, less than one seed std of the final model ({100 * float(fr[D]['val std']):.1f})",
-        "B3 working seed (caption)": f"the working seed reaches {p1(max(b3_seeds.values()))}\\% (test CI {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f})",
+        "B3 working seed (caption)": f"the working seed reaches {p1(max(b3_seeds.values()))}\\% on validation (test 95\\% CI {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f})",
         "B3 A100 reference": f"An A100 run gave {p1(run4[b3]['val acc'])} / {p1(run4[b3]['test acc'])}",
         "B3 re-run seeds (caption)": "all three seeds trained ({:.1f} / {:.1f} / {:.1f})".format(*rerun),
         "B3 re-run table row": f"validation re-run$^\\ddagger$ & {rerun_mean:.1f}\\,$\\pm$\\,{rerun_std:.1f} & --",
-        "ablation: vanilla, both runs": f"reduced accuracy by {cost('vanilla Transformer')} points, the largest drop and the only significant one on test ($p{{=}}{pval('vanilla Transformer'):.3f}$); in the A100 run the same comparison cost {abs(run4_vanilla[0]):.1f} / {abs(run4_vanilla[1]):.1f}",
+        "ablation: vanilla, significance": f"reduced accuracy by {cost('vanilla Transformer')} points, the largest drop and the only one with $p{{<}}0.05$ (McNemar; validation {float(sig['vanilla Transformer']['val_mcnemar_p']):.3f}, test {float(sig['vanilla Transformer']['test_mcnemar_p']):.3f}), although neither survives a Holm correction over the nine ablations ({float(sig['vanilla Transformer']['val_mcnemar_p_holm']):.2f} / {float(sig['vanilla Transformer']['test_mcnemar_p_holm']):.2f})",
+        "ablation: vanilla, consistency": "every vanilla seed is below every full-model seed on both splits" if vanilla_below_on_both else "CONSISTENCY CLAIM FALSE",
+        "ablation: vanilla, A100 run": f"the A100 run showed {abs(run4_vanilla[0]):.1f} / {abs(run4_vanilla[1]):.1f}",
+        "ablation: vanilla, parameters": f"the vanilla model also has {100 * -int(sig['vanilla Transformer']['delta_params']) / n_dact:.0f}\\% fewer parameters",
         "ablation: lexical": f"(removing it costs {cost('− lexical head')} points)",
         "ablation: pointwise": f"(independent binary scoring: {cost('pointwise objective')})",
         "ablation: tags": f"The difference tags help on test only ({cost('− difference tags')})",
@@ -250,11 +273,11 @@ def prose_claims():
         "attention: bias moved": f"(1.0\\,$\\to$\\,{an['tag_bias_other_shared_diff'].split()[-1]})",
         "entropy, p": f"entropy is {float(pent[0]):.2f} (1 = uniform), for correct and wrong predictions alike ($p{{=}}{float(pent[3]):.2f}$)",
         "probe: vanilla embedding / encoder": f"reaches {p1(probe['embedding']['vanilla (no tags)'])}\\% balanced accuracy on the vanilla Transformer's embeddings and only {p1(probe['encoder 2']['vanilla (no tags)'])}\\%",
-        "attention: wrong vs correct": f"({p1(an['attention_mass_wrong_predictions'])} vs.\\ {p1(an['attention_mass_correct_predictions'])}\\%, $p{{=}}{p_wrong:.2f}$)" if p_wrong >= 0.001 else "p < 0.001",
-        "case: lotion bars (747), caption": f"an incorrect prediction (p = {case['747']:.2f} for option 1; option 2 is correct)",
+        "attention: wrong vs correct": f"({p1(an['attention_mass_wrong_predictions'])} vs.\\ {p1(an['attention_mass_correct_predictions'])}\\%, Mann--Whitney $p{{=}}{p_wrong:.2f}$)" if p_wrong >= 0.001 else "p < 0.001",
+        "case: mindful (1300), caption": f"a correct prediction (p = {case['1300']:.2f} for option 1, the gold answer)",
+        "case: lotion bars (747), caption": f"an incorrect prediction (p = {case['747']:.2f} for option 1; option 2 is gold)",
         "case: lotion bars (747), text": f"the model prefers this option with p = {case['747']:.2f}",
-        "case: small cheap home (1516)": f"the most uncertain item (p = {case['1516']:.2f}; option 1 is correct)",
-        "case: LED (993)": f"wins with p = {case['993']:.2f} against",
+        "case: small cheap home (1516)": f"the most uncertain item (p = {case['1516']:.2f}; option 1 is gold)",
         "case: exotic trip (841)": f"(\\emph{{an exotic trip}}, p = {case['841']:.2f})",
         "history: goal matching": f"it lost {100 * (float(goal['control_main_model']['val_mean']) - float(goal['goal_matching']['val_mean'])):.1f} points on validation",
         "history: run 4 vs final spread": f"moved by up to {moved:.1f} points",

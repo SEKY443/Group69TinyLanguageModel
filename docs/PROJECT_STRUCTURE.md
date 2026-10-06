@@ -1,51 +1,53 @@
-# Project folder guide
+# Project folder guide (current as of the final audit, 2026-10-06)
 
-The repository root contains the executed submission notebook, README, dependency files and the
-main working folders. The supplied PIQA data and assignment PDF remain in the parent assignment
-directory. No dataset, training result, checkpoint or original source snapshot was deleted.
+Run every tool from the repository root. This guide replaces the 2026-09-30 version, which described the
+pre-merge layout (folders `notebooks/` and `experiments/completed/` no longer exist; see git history and
+`path_relocations.json`).
 
-| Location from repository root | Purpose |
+## Deliverables
+
+| Location | Purpose |
 |---|---|
-| `CITS4012_69.ipynb` | Executed submission candidate; original code/output evidence preserved |
-| `notebooks/CITS4012_69_reproducible.ipynb` | Current-source reproduction notebook; full Colab execution pending |
-| `templates/Copy_of_CITS4012_YourGroupID.ipynb` | Unmodified official notebook template |
-| `src/` | Eight implementation modules |
-| `tools/` | Notebook generation, experiments, audits, verification and figure generation |
-| `docs/DEVELOPMENT_LOG.md` | Chronological work history and corrections |
-| `docs/PROJECT_AUDIT.md` | Original pre-refinement audit; intentionally historical |
-| `docs/REFINEMENT_SUMMARY.md` | Detailed 20-section handover |
-| `report_support/` | Report text support, result tables, figures, references and check manifests |
-| `outputs/` | Original A100 logs/results/tokenizer/figures; unchanged |
-| `experiments/completed/outputs_replication_efficient/` | Completed local three-seed DACT replication, including weights and predictions |
-| `experiments/completed/outputs_replication_baselines/` | Completed local B0/B1 replication and fitted lexical model |
-| `experiments/development/` | Preserved smoke/functional-check runs and interrupted first attempt |
-| `evidence/historical/` | Exact original notebook/source/builder with original hashes |
-| `evidence/archive/` | Previous executed verification notebook, retaining pre-organisation paths |
-| `evidence/` | Executed smoke notebooks and current saved-artifact verification notebook |
-| `.venv/`, `tmp/` | Local environment and temporary tooling; not submission content |
+| `CITS4012_69.ipynb` | Executed submission notebook: course template, all code, outputs of the reported T4 run (`b880108`) and a labelled supplementary-evidence cell |
+| `report/CITS4012_69.tex`, `.pdf` | ACL report (final mode, Group 73); `make_figures.py` builds `figures/` from `outputs/`; `build.sh` compiles |
+| `submission/` | `CITS4012_73.pdf`, `CITS4012_73.ipynb` (byte copies), `SHA256SUMS`, `MANIFEST.json`; built by `tools/build_submission.py` |
 
-## Commands and paths
+## Code and checks
 
-Run tool commands from the **repository root**, not from `notebooks/` or `tools/`. The README has current
-commands. The notebook builder reads the course template from `templates/` and writes its unexecuted
-candidate into `notebooks/`. Newly generated notebooks put smoke runs in `experiments/development/`
-and full runs in `experiments/completed/`. The local main-replication command likewise defaults to a
-fresh directory under `experiments/completed/`. The original executed submission notebook is unchanged.
+| Location | Purpose |
+|---|---|
+| `src/` | `config`, `data`, `model`, `baselines`, `train`, `evaluate`, `experiments`, `viz`; embedded verbatim in the notebook |
+| `tests/` | pytest suite; `conftest.py` writes synthetic PIQA-format data so no real data is needed |
+| `tools/` | sync, checking, verification, analysis and packaging scripts; `tools/retired/` holds superseded audit-track tools (README inside) |
+| `.github/workflows/ci.yml` | CI: sync check, test-access check, report numbers, submission format, pytest |
+| `requirements-lock.txt` | exact package versions checked by the notebook (`requirements.txt`: ranges; `requirements-a100.txt`: alias) |
 
-`path_relocations.json` maps the previous layout to this one. Saved experiment JSON/logs may record
-old checkpoint paths because changing those would change historical evidence. Active analysis tools
-use `tools/project_paths.py` to resolve those paths; do the same when loading old metadata. Historical
-notebooks, snapshots and chronological log sections describe the layout at the time of execution.
-For a current verification run use `tools/analyse_replication.py` or the new verification notebook;
-the notebook in `evidence/archive/` documents the earlier execution and is not the current launcher.
+## Evidence
 
-`organisation_manifest.json` records SHA-256 hashes before relocation. Every moved file was verified
-immediately after the move. Subsequent deliberate path/documentation updates are recorded in the log;
-experiment artifacts and archived executed evidence retain their content.
+| Location | Purpose |
+|---|---|
+| `outputs/` | Reported run: `logs/` (JSONL per run), `predictions/` (per item, gzip), `results/` (JSON/CSV, incl. post-run analyses), `figures/` (+ attention data `.png.json`), `tokenizer.json`, `run_config.json`, `data_manifest.json`, `test_access.log` |
+| `experiments/a100_run_0d70cdc/` | Previous full run of the final model (Colab Pro A100) |
+| `experiments/t4_run_538cf5b/`, `t4_run_e5fdb29/` | Earlier free-T4 runs |
+| `experiments/a100_runs_20261001/` | The two A100 runs of 2026-10-01 compared (`COMPARISON.md`) |
+| `experiments/goal_matching/`, `length_bucketing/`, `roberta_stability/` | Pre-registered experiments (validation only), each with `PREREGISTRATION.md` and results |
+| `experiments/lexical_pilot/`, `b1_versions/`, `calibration/`, `checkpoint_selection/`, `t4_timing/` | Small validation-only analyses |
+| `experiments/final_audit_20261006/` | Final audit: post-run equivalence, B1 reproduction, its own `test_access.log` |
+| `evidence/historical/` | Original A100 notebook, sources and outputs with SHA-256 manifest (unchanged) |
+| `evidence/` (other) | Development smoke notebooks and the audit track's replication notebook |
+| `report_support/` | Audit-track notes, tables and figures about the ORIGINAL model (historical) |
+| `templates/` | Official course notebook template (unmodified) |
 
-## Submission and backup
+## Documentation
 
-The final required names remain `CITS4012_69.ipynb` and `CITS4012_69.pdf`; the report PDF is still pending.
-Keep the working report assets here, and place the final PDF beside the submission notebook when ready.
-Completed/development run directories and weights remain Git-ignored. Back up the completed runs
-explicitly when moving machines; Git alone does not include them. No remote push was performed.
+| File | Purpose |
+|---|---|
+| `docs/DEVELOPMENT_LOG.md` | Chronological record of all work (§49: final audit) |
+| `docs/FINAL_MARKING_AUDIT.md` | Final assessment against the brief and marking guide |
+| `docs/FINAL_REQUIREMENTS_TRACEABILITY.md` | Every official requirement → evidence → status |
+| `docs/FINAL_SUBMISSION_CHECKLIST.md` | Pre-submission checklist |
+| `docs/PROJECT_AUDIT.md`, `REFINEMENT_SUMMARY.md`, `TRAINING_AUDIT.md`, `NOTE_FOR_SALAH.md` | Earlier audits and hand-over notes (historical; later findings take precedence) |
+| `docs/organisation_manifest.json`, `path_relocations.json` | Hashes and path map of the 2026-09-30 reorganisation |
+
+`data/` (the PIQA files), `outputs/checkpoints/` and caches are git-ignored. Checkpoints of the reported run are not
+distributed; `Run all` retrains every model.
