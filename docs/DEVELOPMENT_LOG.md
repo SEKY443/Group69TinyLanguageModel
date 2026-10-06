@@ -1940,4 +1940,7 @@ academic wording of every paragraph. This pass was carried out with Claude Code,
   - The repository itself is still named `Group69TinyLanguageModel`; renaming it is a GitHub setting for its owner.
 - **Verification.** The post-run equivalence proof was re-run (weights and predictions bit-identical), and all
   checks pass.
+- **Snapshot.** Rebuilt from commit `8617728` and committed as `16ea77f`. The local tag
+  `submission-group73-2026-10-06`, never pushed, was moved to that commit; push it with
+  `git push origin submission-group73-2026-10-06`.
 
