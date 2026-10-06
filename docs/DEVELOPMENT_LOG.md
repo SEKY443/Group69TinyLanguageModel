@@ -1823,6 +1823,7 @@ carry a `Co-Authored-By` trailer. The full assessment is in `docs/FINAL_MARKING_
   - It reads saved files only and skips absent ones.
   - Its saved output was produced on 2026-10-06 in a separate CPU kernel from the repository root, and its markdown
     says so.
+- **Colab default GPU** set to T4 in the notebook metadata (it requested an A100, unavailable on the free tier; the reported run used a T4).
 - **Schema.** `nbformat_minor` set to 5: the cells carry `id` fields, which made the file fail strict nbformat
   validation since before this audit. No content change.
 
