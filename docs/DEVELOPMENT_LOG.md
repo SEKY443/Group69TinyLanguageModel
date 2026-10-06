@@ -45,6 +45,7 @@ S1–S3. Parallel track on `main`: evidence audit and replication (Salah Elshafe
 49. Final audit and submission preparation (2026-10-06)
 50. Repository reorganisation and submission snapshot (2026-10-06)
 51. Report revision: numeric citations, standalone references, formal edit (2026-10-06)
+52. Branch replayed onto main and merged (2026-10-06)
 
 ---
 
@@ -1943,4 +1944,24 @@ academic wording of every paragraph. This pass was carried out with Claude Code,
 - **Snapshot.** Rebuilt from commit `8617728` and committed as `16ea77f`. The local tag
   `submission-group73-2026-10-06`, never pushed, was moved to that commit; push it with
   `git push origin submission-group73-2026-10-06`.
+
+## 52. Branch replayed onto main and merged (2026-10-06)
+Pull request #1 merged this branch into `main` up to commit `227d9fb`. The later commits (§50–§51) were then replayed
+onto the merge commit `7900887`, as the workflow requires after a merge. The resulting files are byte-identical to
+those before the replay. The commit hashes quoted in §50–§51 changed as follows:
+
+| Commit | Before | After |
+|---|---|---|
+| Reorganise repository; deliverables named CITS4012_73 | `89a4d96` | `54219fb` |
+| Submission snapshot for Group 73 | `2453438` | `c3ad43e` |
+| Development log: snapshot commit and tag status | `6b1e3cd` | `a5e1c97` |
+| Report: numeric citations, standalone references, formal wording; Group 73 in notebook code | `8617728` | `fee1c98` |
+| Submission snapshot for Group 73 (revised report) | `16ea77f` | `2d94528` |
+| Development log: snapshot and tag of the revised report | `45943fa` | `ed3f3a7` |
+
+- The snapshot in `submission/` was rebuilt on the replayed branch; `submission/MANIFEST.json` records its source
+  commit.
+- The local tag `submission-group73-2026-10-06` was moved to the new snapshot commit.
+- The branch was then merged into `main` through a second pull request, at the group's request, so that `main` shows
+  `CITS4012_73.ipynb` and `report/CITS4012_73.tex/.pdf`.
 
