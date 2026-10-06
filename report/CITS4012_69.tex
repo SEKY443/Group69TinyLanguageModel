@@ -1,13 +1,7 @@
 \documentclass[11pt]{article}
-% IEEE-style numbered citations inside the official ACL template: natbib (loaded by acl.sty) is switched to
-% numeric, square-bracket, sorted and compressed citations; the reference list uses IEEEtran.bst. acl.sty's own
-% \bibliographystyle{acl_natbib} call is suspended while the package loads, so only one style reaches BibTeX.
-% Page geometry, fonts, columns and margins are those of acl.sty.
-\PassOptionsToPackage{numbers,square,sort&compress}{natbib}
-\let\originalbibliographystyle\bibliographystyle
-\renewcommand{\bibliographystyle}[1]{}
+% Official ACL template (acl.sty, final mode); citations and the reference list use the template's own
+% natbib author-year style (acl_natbib.bst, set by acl.sty).
 \usepackage[final]{acl}
-\let\bibliographystyle\originalbibliographystyle
 \usepackage{times}
 \usepackage{latexsym}
 \usepackage[T1]{fontenc}
@@ -30,7 +24,7 @@
 \maketitle
 
 \begin{abstract}
-This project investigates difference-aware modelling for physical commonsense question answering on PIQA. A Difference-Aware Contrastive Transformer (\dact{}), trained from scratch, marks where two near-identical candidate solutions differ, compares them with cross-solution attention, pools around the differing tokens and adds a jointly trained lexical component; it was evaluated against five baselines and in nine ablations. \dact{} achieved the highest validation accuracy among the models trained from scratch (61.3\%); on the evaluation split, no statistically significant difference from a TF-IDF baseline was detected (61.9 vs.\ 61.2\%, McNemar $p{=}0.62$). The model locates the differing words but lacks the knowledge to judge them.
+This project investigates difference-aware modelling for physical commonsense question answering on PIQA. A Difference-Aware Contrastive Transformer (\dact{}), trained from scratch, marks where two near-identical candidate solutions differ, compares them with cross-solution attention, pools around the differing tokens and adds a jointly trained lexical component; it was evaluated against five baselines and in nine ablations. \dact{} achieved the highest validation accuracy among the models trained from scratch (61.3\%); on the evaluation split, no statistically significant difference from a TF-IDF baseline was detected (61.9 vs.\ 61.2\%, McNemar $p{=}0.62$). The pooling attention concentrates on the differing words, but incorrect predictions attend to them slightly more than correct ones: locating a difference does not suffice to judge it.
 \end{abstract}
 
 \section{Introduction}
@@ -39,16 +33,16 @@ This project investigates difference-aware modelling for physical commonsense qu
 PIQA \cite{bisk2020piqa} is a question answering benchmark for physical commonsense: each item consists of an everyday goal and two candidate solutions, exactly one of which achieves the goal. Physical commonsense is relevant to assistants that give practical instructions and to robots that must choose feasible actions. The main difficulty of PIQA is that the two candidates are usually near-duplicates; in the training split used here, the median share of differing solution tokens is 15\%. The correct answer therefore depends on a few substituted words whose plausibility requires world knowledge. This motivates an architecture that represents the differences explicitly instead of scoring each candidate independently.
 
 \subsection{Project Objectives}
-The objective of this project is to investigate whether a neural model trained from scratch, without external data, can exploit the explicit differences between two candidate solutions to improve physical commonsense QA. The specific goals were: (i) to design and implement an attention-based architecture that represents the differences between the candidates in its input, its comparison of the candidates and its summary representation; (ii) to compare it with baselines ranging from a majority classifier to pretrained models; (iii) to measure the contribution of each component with controlled ablations; and (iv) to analyse whether the attention mechanism concentrates on the differing tokens and how this relates to the model's errors.
+This project investigates whether a neural model trained from scratch, without external data, can exploit the explicit differences between two candidate solutions. The goals were (i) to design an attention-based architecture that represents these differences in its input, its comparison of the candidates and its summary representation; (ii) to compare it with baselines from a majority classifier to pretrained models; (iii) to measure each component's contribution with controlled ablations; and (iv) to analyse whether attention concentrates on the differing tokens and how this relates to the errors.
 
 \subsection{Related Work}
-Bisk et al.~\cite{bisk2020piqa} report 77.1\% for RoBERTa-large against 94.9\% for humans, and multi-format QA training improves pretrained models further \cite{khashabi2020unifiedqa} (cited for context only). The main model in this project builds on the Transformer encoder \cite{vaswani2017attention}. For multiple-choice reading comprehension, the Option Comparison Network \cite{ran2019option} and DCMN+ \cite{zhang2020dcmn} compare candidate answers with each other instead of scoring them independently. For natural language inference, ESIM \cite{chen2017esim} and the decomposable attention model \cite{parikh2016decomposable} align two texts token by token and build comparison features from the alignment. Work on annotation artefacts shows that shallow lexical cues can solve many items without reasoning \cite{gururangan2018annotation,poliak2018hypothesis}; this motivates both the lexical baseline and the lexical component of the model.
+\citet{bisk2020piqa} report 77.1\% for RoBERTa-large against 94.9\% for humans, and multi-format QA training improves pretrained models further \cite{khashabi2020unifiedqa}. The main model in this project builds on the Transformer encoder \cite{vaswani2017attention}. For multiple-choice reading comprehension, the Option Comparison Network \cite{ran2019option} and DCMN+ \cite{zhang2020dcmn} compare candidate answers with each other instead of scoring them independently. For natural language inference, ESIM \cite{chen2017esim} and the decomposable attention model \cite{parikh2016decomposable} align two texts token by token and build comparison features from the alignment. Work on annotation artefacts shows that shallow lexical cues can solve many items without reasoning \cite{gururangan2018annotation,poliak2018hypothesis}; this motivates both the lexical baseline and the lexical component of the model.
 
 \section{Methodology}\label{sec:method}
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.97\textwidth]{figures/architecture.pdf}
-\caption{Architecture of \dact{}. Both candidates are processed by the same weights. Orange boxes are the project-specific components evaluated in the ablation study; blue boxes are standard components. Because the weights are shared, swapping two already-encoded candidates swaps their scores; the \texttt{difflib} alignment that produces the tags depends on the option order (Section~\ref{sec:limits}).}
+\caption{Architecture of \dact{}. Because all weights are shared by the two candidates, swapping two already-encoded candidates swaps their scores; the \texttt{difflib} alignment that produces the tags depends on the option order (Section~\ref{sec:limits}).}
 \label{fig:arch}
 \end{figure*}
 
@@ -62,7 +56,7 @@ Each candidate is encoded as $x^{(k)} = [\textsc{cls}]\,g\,[\textsc{sep}]\,s_k\,
 \begin{equation}
 e_i = E_{tok}[x_i] + E_{pos}[i] + E_{seg}[\sigma_i] + E_{tag}[t_i],
 \end{equation}
-where $E_{tok}$, $E_{pos}$, $E_{seg}$ and $E_{tag}$ are learned token, position, segment and tag embeddings and $\sigma_i$ indicates whether position $i$ belongs to the goal or the solution. The tag embedding informs the encoder from the first layer where the candidates disagree.
+followed by LayerNorm and dropout, where $E_{tok}$, $E_{pos}$, $E_{seg}$ and $E_{tag}$ are learned token, position, segment and tag embeddings and $\sigma_i$ indicates whether position $i$ belongs to the goal or the solution. The tag embedding informs the encoder from the first layer where the candidates disagree.
 
 \subsection{Shared Transformer Encoder}
 A pre-LayerNorm Transformer encoder \cite{vaswani2017attention,xiong2020layer} maps each candidate sequence to hidden states $H^{(k)} \in \mathbb{R}^{L \times d}$. Both candidates share the encoder, so differences between their representations arise from the inputs, not from different parameters.
@@ -70,9 +64,9 @@ A pre-LayerNorm Transformer encoder \cite{vaswani2017attention,xiong2020layer} m
 \subsection{Cross-Solution Attention}
 Plausibility in PIQA is relative: a solution is correct because it is better than its rival. Each token of candidate $k$ therefore attends to the solution tokens of the other candidate $\bar{k}$, plus the \textsc{cls} token of $\bar{k}$, which serves as a target when a token has no counterpart:
 \begin{equation}
-c_i = \mathrm{MHA}\big(h^{(k)}_i, H^{(\bar{k})}, H^{(\bar{k})}\big),
+c_i = \mathrm{MHA}\big(\bar{h}^{(k)}_i, \bar{H}^{(\bar{k})}, \bar{H}^{(\bar{k})}\big),\quad \bar{h} = \mathrm{LN}(h),
 \end{equation}
-where MHA is multi-head attention. The hidden states are then updated with the comparison features of ESIM \cite{chen2017esim}: $\tilde{h}_i = \mathrm{LN}\big(h_i + \mathrm{FFN}([h_i; c_i; h_i - c_i; h_i \odot c_i])\big)$. ESIM applies these features to premise--hypothesis pairs; this project applies them to two competing answers, so that each candidate is represented by what it contains instead of its rival.
+where MHA is multi-head attention whose keys are restricted to those positions. The hidden states are then updated with the comparison features of ESIM \cite{chen2017esim}: $\tilde{h}_i = \mathrm{LN}\big(h_i + \mathrm{FFN}([\bar{h}_i; c_i; \bar{h}_i - c_i; \bar{h}_i \odot c_i])\big)$. ESIM applies these features to premise--hypothesis pairs; this project applies them to two competing answers, so that each candidate is represented by what it contains instead of its rival.
 
 \subsection{Difference-Guided Attention Pooling}
 The solution tokens are summarised with additive attention \cite{bahdanau2015neural} extended by a learned bias per tag:
@@ -94,7 +88,7 @@ The two scores compete in a softmax, $P(k) = \mathrm{softmax}(z_1, z_2)_k$, whic
 \section{Experimental Setup}
 
 \subsection{Dataset and Data Split}
-PIQA provides 16{,}113 labelled training items and 1{,}838 labelled development items; the test labels of the official benchmark are not public. The 1{,}838 development items serve as this project's final evaluation split and are called the evaluation split below. A stratified 10\% of the training file (seed 42) was held out for validation, giving 14{,}501 / 1{,}612 / 1{,}838 items for training, validation and evaluation, all label-balanced (50.0 / 50.0 / 50.5\% label 1). An audit of the data found six duplicate rows within the training file and one evaluation item (index 1545) that appears twice in the training split. The split was kept unchanged and the overlap is disclosed: re-scoring the saved evaluation predictions without that item changes accuracy by about 0.02 points (\dact{} 61.86\,$\to$\,61.84\%, TF-IDF 61.21\,$\to$\,61.19\%).
+PIQA provides 16{,}113 labelled training items and 1{,}838 labelled development items; the test labels of the official benchmark are not public. The unit's test file is byte-identical to these 1{,}838 development items (same SHA-256), which serve as this project's final evaluation split and are called the evaluation split below. A stratified 10\% of the training file (seed 42) was held out for validation, giving 14{,}501 / 1{,}612 / 1{,}838 items for training, validation and evaluation, all label-balanced (50.0 / 50.0 / 50.5\% label 1). An audit of the data found six duplicate rows within the training file and one evaluation item (index 1545) that appears twice in the training split. The split was kept unchanged and the overlap is disclosed: re-scoring the saved evaluation predictions without that item changes accuracy by about 0.02 points (\dact{} 61.86\,$\to$\,61.84\%, TF-IDF 61.21\,$\to$\,61.19\%).
 
 \subsection{Data Preprocessing}
 Whitespace is collapsed, and the BPE tokenizer applies NFKC normalisation and lower-casing. Goals are truncated to 40 and solutions to 96 BPE tokens. For longer solutions (1.6\% of evaluation solutions), the 96-token window is centred on the differing span instead of keeping the prefix.
@@ -109,7 +103,7 @@ All baseline results were produced by the group's own experiments. \textbf{B0} p
 Accuracy is PIQA's official metric. Because the labels are balanced and each item has exactly one correct candidate, accuracy is unbiased and has a chance level of 50\%. Models trained with seeds 42--44 are reported as mean $\pm$ standard deviation. For the seed with the best validation accuracy, a 95\% bootstrap confidence interval (2{,}000 resamples \cite{efron1993bootstrap}) and an exact McNemar test \cite{mcnemar1947note} against \dact{} are computed on the evaluation split.
 
 \subsection{Experimental Protocol}\label{sec:protocol}
-Validation accuracy is the evidence used for every design and selection decision. The evaluation split was, however, evaluated in several development runs, and the lexical component was introduced after earlier evaluation results had been seen; its configuration was then chosen on validation only. The evaluation results are therefore useful for comparison but are not an untouched estimate of generalisation. In the final run, evaluation labels are read only in the last step of the notebook, and every read is logged. The submitted notebook contains the complete final run (commit \texttt{b880108}; 57 cells, no errors, logs of all 33 training runs) and a cell that checks the tables against the result files.
+Validation accuracy is the evidence used for every design and selection decision. The evaluation split was, however, evaluated in several development runs, and the lexical component was introduced after earlier evaluation results had been seen; its configuration was then chosen on validation only. The evaluation results are therefore useful for comparison but are not an untouched estimate of generalisation. In the final run, evaluation labels are read only in the last step of the notebook, and every read is logged. The submitted notebook contains the complete final run (commit \texttt{b880108}; no errors, logs of all 33 training runs) and a cell that checks the tables against the result files; later diagnostics-only code changes were verified to leave trained weights and predictions bit-identical.
 
 \section{Results and Analysis}
 
@@ -132,36 +126,37 @@ B3 RoBERTa-base, fine-tuned$^\dagger$ & 59.2\,$\pm$\,5.8 & 57.3\,$\pm$\,6.9 \\
 B4 Qwen2.5-1.5B, zero-shot & 78.2 & 75.1 \\
 \bottomrule
 \end{tabular}
-\caption{Accuracy (\%) on the validation and evaluation (Test) splits; mean $\pm$ std over 3 seeds; B0, B1 and B4 are deterministic single runs. \dact{} test 95\% CI: 59.6--64.0. $^\dagger$Two of three seeds stayed at chance-level loss; the working seed reaches 65.3\% (test CI 62.4--66.6). $^\ddagger$Same settings; all three seeds trained (69.6 / 68.5 / 68.8); validation only. An A100 run gave 68.0 / 66.7.}
+\caption{Accuracy (\%) on the validation and evaluation (Test) splits; mean $\pm$ std over 3 seeds; B0, B1 and B4 are deterministic single runs. \dact{} test 95\% CI: 59.6--64.0. $^\dagger$Two of three seeds stayed at chance-level loss; the working seed reaches 65.3\% on validation (test 95\% CI 62.4--66.6). $^\ddagger$Same settings; all three seeds trained (69.6 / 68.5 / 68.8); validation only. An A100 run gave 68.0 / 66.7.}
 \label{tab:main}
 \end{table}
 
-Table~\ref{tab:main} compares \dact{} with the baselines. \dact{} has the highest accuracy among the models trained from scratch on both splits: +2.0 / +3.1 points over the BiLSTM (McNemar $p{=}0.09$ on test) and +2.0 / +0.7 over TF-IDF. The 2-point validation lead over TF-IDF was also observed in an earlier independent A100 run, whereas on the evaluation split no statistically significant difference was detected ($p{=}0.62$; $p{=}0.88$ in the A100 run). The two models make substantially different errors (Section~\ref{sec:ablation}), so the result reflects two different sources of evidence of similar strength rather than one model reproducing the other. The pretrained baselines perform better: the zero-shot LLM (about 800 times more parameters) is 13.2 points above \dact{} on test, and RoBERTa (65 times more parameters), when its fine-tuning succeeds, is about 8 points above on validation (69.0 vs.\ 61.3\%). Because model size, tokenisation, architecture and pretraining all differ, this gap cannot be attributed to world knowledge alone. RoBERTa's fine-tuning trained one of three seeds in the final run and all three in the re-run with identical settings, a known instability \cite{dodge2020finetuning}.
+\dact{} has the highest accuracy among the models trained from scratch on both splits (Table~\ref{tab:main}): +2.0 / +3.1 points over the BiLSTM (McNemar $p{=}0.09$ on test) and +2.0 / +0.7 over TF-IDF. The 2-point validation lead over TF-IDF was also observed in an earlier independent A100 run, whereas on the evaluation split no statistically significant difference was detected ($p{=}0.62$; $p{=}0.88$ in the A100 run). The pretrained baselines perform better: the zero-shot LLM (about 800 times more parameters) is 13.2 points above \dact{} on test, and RoBERTa (65 times more parameters), when its fine-tuning succeeds, is about 8 points above on validation (69.0 vs.\ 61.3\%). Because model size, tokenisation, architecture and pretraining all differ, this gap cannot be attributed to world knowledge alone. RoBERTa's fine-tuning was unstable across sessions (Table~\ref{tab:main}), a known problem \cite{dodge2020finetuning}.
 
 \subsection{Ablation Study}\label{sec:ablation}
 \begin{table}[t]
 \centering\small
-\begin{tabular}{@{}lrr@{}}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrr@{}}
 \toprule
-Ablation (vs.\ full \dact{}) & $\Delta$ Val & $\Delta$ Test \\
+Ablation (vs.\ full \dact{}) & $\Delta$ Val & $\Delta$ Test & $\Delta$ Par. \\
 \midrule
-$-$ lexical head & $-$2.3 & $-$0.3 \\
-pointwise (independent BCE) objective & $-$1.7 & $-$1.4 \\
-$-$ difference tags & $-$0.2 & $-$1.3 \\
-mean instead of attention pooling & $-$0.2 & +0.2 \\
-$-$ MLM warm-up & +0.1 & $-$0.3 \\
-$-$ tag bias in pooling & +0.1 & $-$0.6 \\
-tag bias initialised at 0 & +0.2 & $-$0.7 \\
-$-$ cross-solution attention & +0.6 & $-$0.6 \\
+$-$ lexical head & $-$2.3 & $-$0.3 & $-$262k \\
+pointwise BCE objective & $-$1.7 & $-$1.4 & 0 \\
+$-$ difference tags & $-$0.2 & $-$1.3 & $-$0.4k \\
+mean pooling & $-$0.2 & +0.2 & 0 \\
+$-$ MLM warm-up & +0.1 & $-$0.3 & 0 \\
+$-$ tag bias in pooling & +0.1 & $-$0.6 & 0 \\
+tag bias initialised at 0 & +0.2 & $-$0.7 & 0 \\
+$-$ cross-solution attention & +0.6 & $-$0.6 & $-$149k \\
 \midrule
-vanilla (four components removed) & $-$3.7 & $-$4.3 \\
+vanilla (4 components removed) & $-$3.7 & $-$4.3 & $-$411k \\
 \bottomrule
 \end{tabular}
-\caption{Ablation results: change in accuracy (percentage points) relative to the full model, 3 seeds each, one change at a time on the selected configuration; differences of the unrounded 3-seed means, rounded to 0.1 (seed std $\approx$ 0.1--1.1). The vanilla model removes the difference tags, cross-solution attention, attention pooling and the lexical component.}
+\caption{Ablation results: change in accuracy (percentage points) relative to the full model (1.93\,M parameters), 3 seeds each, one change at a time on the selected configuration; differences of the unrounded 3-seed means, rounded to 0.1 (seed std $\approx$ 0.1--1.1). $\Delta$ Par.: change in trainable parameters. The vanilla model removes the difference tags, cross-solution attention, attention pooling and the lexical component.}
 \label{tab:abl}
 \end{table}
 
-Each ablation tests one design hypothesis (Table~\ref{tab:abl}); seeds, data and training budget are fixed. Removing the difference-aware components together (the vanilla model) reduced accuracy by 3.7 / 4.3 points, the largest drop and the only significant one on test ($p{=}0.007$); in the A100 run the same comparison cost 2.5 / 2.4. This indicates that the combined design provides information beyond a plain Transformer. The lexical component mainly helps on validation (removing it costs 2.3 / 0.3 points), and the forced-choice objective helps on both splits (independent binary scoring: 1.7 / 1.4). The difference tags help on test only (0.2 / 1.3). The remaining components show no consistent effect: cross-solution attention (removing it gives +0.6 / $-$0.6), attention pooling (+0.2 on test with mean pooling), the tag bias and its initial value, and the MLM warm-up (+0.1 / $-$0.3) change accuracy by less than a point in opposite directions on the two splits. A likely explanation is that these components carry overlapping information about where the candidates differ, so each can be compensated by the others. Differences below one seed std are not conclusive, and with nine comparisons individual p-values should not be over-interpreted \cite{dror2018hitchhiker}.
+Each ablation tests one design hypothesis (Table~\ref{tab:abl}); seeds, data and training budget are fixed. Removing the difference-aware components together (the vanilla model) reduced accuracy by 3.7 / 4.3 points, the largest drop and the only one with $p{<}0.05$ (McNemar; validation 0.009, test 0.007), although neither survives a Holm correction over the nine ablations (0.08 / 0.06). More convincing is its consistency: every vanilla seed is below every full-model seed on both splits, and the A100 run showed 2.5 / 2.4. The combined design thus adds information beyond a plain Transformer, although the vanilla model also has 21\% fewer parameters. The lexical component mainly helps on validation (removing it costs 2.3 / 0.3 points), and the forced-choice objective helps on both splits (independent binary scoring: 1.7 / 1.4). The difference tags help on test only (0.2 / 1.3). The remaining components show no consistent effect: cross-solution attention (removing it gives +0.6 / $-$0.6), attention pooling (+0.2 on test with mean pooling), the tag bias and its initial value, and the MLM warm-up (+0.1 / $-$0.3) change accuracy by less than a point in opposite directions on the two splits. A likely explanation is that these components carry overlapping information about where the candidates differ, so each can be compensated by the others. Differences below one seed std are not conclusive, and with nine comparisons individual p-values should not be over-interpreted \cite{dror2018hitchhiker}.
 
 \dact{} and TF-IDF agree on only 78.2\% of test items; \dact{} alone solves 11.2\% (206 items) and TF-IDF alone 10.6\%, for an oracle accuracy of 72.4\%. The items only \dact{} solves include minimal pairs with a one-word difference inside long shared text (\emph{release} vs.\ \emph{do not release} the ignition key; the typo \emph{sparrow bottle} vs.\ \emph{spray bottle}), where the TF-IDF difference vector $s_2 - s_1$ is close to zero and the alignment-based tags are most informative. Against RoBERTa, the oracle rises to 82.4\%.
 
@@ -173,26 +168,26 @@ Each ablation tests one design hypothesis (Table~\ref{tab:abl}); seeds, data and
 \label{fig:controls}
 \end{figure}
 
-The trained model puts 78.0\% of its pooling attention on differing tokens, which make up 24.8\% of solution tokens (Figure~\ref{fig:controls}). Because the tag bias starts at 1, two controls separate learned focus from the built-in prior: an untrained model reaches only 38.9\%, while the trained model with the bias set to 0 still reaches 62.0\%, and the bias itself barely changed in training (1.0\,$\to$\,1.03). The focus is therefore mainly learned by the pooling scorer, which is consistent with the small effect of initialising the bias at 0. On validation, the normalised pooling entropy is 0.59 (1 = uniform), for correct and wrong predictions alike ($p{=}0.98$), so the pooling is selective in both cases. A linear probe for differing versus shared tokens reaches 62.0\% balanced accuracy on the vanilla Transformer's embeddings and only 63.0\% after its encoder, against 100\% in every layer of \dact{}: without tags, the encoder does not learn where the candidates differ. Incorrect predictions put more attention on the differing tokens than correct ones (79.0 vs.\ 77.4\%, $p{=}0.03$). Detecting the relevant difference is therefore not sufficient to judge physical plausibility. The attention distribution shows where the model places weight during aggregation, but it does not by itself establish the reason for a prediction \cite{jain2019attention,wiegreffe2019attention}.
+The trained model puts 78.0\% of its pooling attention on differing tokens, which make up 24.8\% of solution tokens (Figure~\ref{fig:controls}). Because the tag bias starts at 1, two controls separate learned focus from the built-in prior: an untrained model reaches only 38.9\%, while the trained model with the bias set to 0 still reaches 62.0\%, and the bias itself barely changed in training (1.0\,$\to$\,1.03). The focus is therefore mainly learned by the pooling scorer, which is consistent with the small effect of initialising the bias at 0. On validation, the normalised pooling entropy is 0.59 (1 = uniform), for correct and wrong predictions alike ($p{=}0.98$), so the pooling is selective in both cases. A linear probe for differing versus shared tokens reaches 62.0\% balanced accuracy on the vanilla Transformer's embeddings and only 63.0\% after its encoder, against 100\% in every layer of \dact{}: without tags, the encoder barely learns where the candidates differ. Incorrect predictions put slightly more attention on the differing tokens than correct ones (79.0 vs.\ 77.4\%, Mann--Whitney $p{=}0.03$), so attending to the differing tokens is not sufficient for a correct prediction. The attention distribution shows where the model places weight during aggregation, but it does not by itself establish the reason for a prediction \cite{jain2019attention,wiegreffe2019attention}.
 
 \subsection{Qualitative Analysis}
 \begin{figure*}[t]
 \centering
 \includegraphics[width=0.98\textwidth]{figures/attention_cases.pdf}
-\caption{Pooling attention over each candidate solution (darker = higher weight; \textbf{bold} = tokens that differ between the candidates). Top: \emph{adding scents to lotion bars}, an incorrect prediction (p = 0.96 for option 1; option 2 is correct). Bottom: \emph{a small but cheap home}, the most uncertain item (p = 0.50; option 1 is correct).}
+\caption{Pooling attention of the best-validation-seed model over each candidate solution of three evaluation items (darker = higher weight; \textbf{bold} = tokens that differ between the candidates; p = predicted probability). Top: \emph{becoming more mindful}, a correct prediction (p = 0.99 for option 1, the gold answer). Middle: \emph{adding scents to lotion bars}, an incorrect prediction (p = 0.96 for option 1; option 2 is gold). Bottom: \emph{a small but cheap home}, the most uncertain item (p = 0.50; option 1 is gold).}
 \label{fig:cases}
 \end{figure*}
 
-Figure~\ref{fig:cases} shows two evaluation items. For \emph{adding scents to lotion bars} (top), the incorrect option adds the oils ``to the water in the bottom of the double boiler''. The pooling peaks on \emph{bottom}, the part that makes the option wrong, yet the model prefers this option with p = 0.96: it locates the decisive span but has no knowledge that oil in the water bath never reaches the lotion. In \emph{a small but cheap home} (bottom), the candidates differ in a one-letter typo, a \emph{shipping} vs.\ a \emph{shopping} container, and in \emph{living space} vs.\ \emph{relaxing environment}. Almost half of the pooling weight is on \emph{shipping}, but the scores tie. Correct predictions rest on similar word-level evidence: for \emph{a simple camping lantern}, the correct option (a milk jug on top of an \emph{LED light}, \emph{translucent plastic}) wins with p = 0.99 against \emph{fairy lights} in a filled jug, with pooling spread over the many differing words. The most confident error (\emph{an exotic trip}, p = 0.98) pairs options that share almost no words; because $\ell_k$ sums over n-grams, such spans receive extreme lexical scores. Single examples illustrate, but do not establish, general behaviour.
+Figure~\ref{fig:cases} shows a success, a failure and the most uncertain evaluation item, chosen by confidence. In the correct prediction (top), the pooling weight falls on \emph{present}, \emph{meditate} and \emph{moment} in the gold option and on \emph{relax}, \emph{closed} and \emph{focus} in the rival: content words that separate the two activities. For \emph{adding scents to lotion bars} (middle), the incorrect option adds the oils ``to the water in the bottom of the double boiler''. The pooling peaks on \emph{bottom}, the part that makes the option wrong, yet the model prefers this option with p = 0.96: attending to the decisive span did not lead to the correct judgement. In \emph{a small but cheap home} (bottom), the candidates differ in a one-letter typo, a \emph{shipping} vs.\ a \emph{shopping} container, and in \emph{living space} vs.\ \emph{relaxing environment}. Almost half of the pooling weight is on \emph{shipping}, but the scores tie. The most confident error (\emph{an exotic trip}, p = 0.98) pairs options that share almost no words; because $\ell_k$ sums over n-grams, such spans receive extreme lexical scores. Single examples illustrate, but do not establish, general behaviour.
 
 \subsection{Experimental Stability}\label{sec:stability}
-All development runs are logged in the repository. The lexical component needed its own learning rate: with the shared rate, it barely moved from zero before early stopping. A goal-matching block (165\,k parameters) was pre-registered, with its acceptance rule (validation gain $\geq$ 1.0 point and $>$ 2 pooled seed std) committed before training; it lost 0.3 points on validation and was rejected without a test run. Results were sensitive to seeds and sessions: between the A100 run and the final run, single ablations and the from-scratch baselines moved by up to 1.6 points, the one-seed grid chose a different configuration, and RoBERTa's fine-tuning succeeded in one, two or three of three seeds depending on the session. The conclusions of this report therefore rest on effects larger than this spread, such as the vanilla ablation and the gap to pretrained models.
+All development runs are logged in the repository. The lexical component needed its own learning rate: with the shared rate, it barely moved from zero before early stopping. A goal-matching block (165\,k parameters) was pre-registered, with its acceptance rule (validation gain $\geq$ 1.0 point and $>$ 2 pooled seed std) committed before training; it lost 0.3 points on validation and was rejected without a test run. Results were sensitive to seeds and sessions: between the A100 run and the final run, single ablations and the from-scratch baselines moved by up to 1.6 points, the one-seed grid chose a different configuration, and RoBERTa's fine-tuning succeeded in one, two or three of three seeds depending on the session. The conclusions therefore rest on effects larger than this spread.
 
 \subsection{Limitations}\label{sec:limits}
-Improvements of about one point are within seed and sampling noise, and each grid candidate was trained with one seed. The evaluation split was exposed during development (Section~\ref{sec:protocol}); a replacement test split held out of the training file and never evaluated on has been prepared but not yet run. One evaluation item overlaps with the training data, and the difference tags depend on the option order (102 evaluation items change tags when the options are swapped; an optional canonical alignment removes this). The model overfits quickly, with 85--92\% training accuracy against about 61\% validation accuracy at the selected epoch, so early stopping does most of the regularisation. Ablations that remove modules also change the parameter count. The comparison with pretrained models confounds knowledge with model size and pretraining, and attention weights are not causal explanations.
+Improvements of about one point are within seed and sampling noise, and each grid candidate was trained with one seed. The evaluation split was exposed during development (Section~\ref{sec:protocol}), so an untouched estimate would need a fresh held-out split. One evaluation item overlaps with the training data, and the difference tags depend on the option order (102 evaluation items change tags when the options are swapped; an optional canonical alignment removes this). Because BPE training in the \texttt{tokenizers} library and the GPU kernels are not deterministic, re-runs reproduce the results only up to seed-level variation. The model overfits quickly, with 85--92\% training accuracy against about 61\% validation accuracy at the selected epoch, so early stopping does most of the regularisation. Ablations that remove modules also change the parameter count (Table~\ref{tab:abl}).
 
 \section{Conclusion}
-This project developed and evaluated a Difference-Aware Contrastive Transformer for PIQA, trained from scratch. Making the difference between two near-identical solutions explicit and adding lexical evidence gave the highest validation accuracy among the from-scratch models in two runs; on the evaluation split, no significant difference from TF-IDF was detected. The combined design gave the clearest improvement (3.7 / 4.3 points over a vanilla Transformer), while single components had no consistent effect. The model learns to focus on the differing words but still misjudges them, and pretrained models remain clearly stronger. Next steps are a length-normalised lexical score, a cleaner evaluation protocol and difference-aware mechanisms on pretrained representations.
+This project developed \dact{}, a difference-aware Transformer for PIQA trained from scratch. Making the difference between two near-identical solutions explicit and adding lexical evidence gave the best validation accuracy of the from-scratch models in two runs, but no significant difference from TF-IDF on the evaluation split. The combined design gave the clearest improvement (3.7 / 4.3 points over a vanilla Transformer), while single components had no consistent effect. The model's attention concentrates on the differing words, but this focus does not prevent confident errors, and pretrained models remain clearly stronger. Next steps are a length-normalised lexical score, a cleaner evaluation protocol and difference-aware mechanisms on pretrained representations.
 
 \section*{Team Contributions}
 The work was divided among the three members; each member implemented and tested their own part of the code and wrote the report sections that describe it.
@@ -203,8 +198,6 @@ The work was divided among the three members; each member implemented and tested
 
 \textbf{Salah:} evidence audit of the original run (training/evaluation overlap, order-dependent alignment, evaluation exposure), robustness and provenance code (validation, determinism, prediction export), and the local replication of the original model.
 
-\clearpage
-\bibliographystyle{IEEEtran}
 \bibliography{references}
 
 \end{document}
