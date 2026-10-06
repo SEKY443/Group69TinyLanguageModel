@@ -1,92 +1,119 @@
-# Group 69: PIQA / Difference-Aware Contrastive Transformer (DACT)
+# CITS4012 Group 73: Difference-Aware Contrastive Transformer (DACT) for PIQA
 
-CITS4012 group project. Dataset: PIQA (Physical Interaction QA). Main model: **DACT**, a randomly initialised,
-shared Transformer with difference-tag embeddings, cross-solution comparison, difference-biased pooling and a
-jointly trained lexical head. Pretrained RoBERTa/Qwen are baselines only.
-
-This repository combines two tracks of work (merged on 2026-10-01, see `docs/DEVELOPMENT_LOG.md` section 28):
-- **`revision-2`:** the final model with the lexical head, its full Colab run, and the ACL report draft (log sections 22–27).
-- **`main` (Salah Elshafey):** an evidence audit of the original A100 run, robustness and provenance code, and a local replication of the original model (log sections S1–S3).
-
-## Where to find things
-
-```text
-Group69TinyLanguageModel/
-├── CITS4012_69.ipynb        # submission: executed run of the final model (free T4, commit b880108, 2026-10-04)
-├── report/                  # ACL report draft: CITS4012_69.tex, CITS4012_69.pdf, figures, make_figures.py
-├── outputs/                 # logs, results and figures of that final run
-├── src/                     # model, data, training and evaluation (merged code of both tracks)
-├── tools/                   # sync, pilot, build, audit, experiment and checking scripts
-├── references.bib           # BibTeX used by the report
-├── docs/                    # development log, audit, handover and folder guide
-├── evidence/historical/     # original A100 notebook (exact + audited), sources, SHA-256 manifest,
-│   └── a100_outputs/        #   and the original A100 logs, results and figures
-├── report_support/          # audit notes, tables and figures about the ORIGINAL model
-├── notebooks/               # current-source reproduction candidate from the audit track
-├── experiments/             # archived runs: A100 run 0d70cdc, earlier T4 run, A100 runs of 2026-10-01 incl. Salah's version
-├── templates/               # original course notebook template
-└── requirements*.txt        # local and historical environments
-```
-
-| Artifact | Meaning |
-|---|---|
-| `CITS4012_69.ipynb` | **Final executed notebook** (commit `b880108`, free Colab T4): DACT 61.3 / 61.9 % val / test, all baselines (2 of 3 RoBERTa seeds failed to fine-tune), 9 ablations, attention analysis, consistency check; its outputs are in `outputs/` |
-| `experiments/a100_run_0d70cdc/` | Outputs of the previous final run (Colab Pro A100, commit `0d70cdc`): DACT 61.2 / 61.6 %, RoBERTa 68.0 / 66.7 % |
-| `report/CITS4012_69.pdf` | Report draft built from that run; Team Contributions still to be written by the group |
-| `outputs/` | Logs, results, figures and per-item predictions (gzip) of the final run (40 JSON-lines logs) |
-| `experiments/a100_runs_20261001/` | Both A100 runs of 2026-10-01 compared (`COMPARISON.md`): current version vs Salah's version |
-| `experiments/t4_run_538cf5b/` | Outputs of the earlier free-T4 run of the final model (61.1 / 61.6 %) |
-| `evidence/historical/CITS4012_69.ipynb` | Exact original A100 notebook (run 1) |
-| `evidence/historical/CITS4012_69_audited_A100.ipynb` | Original A100 notebook with the audit track's corrected narrative and appended audit cells |
-| `evidence/historical/a100_outputs/` | Original A100 logs, results, tokenizer and attention figures, unchanged |
-| `report_support/`, `notebooks/` | Audit-track material; describes the **original** model (without the lexical head) |
-
-## Findings of the audit track that apply to every run
-- One normalised test item also appears twice in the training data.
-- The `difflib` alignment is directional, so swapping the two options can change the difference tags. Set `Config.symmetric_diff_tags=True` to use canonical ordering. This is off by default, so recorded results are unchanged.
-- The original A100 run's checkpoints and predictions were not kept. New runs save their predictions to `outputs/predictions/`.
-
-## Running the final notebook (Google Colab)
-1. Open `CITS4012_69.ipynb` in Colab and select a GPU runtime.
-2. Run `Runtime → Run all`. It takes about 30–35 minutes on an A100, or about 1 h 50 min on a free T4.
-   - The PIQA files are downloaded automatically from the unit's shared folder.
-   - `MyDrive/Group69/PIQA.zip` is used only if that download fails.
-   - Every run directory must be new, because the code refuses to overwrite existing logs or checkpoints.
-3. At the end, `outputs.zip` (logs, results, figures) is downloaded to your computer.
-
-**Note:** the saved outputs of `CITS4012_69.ipynb` were produced by the `revision-2` code. After the merge, `src/` also contains the audit track's additions:
-- saved predictions;
-- run provenance;
-- validation loss and finite-loss checks;
-- a selected-position MLM head;
-- optional determinism.
-
-These add checks and records and don't change the model's defaults. Even so, one fresh run of the merged notebook is needed before submission, so that the saved outputs come from exactly the submitted code.
-
-## Keeping the notebook and `src/` in sync
-After editing a module in `src/`, run:
-
-```bash
-python tools/sync_notebook.py
-```
-
-## Tests and checks (CPU, about 2 minutes)
-
-```bash
-pip install -r requirements-lock.txt pytest      # or a CPU torch build plus the locked scientific stack
-python -m pytest                                  # 25 tests; add -m "not slow" to skip the notebook run
-python tools/sync_notebook.py --check             # the notebook's module cells equal src/
-python tools/check_test_access.py                 # no test labels before the final-results cell
-python tools/check_report_numbers.py              # report tables equal their result files
-```
-
-The same checks run on GitHub Actions (`.github/workflows/ci.yml`). The audit track's old tools (`audit_evidence.py`,
-`verify_model.py`, `final_checks.py`, …) were written for the pre-merge model and are kept in `tools/retired/` (see
-its README); their outputs remain in `report_support/`.
+CITS4012 Natural Language Processing group project (UWA, 2026). Dataset: **PIQA** (physical commonsense, two
+candidate solutions per goal). Main model: **DACT**, a Transformer trained from scratch that marks where the two
+near-identical solutions differ (difference-tag embeddings), compares them with cross-solution attention, pools
+around the differing tokens and adds a jointly trained hashed lexical head. Pretrained RoBERTa-base and
+Qwen2.5-1.5B appear only as baselines. (The repository keeps its original name, `Group69TinyLanguageModel`; the
+group's assigned ID is **73**.)
 
 ## Submission
-The brief requires exactly two files:
-- `CITS4012_69.ipynb`
-- `CITS4012_69.pdf` (ACL LaTeX in final mode, "Group 69" as the only author, at most six pages of main content, BibTeX references, and the real team contributions)
 
-Label the historical A100 results and the audit track's local replications separately from the final run.
+| Required file | In this repository | Source |
+|---|---|---|
+| `CITS4012_73.pdf` | `submission/CITS4012_73.pdf` | byte copy of `report/CITS4012_69.pdf` |
+| `CITS4012_73.ipynb` | `submission/CITS4012_73.ipynb` | byte copy of `CITS4012_69.ipynb` |
+
+`python tools/build_submission.py` checks the brief's format rules (course template, `\author{Group 73}`, final
+mode, six-page limit, no error outputs, notebook = `src/`) and rebuilds `submission/` with `SHA256SUMS` and a freeze
+`MANIFEST.json`. Before submitting, the group must confirm the Team Contributions paragraphs and decide on an AI-use
+statement (`docs/FINAL_MARKING_AUDIT.md` §10).
+
+## Results of the reported run (free Colab T4, commit `b880108`, accuracy %, 3 seeds)
+
+| Model | Validation | Evaluation ("test") |
+|---|---|---|
+| **DACT (main model, 1.93 M parameters)** | **61.3 ± 0.5** | **61.9 ± 0.3** |
+| B1 TF-IDF + logistic regression | 59.2 | 61.2 (McNemar p = 0.62 vs DACT) |
+| B2 BiLSTM + attention | 59.3 ± 0.7 | 58.7 ± 1.1 |
+| B3 RoBERTa-base fine-tuned (2 of 3 seeds failed; validation re-run 69.0 ± 0.6) | 59.2 ± 5.8 | 57.3 ± 6.9 |
+| B4 Qwen2.5-1.5B zero-shot | 78.2 | 75.1 |
+| Vanilla Transformer (four DACT components removed) | 57.5 ± 1.0 | 57.6 ± 1.0 |
+
+The evaluation split is PIQA's labelled development set (byte-identical to the unit's `test` files). It was
+evaluated in earlier development runs, so it is not an untouched estimate (report §3.6). All numbers are in
+`outputs/results/` and are recomputed from per-item predictions by `tests/test_evidence_consistency.py`.
+
+## Repository layout
+
+```text
+CITS4012_69.ipynb      executed submission notebook (course template; outputs of the reported run)
+report/                ACL report: CITS4012_69.tex/.pdf, acl.sty, references.bib, figures/, make_figures.py, build.sh
+submission/            the two files to upload (CITS4012_73.*), SHA256SUMS, MANIFEST.json
+src/                   model, data, training, baselines, evaluation, experiment and visualisation modules
+                       (embedded verbatim in the notebook; tools/sync_notebook.py keeps them identical)
+outputs/               reported run: logs/, predictions/ (gzip), results/, figures/, tokenizer, run_config, test_access.log
+tests/                 pytest suite (model properties, evidence consistency, evaluation hygiene, resume, notebook smoke run)
+tools/                 checking, verification, analysis and packaging scripts (tools/retired/: superseded audit tools)
+experiments/           archived earlier runs and separate pre-registered experiments (each folder has its own record)
+docs/                  development log, final audit, requirements traceability, submission checklist, earlier audits
+evidence/              historical notebooks and sources of the original A100 run (unchanged)
+report_support/        audit-track notes and tables about the ORIGINAL model (historical)
+templates/             the official, unmodified course notebook template
+```
+
+## Running the notebook (clean Google Colab)
+
+1. Open `CITS4012_69.ipynb` (or `submission/CITS4012_73.ipynb`) in Colab and select a GPU runtime.
+2. `Runtime → Run all`: about 1 h 50 min on a free T4, 30–35 min on an A100.
+   - **Data:** the four PIQA files are downloaded from the unit's shared folder. If that fails, the official PIQA
+     release is downloaded from GitHub and used only if its SHA-256 equals the unit's files. The last fallback is
+     `MyDrive/Group69/PIQA.zip`. Every source is checked against the hashes of the reported run.
+   - **Packages:** everything is pre-installed on Colab; the first cell compares versions with
+     `requirements-lock.txt`.
+   - **Checkpoints:** none are needed; every model is retrained.
+3. Results reproduce up to seed-level variation, not digit for digit: GPU kernels and BPE training in the
+   `tokenizers` library are not deterministic.
+
+## Local checks (CPU, about 2 minutes)
+
+```bash
+pip install -r requirements-lock.txt pytest nbformat nbclient ipykernel pypdf
+python -m pytest                              # 79 tests; -m "not slow" skips the end-to-end notebook run
+python tools/sync_notebook.py --check         # notebook module cells == src/
+python tools/check_test_access.py             # no test-label access before the final-results cell
+python tools/check_report_numbers.py          # every table value and result in the prose == its result file
+python tools/build_submission.py --check-only # format rules of the brief
+```
+
+The same checks run on GitHub Actions (`.github/workflows/ci.yml`).
+
+## Verification tools (final audit)
+
+**Run without the PIQA files:**
+
+| Command | What it shows |
+|---|---|
+| `python tools/verify_post_run_equivalence.py` | Code changes after the reported run leave trained weights and predictions bit-identical (DACT with MLM warm-up, BiLSTM; deterministic CPU). |
+| `python tools/ablation_significance.py` | McNemar tests of all ablations on both splits, Holm-adjusted, plus seed separation and parameter changes, from saved predictions. |
+
+**Need the PIQA files in `data/piqa/`:**
+
+| Command | What it shows |
+|---|---|
+| `python tools/verify_b1_reproduction.py --data-dir data/piqa --out-dir <dir>` | Re-fits B1 and matches the saved validation predictions item by item, and the reported test numbers. Logs its test-label read in `<dir>/test_access.log`. |
+| `python tools/rescore_without_duplicate.py --data-dir data/piqa` | Effect of the one duplicated evaluation item. |
+
+## Building the report
+
+```bash
+python report/make_figures.py   # figures from outputs/ (matplotlib)
+sh report/build.sh              # pdflatex + BibTeX; prints pages, overfull boxes and warnings
+```
+
+## Known limitations (also in the report)
+
+- The evaluation split was exposed during development; the lexical head was explored after earlier test results
+  (configured on validation only).
+- The hyper-parameter grid used one seed.
+- Ablations change parameter counts, and the vanilla ablation removes four components at once.
+- One evaluation item also appears in the training data.
+- The `difflib` difference tags depend on the option order (102 evaluation items).
+- B3/B4 per-item test predictions were not saved.
+- The run's checkpoints are not distributed.
+
+## History
+
+`docs/DEVELOPMENT_LOG.md` records every step, including failed experiments and earlier runs (archived in
+`experiments/` and `evidence/`). The final audit is `docs/FINAL_MARKING_AUDIT.md`, with
+`docs/FINAL_REQUIREMENTS_TRACEABILITY.md` and `docs/FINAL_SUBMISSION_CHECKLIST.md`.

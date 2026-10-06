@@ -38,6 +38,11 @@ All times are local (CST, UTC+8) on **2026-09-29**. Times of the Colab run come 
 30. Review note for Salah; replication script fixed
 31. Submission files prepared from `merge-review`
 S1–S3. Parallel track on `main`: evidence audit and replication (Salah Elshafey)
+32–39. Report polish, honest final pass and upgrades (robustness, reproducibility, tests, evaluation hygiene)
+40. Final run of `main` on a free T4 (the reported run, `b880108`)
+41–43. Training hardening; RoBERTa stability test; RoBERTa footnote
+44–48. Report passes, group number 73, clean-test run stopped
+49. Final audit and submission preparation (2026-10-06)
 
 ---
 
@@ -1705,3 +1710,169 @@ The Google Drive folder names in the code (`MyDrive/Group69/...`) and the reposi
   - Conclusion without the repeated parameter ratios.
 - **One sentence added to Limitations:** a replacement test split, held out of the training file and never evaluated on, has been prepared but not yet run. This is true at this commit; no clean-test result is claimed.
 - **Checks:** strict tables 37 / 0 errors, prose 50 claims / 0 errors. The main text ends mid-column on page 6; references alone on page 8.
+
+## 49. Final audit and submission preparation (2026-10-06, branch `claude/inspiring-mayer-t5ckuv` from `main` `c701eba`)
+Requested by the group (Salah): a final technical, scientific, reproducibility and format audit against the official
+brief, with every safe fix applied. The work was carried out with Claude Code (an AI coding assistant). Its commits
+carry a `Co-Authored-By` trailer. The full assessment is in `docs/FINAL_MARKING_AUDIT.md`, the requirement matrix in
+`docs/FINAL_REQUIREMENTS_TRACEABILITY.md` and the checklist in `docs/FINAL_SUBMISSION_CHECKLIST.md`.
+
+**Inputs and environment.**
+- The official brief (*CITS4012 Group Project*, September 2026, 6 pages) was supplied by the group and read in full.
+  Its SHA-256 is recorded in the traceability matrix; the PDF itself is not committed.
+- The group confirmed that its assigned ID is **73**.
+- Container: Linux on CPU, no GPU; Google Drive and the Hugging Face Hub were not reachable.
+- Locked environment installed from PyPI: Python 3.13.16 with exactly the versions in `requirements-lock.txt`.
+- LaTeX: TeX Live 2023 (pdflatex + BibTeX) from Ubuntu packages. Tectonic, which built the earlier PDFs, could not
+  fetch its bundle here.
+
+### 49.1 Verification without changes
+- **Data identity.**
+  - The official PIQA files (`train.jsonl`, `train-labels.lst`, `valid.jsonl`, `valid-labels.lst` from the PIQA
+    GitHub release) have exactly the SHA-256 that the run recorded for the unit's four files
+    (`outputs/data_manifest.json`).
+  - The unit's `test` split is therefore PIQA's development set, byte for byte. The earlier audit could not establish
+    this.
+  - The files were placed in the git-ignored `data/piqa/`.
+- **Splits.** The ordered SHA-256 of train / validation / test (14,501 / 1,612 / 1,838) reproduce the manifest.
+- **Dataset facts in the report, all recomputed:**
+  - 6 duplicate rows in the training file;
+  - test item 1545 appears twice in the training split (no train–validation or validation–test overlap);
+  - 1.58 % of evaluation solutions exceed 96 BPE tokens;
+  - median differing-token share 0.150;
+  - raw option swap changes the tags of 759 / 83 / 102 train / validation / test items;
+  - 1,927,492 parameters, 262,144 of them lexical; BiLSTM 5,072,385.
+- **New finding: the BPE tokenizer is not reproducible by retraining.**
+  - Two trainings of `tokenizers` BPE on the same split differ (merge tie-breaking), even with `RAYON_NUM_THREADS=1`.
+  - The A100 and T4 runs' tokenizers also differ.
+  - The run's tokenizer is saved (`outputs/tokenizer.json`), but a re-run reproduces results only up to seed-level
+    variation. Now disclosed in the report (§4.6), the notebook readme and the README.
+- **Results.**
+  - Every per-seed validation/test accuracy, mean, std, bootstrap CI and McNemar p of DACT, the nine ablations and
+    the BiLSTM in `final_results.csv` was recomputed from `outputs/predictions/*.jsonl.gz`. All match exactly.
+  - Error overlaps also match.
+- **Post-run code changes.** The notebook's module cells differ from the run commit `b880108` (training hardening,
+  section 41).
+  - Every change was classified from the diff: logging and diagnostics, an off-by-default sampler, a B4 OOM
+    fallback, a B3 encoding helper.
+  - `tools/verify_post_run_equivalence.py` (new) trains DACT (MLM warm-up + QA) and the BiLSTM with the `b880108`
+    sources and with the current `src/`. It uses the same synthetic data, tokenizer and seed, deterministically on
+    CPU.
+  - Parameters and validation probabilities are **bit-identical**. The only difference is the logged training loss,
+    which differs by ≤ 3.4e-8 because it is now accumulated in float32 on the device.
+  - Evidence: `experiments/final_audit_20261006/post_run_equivalence.json`.
+- **B1.** `tools/verify_b1_reproduction.py` (new) re-fitted TF-IDF + LR in the locked environment.
+  - 0 of 1,612 validation predictions differ from the saved file.
+  - Test accuracy (61.21 %), McNemar p against DACT (0.6176) and every DACT/B1 overlap share equal the logged values.
+- **Test-label reads in this audit.** Two reads, both evaluation-only:
+  - a direct read of `test-labels.lst`, to confirm the gold labels stored in the saved prediction files;
+  - one logged read by the B1 tool.
+  - Both are recorded in `experiments/final_audit_20261006/test_access.log`; the first was entered manually, with an
+    approximate time. No decision depended on them, and `outputs/test_access.log` was not modified.
+
+### 49.2 Problems found and fixed
+
+**Report** (`report/CITS4012_69.tex`, rebuilt PDF).
+1. **Citation style (format compliance; P0 risk).** The ACL template's own `\bibliographystyle{acl_natbib}` had been
+   suppressed in favour of IEEE numbered citations (section 46). Because "the official ACL template" is mandatory,
+   the override was removed. Citations and the reference list are back in the template's author-year style, and the
+   bibliography's full venue names were restored from before section 46 (keys and every other field unchanged).
+   The group can revert this in one commit if it prefers the IEEE style.
+2. **Significance overclaim.** "The only significant one on test (p = 0.007)" ignored the nine-comparison family
+   that the same paragraph cites.
+   - The Holm-adjusted p is 0.061 on test (0.084 on validation, where p = 0.009).
+   - The sentence now gives both values and the stronger evidence: every vanilla seed lies below every full-model
+     seed on both splits.
+   - New tool: `tools/ablation_significance.py` → `outputs/results/ablation_significance.csv`.
+3. **No visualised successful prediction.** The brief asks for examples of successful *and* failed predictions;
+   Figure 3 showed a failure and a tie. Figure 3 now shows a correct prediction (test item 1300, p = 0.99), the
+   failure (747) and the tie (1516), each with gold and predicted option, all from the saved attention data. The
+   text now describes the shown success.
+4. **Ambiguous footnote.** "The working seed reaches 65.3 %" read as a test score; 65.3 % is its validation accuracy.
+5. **Equation accuracy.** The cross-solution equations now show the LayerNorm on queries, keys/values and fusion
+   input, as in `ContrastiveCrossSolution`. The embedding now mentions LayerNorm and dropout.
+6. **Unverifiable sentence.** "A replacement test split … has been prepared but not yet run" refers to an unmerged
+   branch that is not in this repository. It was replaced by what an untouched estimate would need.
+7. **Presentation.**
+   - Figure 1 redrawn: its labels overflowed their boxes, the alignment → tags and lexical → softmax flows were
+     missing, and the scorer input is now shown.
+   - Figures 2 and 3 have larger fonts.
+   - The forced page break that left page 7 holding only "model." was removed.
+   - Table 2 gained a "Δ Par." column (parameter change of each ablation), because the parameter confound was only
+     mentioned in words.
+   - Interpretive wording made descriptive ("locates … but lacks the knowledge" → what the attention shows).
+   - One sentence noting that the unit's test file is byte-identical to PIQA's development set.
+   - A few redundant sentences cut to stay within six pages.
+8. **Page limit.** Main content on pages 1–6, Team Contributions from page 7, references after it; 8 pages in total.
+   - Measured slack: 3 more lines fit before the Conclusion would spill.
+   - No overfull boxes, LaTeX warnings or BibTeX warnings (two redundant `number` fields removed).
+   - `tools/check_report_numbers.py` updated to the new wording and to the parameter column: 46 table values,
+     53 prose claims, 0 errors, 0 untraceable numbers.
+
+**Notebook** (`CITS4012_69.ipynb`; no saved output of the run was edited).
+- The title cell names Group 73 and the submitted file names (it still held the template's instruction line).
+- **Readme cell:**
+  - both sets of post-run changes and their equivalence proof;
+  - the data fallback and SHA-256 check;
+  - re-run expectations (tokenizer/GPU nondeterminism);
+  - why no saved-model download is needed.
+- **Discussion cells:** the Holm correction, and hedged causal wording in the qualitative discussion.
+- **New supplementary-evidence cell** (markdown + code). It prints the report's numbers that come from separate
+  runs or post-run analyses: ablation McNemar/Holm, the RoBERTa validation re-run, the A100 comparison, goal
+  matching, the data audit and the duplicate re-scoring.
+  - It reads saved files only and skips absent ones.
+  - Its saved output was produced on 2026-10-06 in a separate CPU kernel from the repository root, and its markdown
+    says so.
+- **Schema.** `nbformat_minor` set to 5: the cells carry `id` fields, which made the file fail strict nbformat
+  validation since before this audit. No content change.
+
+**Data acquisition** (`src/data.py`; synced into the notebook).
+- `prepare_data` now:
+  1. verifies the four files against the run's SHA-256 (`verify_piqa_files`; a loud warning on mismatch);
+  2. if the unit's shared folder fails, downloads the official PIQA release, accepting it only if byte-identical
+     (`download_piqa_release`), before falling back to the Drive zip, which needs an interactive mount.
+- Tested offline (mocked downloads) and once live.
+- Nothing that is trained or computed changes.
+
+**Repository.**
+- New tests (36), all passing:
+  - `tests/test_model_properties.py`: no pretrained weights in the main path; random init and seed determinism;
+    attention rows are distributions over allowed keys only; the explicit path equals SDPA; QA gradient reaches every
+    attention component; pooling attention changes the output; inputs are label-independent; the tokenizer sees only
+    the training split; exact checkpoint round trip; tiny-set overfit; no tags on padding.
+  - `tests/test_evidence_consistency.py`: tables recomputed from predictions; Holm; McNemar known values; the three
+    repository checkers.
+  - `tests/test_data_acquisition.py`.
+  - `tests/test_submission.py`.
+- New tools: `verify_post_run_equivalence.py`, `verify_b1_reproduction.py`, `ablation_significance.py`,
+  `build_submission.py`, `report/build.sh`.
+- `requirements-lock.txt`: its comment wrongly called it the final run's versions; the T4 run used tokenizers
+  0.23.2 and transformers 5.17.0. Comment corrected; pins unchanged.
+- CI also runs the submission-format check.
+- Two unreferenced PNGs of an earlier report version were removed from `report/figures/` (they remain in git
+  history).
+- `README.md` and `docs/PROJECT_STRUCTURE.md` were rewritten: they referred to folders that no longer exist, a draft
+  report, 25 tests and `CITS4012_69.*` as submission names.
+- **Submission package.** `tools/build_submission.py` checks the template section titles, error outputs, the
+  `src/` sync, the group ID in the title cell, `[final]{acl}`, `\author{Group 73}` and the six-page rule. It then
+  writes `submission/CITS4012_73.pdf`, `submission/CITS4012_73.ipynb`, `SHA256SUMS` and `MANIFEST.json`. A negative
+  test confirmed that the page rule rejects a PDF whose Conclusion starts on page 7.
+
+### 49.3 Not changed, and why
+- **No retraining and no new experiments.** No result or design decision changed, so none was needed, and the test
+  split must not guide further work.
+- **No GPU re-run of the final notebook.** No GPU was available. The saved outputs remain those of `b880108`,
+  with the proofs above.
+- **Team Contributions text.** Only the members can confirm it.
+- **AI-use statement.** The brief is silent and the unit's policy decides; the records in §19, §22, §27 and
+  `NOTE_FOR_SALAH.md` are untouched.
+- **Historical evidence.** Untouched: `outputs/` (except the new derived `ablation_significance.csv`), `evidence/`,
+  `experiments/` (except the new `final_audit_20261006/`), logs and earlier audits.
+
+### 49.4 Checks at the end
+- `pytest`: 79 passed (43 earlier + 36 new), including the end-to-end notebook smoke run.
+- `tools/sync_notebook.py --check`: none out of date.
+- `tools/check_test_access.py`: OK.
+- `tools/check_report_numbers.py`: 46 / 53, 0 errors.
+- `tools/build_submission.py --check-only`: OK.
+- Retraining required: **no**. Report changes: **yes** (listed above).
