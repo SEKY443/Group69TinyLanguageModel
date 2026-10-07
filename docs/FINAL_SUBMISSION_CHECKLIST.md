@@ -1,5 +1,7 @@
 # Final submission checklist (Group 73)
 
+**Final version, 2026-10-07.** After the checks below (2026-10-06), the report text was revised for readability (no number changed) and rebuilt with pdflatex, the notebook's explanatory text was polished (code and saved outputs unchanged), and `submission/` was re-frozen: `CITS4012_73.pdf` `7fa7414fa61d`, `CITS4012_73.ipynb` `4161ff0ff92f` (source commit `294eb64`). `python tools/build_submission.py --check-only`, `python tools/check_report_numbers.py` and `python -m pytest` (79 tests) pass on this version. Unless the group raises further objections, this is the final result; only the Team Contributions row below still needs each member's confirmation.
+
 Checked on 2026-10-06 against the official brief. PASS needs direct evidence; the command or file is given.
 Re-run everything with: `python tools/build_submission.py` (checks + package) and `python -m pytest`.
 
