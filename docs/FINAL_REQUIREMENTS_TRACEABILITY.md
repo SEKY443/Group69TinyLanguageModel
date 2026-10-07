@@ -50,7 +50,7 @@ Verification commands are run from the repository root in the locked environment
 | D3 | Only the group number in `\author` (e.g. `\author{Group 12}`), no names | `\author{Group 73}` (group ID confirmed by the group on 2026-10-06) | PASS | – | – | same |
 | D4 | ≤ 6 pages of content incl. figures/tables; Team Contributions and References excluded | pdflatex (TeX Live 2023): abstract–Conclusion on pages 1–6, Team Contributions on page 7, references alone on page 8; 3 lines of measured slack | PASS | Low: a different TeX distribution could shift lines; rebuild with `report/build.sh` and re-run the check | Re-check if rebuilt elsewhere | `tools/build_submission.py --check-only` (page rule), slack test (log §49) |
 | D5 | References generated with BibTeX | `report/references.bib` (23 entries, all cited, all primary sources) | PASS | – | – | `bibtex` log: 0 errors, 0 warnings |
-| D6 | Team Contributions section describing each member | Present (Bayron, Ali, Salah) | NOT VERIFIED | Medium | **Each member must confirm their paragraph is true** | Team |
+| D6 | Team Contributions section describing each member | Present (Byron, Ali, Salah) | PASS | – | Confirmed by the group on 2026-10-07 | Team |
 | D7 | Report accurately describes the implemented system and experiments | Equations aligned with code; numbers machine-checked; architecture figure matches `DACT.forward` | PASS | – | – | `tools/check_report_numbers.py`; code review |
 
 ## E. Implementation notebook and reproducibility
@@ -70,7 +70,7 @@ Verification commands are run from the repository root in the locked environment
 |---|---|---|---|---|---|---|
 | F1 | Submit exactly two files: `CITS4012_YourGroupID.pdf`, `CITS4012_YourGroupID.ipynb` | `submission/CITS4012_73.pdf`, `submission/CITS4012_73.ipynb`, byte-identical to the repository sources, with `SHA256SUMS` and `MANIFEST.json` | PASS | – | Upload these two files | `tests/test_submission.py` |
 | F2 | One member submits via LMS before 18 Oct 2026 23:59 AWST | – | NOT APPLICABLE (pending) | – | Submit | – |
-| F3 | Group of at most 3 students | Three names in Team Contributions | NOT VERIFIED | – | Team | – |
+| F3 | Group of at most 3 students | Three names in Team Contributions | PASS | – | Team | Confirmed by the group on 2026-10-07 |
 
 ## Notes
 - AI-assistance disclosure: the brief does not mention it, but `docs/DEVELOPMENT_LOG.md` (§19, §22, §27) and

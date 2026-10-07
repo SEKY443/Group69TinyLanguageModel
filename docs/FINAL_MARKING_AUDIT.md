@@ -215,7 +215,7 @@ disclosed in the report, the notebook and the README.
 
 | Risk | Likelihood | Mitigation in place / action |
 |---|---|---|
-| Team Contributions not confirmed by every member | — | **Blocker for the group**: each member checks their paragraph |
+| Team Contributions confirmed by the group (2026-10-07) | — | Resolved |
 | AI-use declaration required by the unit but absent from the report | unknown | **Group decision**; the record in the development log is intact |
 | Marker re-runs on Colab and gets slightly different numbers | medium | readme explains the expected variation; versions are checked; data is SHA-256 verified |
 | Marker reads the test-exposure disclosure as a protocol weakness | medium | disclosed honestly; validation used for every decision in the final run |
@@ -237,6 +237,5 @@ Indicative bands, not a prediction of the mark.
 
 ## 12. Final recommendation
 
-Submit `submission/CITS4012_73.pdf` and `submission/CITS4012_73.ipynb` (hashes in `submission/SHA256SUMS`) once the
-group has confirmed the Team Contributions and decided on the AI-use statement. Do not run further experiments
-against the test split.
+Submit `submission/CITS4012_73.pdf` and `submission/CITS4012_73.ipynb` (hashes in `submission/SHA256SUMS`). The group confirmed
+the Team Contributions on 2026-10-07. Do not run further experiments against the test split.

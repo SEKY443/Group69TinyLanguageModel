@@ -20,8 +20,7 @@ group's assigned ID is **73**.)
 mode, six-page limit, no error outputs, notebook = `src/`) and rebuilds `submission/` with `SHA256SUMS` and a freeze
 `MANIFEST.json`. The frozen copies are `submission/CITS4012_73.pdf` (SHA-256 starts with `7fa7414fa61d`) and
 `submission/CITS4012_73.ipynb` (`4161ff0ff92f`); the manifest records source commit `294eb64` and a clean working tree.
-The only item that still needs each member's confirmation is the Team Contributions paragraphs in the report
-(`docs/FINAL_SUBMISSION_CHECKLIST.md`).
+The group has confirmed the Team Contributions paragraphs in the report (2026-10-07).
 
 ## Results of the reported run (free Colab T4, commit `b880108`, accuracy %, 3 seeds)
 
