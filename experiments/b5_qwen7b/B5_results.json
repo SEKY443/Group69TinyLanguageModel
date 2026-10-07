@@ -1,0 +1,21 @@
+{
+  "model": "Qwen/Qwen2.5-7B",
+  "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+  "revision_note": "the run printed None; this is Hugging Face main on 2026-10-07, unchanged since 2024-09-25",
+  "quantization": "NF4 4-bit",
+  "val_acc": 0.8176178660049628,
+  "test_acc": 0.794341675734494,
+  "test_ci95": [
+    0.7758433079434167,
+    0.8122959738846572
+  ],
+  "mcnemar_vs_dact": {
+    "dact_seed": 42,
+    "only_dact": 216,
+    "only_b5": 540,
+    "p": 7.530883698389237e-33
+  },
+  "repo_commit": "d1e334a",
+  "test_access": {"time": "2026-10-07 14:00:02", "reason": "B5 Qwen2.5-7B zero-shot baseline: final evaluation", "n_items": 1838},
+  "source": "printed outputs of B5_Qwen2.5-7B_zero_shot_output.ipynb (cell 5)"
+}
