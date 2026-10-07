@@ -1,22 +1,22 @@
 {
   "group": "73",
-  "built": "2026-10-06 09:09:43 UTC",
-  "source_commit": "44ae1f446eb20b1516d1e3d90459941175a41ccb",
-  "branch": "claude/inspiring-mayer-t5ckuv",
+  "built": "2026-10-07 23:17:19 CST",
+  "source_commit": "294eb64f175e7724bec61f2e6a2bc7409f32563b",
+  "branch": "main",
   "working_tree_clean_for_sources": true,
   "files": {
     "CITS4012_73.pdf": {
-      "sha256": "272e3bac9cf90598ba5f6d18921b0971ee647dae7a2bf2ad3af0a4367325c56d",
+      "sha256": "7fa7414fa61d5904625c9ce43dca78e9b0cee384a724bf13bdf27f74d3cbc00e",
       "source": "report/CITS4012_73.pdf",
-      "bytes": 293925
+      "bytes": 294463
     },
     "CITS4012_73.ipynb": {
-      "sha256": "b7a23483da330b8fa73ac95338b5408d89dbfd74defd73917110ff2253792ad7",
+      "sha256": "4161ff0ff92f37aa8916ffc4be1c4cc4a0a87c5d21d28ec93cb631299c174ecd",
       "source": "CITS4012_73.ipynb",
-      "bytes": 1537843
+      "bytes": 1537777
     }
   },
-  "report_source_sha256": "801868aa73875ac25cd73ae3a1ab29a1c5467fceb5e6bce03449ecbdfd596093",
+  "report_source_sha256": "acd1d75d9b883f6357f12d2131263c0b0f33ecb781299c639d898261e55b939b",
   "notebook": {
     "cells": 59,
     "code_cells": 33,
@@ -25,7 +25,7 @@
   },
   "report": {
     "pdf_pages": 8,
-    "team_contributions_page": 7,
+    "team_contributions_page": 6,
     "main_content_last_page": 6
   },
   "reported_run": {
@@ -94,7 +94,7 @@
     "outputs/results/rescore_without_duplicate.csv": "7125ca372c68b84c6e05d18da1f7480debaa729473ea4efa61e8dc73d2aa6ad4"
   },
   "build_environment": {
-    "python": "3.13.16",
-    "platform": "Linux-6.18.44-fc-v70-x86_64-with-glibc2.39"
+    "python": "3.13.15",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O"
   }
 }
