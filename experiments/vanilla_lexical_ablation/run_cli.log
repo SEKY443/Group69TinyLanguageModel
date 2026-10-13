@@ -1,0 +1,243 @@
+[colab] Creating session 'abl'...
+[colab] Session READY (abl). Executing /mnt/c/Users/qpj3/AppData/Local/Temp/claude/D--Alarms-semester-2-NLP/58c0ae99-5d48-49f8-a5e4-f05de710d47e/scratchpad/run_abl.py...
+Downloaded the official PIQA release (SHA-256 identical to the unit's files) -> data/piqa
+PIQA files: SHA-256 identical to the files used for the reported results
+{'train': 14501, 'val': 1612, 'test': 1838} | device: cuda
+vanilla_plus_lexical: 1.78M trainable parameters
+[vanilla_plus_lexical_seed42 MLM] ep 01 loss 7.636913634183114 (6.23s)
+[vanilla_plus_lexical_seed42 MLM] ep 02 loss 6.2670850251850325 (4.89s)
+[vanilla_plus_lexical_seed42 MLM] ep 03 loss 6.068825169613487 (4.74s)
+[vanilla_plus_lexical_seed42 MLM] ep 04 loss 5.898875989412007 (4.58s)
+[vanilla_plus_lexical_seed42 MLM] ep 05 loss 5.803968998423794 (4.99s)
+[vanilla_plus_lexical_seed42 MLM] ep 06 loss 5.7217460766173245 (4.59s)
+[vanilla_plus_lexical_seed42 MLM] ep 07 loss 5.673594156901042 (4.71s)
+[vanilla_plus_lexical_seed42 MLM] ep 08 loss 5.643500612493147 (4.85s)
+[vanilla_plus_lexical_seed42 MLM] ep 09 loss 5.633476391173246 (4.57s)
+[vanilla_plus_lexical_seed42 MLM] ep 10 loss 5.619288929721765 (5.0s)
+[vanilla_plus_lexical_seed42] ep 01 loss 0.6866 train_acc 0.5554 val_acc 0.5949 (4.56s)
+[vanilla_plus_lexical_seed42] ep 02 loss 0.5914 train_acc 0.7691 val_acc 0.5962 (4.38s)
+[vanilla_plus_lexical_seed42] ep 03 loss 0.4812 train_acc 0.8629 val_acc 0.5986 (5.31s)
+[vanilla_plus_lexical_seed42] ep 04 loss 0.4132 train_acc 0.9005 val_acc 0.6005 (4.33s)
+[vanilla_plus_lexical_seed42] ep 05 loss 0.3670 train_acc 0.9255 val_acc 0.5949 (4.86s)
+[vanilla_plus_lexical_seed42] ep 06 loss 0.3351 train_acc 0.9421 val_acc 0.5980 (4.65s)
+[vanilla_plus_lexical_seed42] ep 07 loss 0.3130 train_acc 0.9550 val_acc 0.5986 (4.35s)
+[vanilla_plus_lexical_seed42] ep 08 loss 0.2960 train_acc 0.9626 val_acc 0.5819 (5.18s)
+[vanilla_plus_lexical_seed42] ep 09 loss 0.2832 train_acc 0.9701 val_acc 0.5881 (4.44s)
+[vanilla_plus_lexical_seed42] ep 10 loss 0.2733 train_acc 0.9746 val_acc 0.5837 (4.49s)
+[vanilla_plus_lexical_seed42] best val_acc 0.6005 at epoch 4
+[vanilla_plus_lexical_seed43 MLM] ep 01 loss 7.603519372772753 (4.99s)
+[vanilla_plus_lexical_seed43 MLM] ep 02 loss 6.291241562157347 (4.61s)
+[vanilla_plus_lexical_seed43 MLM] ep 03 loss 6.070624635930647 (5.05s)
+[vanilla_plus_lexical_seed43 MLM] ep 04 loss 5.932386967173794 (4.61s)
+[vanilla_plus_lexical_seed43 MLM] ep 05 loss 5.812195895010965 (4.66s)
+[vanilla_plus_lexical_seed43 MLM] ep 06 loss 5.748066149259868 (5.05s)
+[vanilla_plus_lexical_seed43 MLM] ep 07 loss 5.701114052220395 (4.63s)
+[vanilla_plus_lexical_seed43 MLM] ep 08 loss 5.678623667934485 (5.04s)
+[vanilla_plus_lexical_seed43 MLM] ep 09 loss 5.642159445243969 (4.61s)
+[vanilla_plus_lexical_seed43 MLM] ep 10 loss 5.634416011341831 (4.63s)
+[vanilla_plus_lexical_seed43] ep 01 loss 0.6867 train_acc 0.5594 val_acc 0.5893 (5.38s)
+[vanilla_plus_lexical_seed43] ep 02 loss 0.5914 train_acc 0.7696 val_acc 0.5937 (4.42s)
+[vanilla_plus_lexical_seed43] ep 03 loss 0.4780 train_acc 0.8621 val_acc 0.5962 (4.69s)
+[vanilla_plus_lexical_seed43] ep 04 loss 0.4120 train_acc 0.8979 val_acc 0.5924 (4.82s)
+[vanilla_plus_lexical_seed43] ep 05 loss 0.3677 train_acc 0.9237 val_acc 0.6030 (4.34s)
+[vanilla_plus_lexical_seed43] ep 06 loss 0.3358 train_acc 0.9432 val_acc 0.5837 (5.13s)
+[vanilla_plus_lexical_seed43] ep 07 loss 0.3126 train_acc 0.9561 val_acc 0.5918 (4.47s)
+[vanilla_plus_lexical_seed43] ep 08 loss 0.2946 train_acc 0.9647 val_acc 0.5856 (4.54s)
+[vanilla_plus_lexical_seed43] ep 09 loss 0.2825 train_acc 0.9702 val_acc 0.5844 (5.34s)
+[vanilla_plus_lexical_seed43] ep 10 loss 0.2734 train_acc 0.9745 val_acc 0.5837 (4.36s)
+[vanilla_plus_lexical_seed43] ep 11 loss 0.2670 train_acc 0.9758 val_acc 0.5831 (4.78s)
+[vanilla_plus_lexical_seed43] best val_acc 0.6030 at epoch 5
+[vanilla_plus_lexical_seed44 MLM] ep 01 loss 7.603329842550712 (4.81s)
+[vanilla_plus_lexical_seed44 MLM] ep 02 loss 6.2764539216694075 (4.65s)
+[vanilla_plus_lexical_seed44 MLM] ep 03 loss 6.080272473787007 (5.1s)
+[vanilla_plus_lexical_seed44 MLM] ep 04 loss 5.908326801500823 (4.76s)
+[vanilla_plus_lexical_seed44 MLM] ep 05 loss 5.800589042797423 (5.05s)
+[vanilla_plus_lexical_seed44 MLM] ep 06 loss 5.724728768331962 (4.8s)
+[vanilla_plus_lexical_seed44 MLM] ep 07 loss 5.689637836657073 (4.69s)
+[vanilla_plus_lexical_seed44 MLM] ep 08 loss 5.657479269462719 (5.13s)
+[vanilla_plus_lexical_seed44 MLM] ep 09 loss 5.637067292865954 (4.73s)
+[vanilla_plus_lexical_seed44 MLM] ep 10 loss 5.641308165433114 (5.08s)
+[vanilla_plus_lexical_seed44] ep 01 loss 0.6864 train_acc 0.5542 val_acc 0.5819 (4.68s)
+[vanilla_plus_lexical_seed44] ep 02 loss 0.5922 train_acc 0.7676 val_acc 0.5974 (4.53s)
+[vanilla_plus_lexical_seed44] ep 03 loss 0.4816 train_acc 0.8684 val_acc 0.5881 (5.5s)
+[vanilla_plus_lexical_seed44] ep 04 loss 0.4136 train_acc 0.8993 val_acc 0.5924 (4.68s)
+[vanilla_plus_lexical_seed44] ep 05 loss 0.3685 train_acc 0.9263 val_acc 0.5962 (5.25s)
+[vanilla_plus_lexical_seed44] ep 06 loss 0.3356 train_acc 0.9441 val_acc 0.5912 (5.13s)
+[vanilla_plus_lexical_seed44] ep 07 loss 0.3119 train_acc 0.9566 val_acc 0.5962 (4.66s)
+[vanilla_plus_lexical_seed44] ep 08 loss 0.2955 train_acc 0.9628 val_acc 0.5900 (5.4s)
+[vanilla_plus_lexical_seed44] best val_acc 0.5974 at epoch 2
+==> vanilla_plus_lexical: val acc 0.6003 +- 0.0028
+RESULT vanilla_plus_lexical: val 60.03 +- 0.28 | seeds [60.05, 60.3, 59.74] | params 1778372 | elapsed 4.9 min
+vanilla_control: 1.52M trainable parameters
+[vanilla_control_seed42 MLM] ep 01 loss 7.636913098787007 (4.67s)
+[vanilla_control_seed42 MLM] ep 02 loss 6.2670844897889255 (4.95s)
+[vanilla_control_seed42 MLM] ep 03 loss 6.068825169613487 (4.82s)
+[vanilla_control_seed42 MLM] ep 04 loss 5.898867958470395 (4.7s)
+[vanilla_control_seed42 MLM] ep 05 loss 5.803966856839364 (5.24s)
+[vanilla_control_seed42 MLM] ep 06 loss 5.721744470429003 (4.7s)
+[vanilla_control_seed42 MLM] ep 07 loss 5.673597369277687 (4.96s)
+[vanilla_control_seed42 MLM] ep 08 loss 5.643504360265899 (4.92s)
+[vanilla_control_seed42 MLM] ep 09 loss 5.633475855777138 (4.69s)
+[vanilla_control_seed42 MLM] ep 10 loss 5.6192878589295505 (5.13s)
+[vanilla_control_seed42] ep 01 loss 0.6931 train_acc 0.5051 val_acc 0.5254 (4.67s)
+[vanilla_control_seed42] ep 02 loss 0.6898 train_acc 0.5357 val_acc 0.5664 (5.04s)
+[vanilla_control_seed42] ep 03 loss 0.6514 train_acc 0.6231 val_acc 0.5800 (5.01s)
+[vanilla_control_seed42] ep 04 loss 0.6051 train_acc 0.6789 val_acc 0.5806 (4.66s)
+[vanilla_control_seed42] ep 05 loss 0.5685 train_acc 0.7193 val_acc 0.5757 (5.54s)
+[vanilla_control_seed42] ep 06 loss 0.5396 train_acc 0.7453 val_acc 0.5676 (4.97s)
+[vanilla_control_seed42] ep 07 loss 0.5194 train_acc 0.7617 val_acc 0.5658 (5.08s)
+[vanilla_control_seed42] ep 08 loss 0.4993 train_acc 0.7771 val_acc 0.5676 (5.25s)
+[vanilla_control_seed42] ep 09 loss 0.4802 train_acc 0.7968 val_acc 0.5707 (4.46s)
+[vanilla_control_seed42] ep 10 loss 0.4634 train_acc 0.8123 val_acc 0.5602 (5.64s)
+[vanilla_control_seed42] best val_acc 0.5806 at epoch 4
+[vanilla_control_seed43 MLM] ep 01 loss 7.603521514357182 (4.71s)
+[vanilla_control_seed43 MLM] ep 02 loss 6.291239955969024 (4.92s)
+[vanilla_control_seed43 MLM] ep 03 loss 6.07061981736568 (4.94s)
+[vanilla_control_seed43 MLM] ep 04 loss 5.932384825589364 (4.76s)
+[vanilla_control_seed43 MLM] ep 05 loss 5.812197501199288 (5.14s)
+[vanilla_control_seed43 MLM] ep 06 loss 5.748068826240406 (4.7s)
+[vanilla_control_seed43 MLM] ep 07 loss 5.7011156584087175 (4.85s)
+[vanilla_control_seed43 MLM] ep 08 loss 5.678631698876097 (4.98s)
+[vanilla_control_seed43 MLM] ep 09 loss 5.642167476185581 (4.75s)
+[vanilla_control_seed43 MLM] ep 10 loss 5.634417082134046 (5.15s)
+[vanilla_control_seed43] ep 01 loss 0.6931 train_acc 0.5000 val_acc 0.5347 (4.57s)
+[vanilla_control_seed43] ep 02 loss 0.6861 train_acc 0.5458 val_acc 0.5540 (4.65s)
+[vanilla_control_seed43] ep 03 loss 0.6404 train_acc 0.6403 val_acc 0.5689 (5.16s)
+[vanilla_control_seed43] ep 04 loss 0.5985 train_acc 0.6884 val_acc 0.5726 (4.67s)
+[vanilla_control_seed43] ep 05 loss 0.5694 train_acc 0.7111 val_acc 0.5757 (5.49s)
+[vanilla_control_seed43] ep 06 loss 0.5415 train_acc 0.7412 val_acc 0.5614 (4.66s)
+[vanilla_control_seed43] ep 07 loss 0.5171 train_acc 0.7641 val_acc 0.5701 (4.67s)
+[vanilla_control_seed43] ep 08 loss 0.4987 train_acc 0.7794 val_acc 0.5707 (5.58s)
+[vanilla_control_seed43] ep 09 loss 0.4796 train_acc 0.7984 val_acc 0.5769 (4.59s)
+[vanilla_control_seed43] ep 10 loss 0.4648 train_acc 0.8104 val_acc 0.5701 (5.3s)
+[vanilla_control_seed43] ep 11 loss 0.4524 train_acc 0.8182 val_acc 0.5707 (4.58s)
+[vanilla_control_seed43] ep 12 loss 0.4382 train_acc 0.8316 val_acc 0.5695 (4.41s)
+[vanilla_control_seed43] ep 13 loss 0.4295 train_acc 0.8373 val_acc 0.5670 (5.22s)
+[vanilla_control_seed43] ep 14 loss 0.4231 train_acc 0.8445 val_acc 0.5614 (4.49s)
+[vanilla_control_seed43] ep 15 loss 0.4183 train_acc 0.8472 val_acc 0.5658 (4.46s)
+[vanilla_control_seed43] best val_acc 0.5769 at epoch 9
+[vanilla_control_seed44 MLM] ep 01 loss 7.6033277009662825 (5.07s)
+[vanilla_control_seed44 MLM] ep 02 loss 6.27645552785773 (4.74s)
+[vanilla_control_seed44 MLM] ep 03 loss 6.080271938390899 (5.17s)
+[vanilla_control_seed44 MLM] ep 04 loss 5.908331620065789 (4.83s)
+[vanilla_control_seed44 MLM] ep 05 loss 5.800589042797423 (4.94s)
+[vanilla_control_seed44 MLM] ep 06 loss 5.724732516104715 (5.04s)
+[vanilla_control_seed44 MLM] ep 07 loss 5.689639978241503 (4.83s)
+[vanilla_control_seed44 MLM] ep 08 loss 5.657477127878289 (5.21s)
+[vanilla_control_seed44 MLM] ep 09 loss 5.637068363658169 (4.79s)
+[vanilla_control_seed44 MLM] ep 10 loss 5.641310307017544 (5.07s)
+[vanilla_control_seed44] ep 01 loss 0.6932 train_acc 0.4980 val_acc 0.5440 (4.92s)
+[vanilla_control_seed44] ep 02 loss 0.6895 train_acc 0.5362 val_acc 0.5627 (4.5s)
+[vanilla_control_seed44] ep 03 loss 0.6503 train_acc 0.6284 val_acc 0.5645 (5.41s)
+[vanilla_control_seed44] ep 04 loss 0.6063 train_acc 0.6760 val_acc 0.5546 (4.43s)
+[vanilla_control_seed44] ep 05 loss 0.5705 train_acc 0.7155 val_acc 0.5589 (4.38s)
+[vanilla_control_seed44] ep 06 loss 0.5416 train_acc 0.7456 val_acc 0.5490 (5.34s)
+[vanilla_control_seed44] ep 07 loss 0.5180 train_acc 0.7589 val_acc 0.5521 (4.91s)
+[vanilla_control_seed44] ep 08 loss 0.5003 train_acc 0.7779 val_acc 0.5558 (5.47s)
+[vanilla_control_seed44] ep 09 loss 0.4776 train_acc 0.7991 val_acc 0.5596 (4.69s)
+[vanilla_control_seed44] best val_acc 0.5645 at epoch 3
+==> vanilla_control: val acc 0.5740 +- 0.0084
+RESULT vanilla_control: val 57.40 +- 0.84 | seeds [58.06, 57.69, 56.45] | params 1516228 | elapsed 10.2 min
+DONE
+[colab] Stopping session 'abl'...
+[colab] Session terminated.
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /root/.local/share/uv/tools/google-colab-cli/lib/python3.12/site-packages/ju │
+│ pyter_kernel_client/wsclient.py:1353 in _recv_reply                          │
+│                                                                              │
+│   1350 │   │   │   │   if channel == "control":                              │
+│   1351 │   │   │   │   │   reply =                                           │
+│        self.control_channel.get_msg(timeout=timeout)                         │
+│   1352 │   │   │   │   else:                                                 │
+│ ❱ 1353 │   │   │   │   │   reply =                                           │
+│        self.shell_channel.get_msg(timeout=timeout)                           │
+│   1354 │   │   │   except queue.Empty as e:                                  │
+│   1355 │   │   │   │   msg = "Timeout waiting for reply"                     │
+│   1356 │   │   │   │   raise TimeoutError(msg) from e                        │
+│                                                                              │
+│ /root/.local/share/uv/tools/google-colab-cli/lib/python3.12/site-packages/ju │
+│ pyter_kernel_client/wsclient.py:411 in get_msg                               │
+│                                                                              │
+│    408 │   │   ------                                                        │
+│    409 │   │   Empty exception if no message is received before the timeout. │
+│    410 │   │   """                                                           │
+│ ❱  411 │   │   return self._messages.get(timeout=timeout)                    │
+│    412 │                                                                     │
+│    413 │   def get_msgs(self) -> list[dict[str, t.Any]]:                     │
+│    414 │   │   """Get all available messages.                                │
+│                                                                              │
+│ /usr/lib/python3.12/queue.py:179 in get                                      │
+│                                                                              │
+│   176 │   │   │   │   while not self._qsize():                               │
+│   177 │   │   │   │   │   remaining = endtime - time()                       │
+│   178 │   │   │   │   │   if remaining <= 0.0:                               │
+│ ❱ 179 │   │   │   │   │   │   raise Empty                                    │
+│   180 │   │   │   │   │   self.not_empty.wait(remaining)                     │
+│   181 │   │   │   item = self._get()                                         │
+│   182 │   │   │   self.not_full.notify()                                     │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Empty
+
+The above exception was the direct cause of the following exception:
+
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /root/.local/share/uv/tools/google-colab-cli/lib/python3.12/site-packages/co │
+│ lab_cli/commands/run.py:427 in run_command                                   │
+│                                                                              │
+│   424 │   │   state.store.add(s)                                             │
+│   425 │   │                                                                  │
+│   426 │   │   try:                                                           │
+│ ❱ 427 │   │   │   outputs = runtime.execute_code(                            │
+│   428 │   │   │   │   payload, output_hook=_make_run_output_hook(),          │
+│       timeout=timeout                                                        │
+│   429 │   │   │   )                                                          │
+│   430 │   │   except Exception:                                              │
+│                                                                              │
+│ /root/.local/share/uv/tools/google-colab-cli/lib/python3.12/site-packages/co │
+│ lab_cli/runtime.py:237 in execute_code                                       │
+│                                                                              │
+│   234 │   │   │   │   │   │   if idx < len(outputs):                         │
+│   235 │   │   │   │   │   │   │   output_hook(outputs[idx])                  │
+│   236 │   │   │                                                              │
+│ ❱ 237 │   │   │   reply = self.kernel_client.execute_interactive(            │
+│   238 │   │   │   │   code, output_hook=wrapped_output_hook, **kwargs        │
+│   239 │   │   │   )                                                          │
+│   240 │   │   │   # execute_interactive returns the raw reply message        │
+│                                                                              │
+│ /root/.local/share/uv/tools/google-colab-cli/lib/python3.12/site-packages/ju │
+│ pyter_kernel_client/client.py:364 in execute_interactive                     │
+│                                                                              │
+│   361 │   │   │   The reply message for this request                         │
+│   362 │   │   """                                                            │
+│   363 │   │   self._set_variables(variables)                                 │
+│ ❱ 364 │   │   return self._manager.client.execute_interactive(               │
+│   365 │   │   │   code,                                                      │
+│   366 │   │   │   silent=silent,                                             │
+│   367 │   │   │   store_history=store_history,                               │
+│                                                                              │
+│ /root/.local/share/uv/tools/google-colab-cli/lib/python3.12/site-packages/ju │
+│ pyter_kernel_client/wsclient.py:1112 in execute_interactive                  │
+│                                                                              │
+│   1109 │   │   │   # output is done, get the reply                           │
+│   1110 │   │   │   if timeout is not None:                                   │
+│   1111 │   │   │   │   timeout = max(0, deadline - time.monotonic())         │
+│ ❱ 1112 │   │   │   return self._recv_reply(msg_id, timeout=timeout)          │
+│   1113 │                                                                     │
+│   1114 │   def is_alive(self) -> bool:                                       │
+│   1115 │   │   """Is the kernel process still running?"""                    │
+│                                                                              │
+│ /root/.local/share/uv/tools/google-colab-cli/lib/python3.12/site-packages/ju │
+│ pyter_kernel_client/wsclient.py:1356 in _recv_reply                          │
+│                                                                              │
+│   1353 │   │   │   │   │   reply =                                           │
+│        self.shell_channel.get_msg(timeout=timeout)                           │
+│   1354 │   │   │   except queue.Empty as e:                                  │
+│   1355 │   │   │   │   msg = "Timeout waiting for reply"                     │
+│ ❱ 1356 │   │   │   │   raise TimeoutError(msg) from e                        │
+│   1357 │   │   │   if reply["parent_header"].get("msg_id") != msg_id:        │
+│   1358 │   │   │   │   self.log.debug("Ignoring message not from request:    │
+│        %s", msg_id)                                                          │
+│   1359 │   │   │   │   continue                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+TimeoutError: Timeout waiting for reply
+EXIT 0

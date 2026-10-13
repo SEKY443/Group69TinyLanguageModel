@@ -179,6 +179,7 @@ def prose_claims():
     eo = _csv("outputs/results/error_overlap.csv", "")
     probe = _csv("outputs/results/diff_probe_by_layer.csv", "layer")
     goal = _csv("experiments/goal_matching/results.csv", "arm")
+    vl = _csv("experiments/vanilla_lexical_ablation/results.csv", "arm")   # validation only, run 2026-10-13
     hp = [_json(f"outputs/results/hp{i}_val.json")["val"]["mean"] for i in range(5)]
     v = lambda m: p1(fr[m]["val acc"])    # noqa: E731
     t = lambda m: p1(fr[m]["test acc"])   # noqa: E731
@@ -228,6 +229,11 @@ def prose_claims():
     roberta_gap = rerun_mean - 100 * float(fr[D]["val acc"])
     p_wrong = float(an["attention_mass_correct_vs_wrong_mannwhitney_p"])
     tags_test = delta("− difference tags", "test acc")
+    full_v, van_v = float(fr[D]["val acc"]), float(fr["vanilla Transformer"]["val acc"])
+    vlex_v, ctrl_v = float(vl["vanilla_plus_lexical"]["val_mean"]), float(vl["vanilla_control"]["val_mean"])
+    recovered, gap, rest = 100 * (vlex_v - van_v), 100 * (full_v - van_v), 100 * (full_v - vlex_v)
+    two_thirds = "about two thirds of it" if 0.6 <= recovered / gap <= 0.72 else "SHARE IS NOT TWO THIRDS"
+    vlex_params_k = round((n_dact - int(vl["vanilla_plus_lexical"]["n_params"])) / 1000)
     return {
         "abstract: DACT val": f"among the models trained from scratch ({v(D)}\\%)",
         "abstract: DACT vs TF-IDF test, p": f"({t(D)} vs.\\ {t(B1)}\\%, McNemar $p{{=}}{pval(B1):.2f}$)",
@@ -255,15 +261,19 @@ def prose_claims():
         "ablation: vanilla, significance": f"reduced accuracy by {cost('vanilla Transformer')} points, the largest drop and the only one with $p{{<}}0.05$ (McNemar; validation {float(sig['vanilla Transformer']['val_mcnemar_p']):.3f}, evaluation {float(sig['vanilla Transformer']['test_mcnemar_p']):.3f}), although neither survives a Holm correction over the nine ablations ({float(sig['vanilla Transformer']['val_mcnemar_p_holm']):.2f} / {float(sig['vanilla Transformer']['test_mcnemar_p_holm']):.2f})",
         "ablation: vanilla, consistency": "every vanilla seed is below every full-model seed on both splits" if vanilla_below_on_both else "CONSISTENCY CLAIM FALSE",
         "ablation: vanilla, A100 run": f"the A100 run showed {abs(run4_vanilla[0]):.1f} / {abs(run4_vanilla[1]):.1f}",
-        "ablation: vanilla, parameters": f"the vanilla model also has {100 * -int(sig['vanilla Transformer']['delta_params']) / n_dact:.0f}\\% fewer parameters",
-        "ablation: lexical": f"(removing it costs {cost('− lexical head')} points)",
+        "ablation: vanilla + lexical head (validation)": f"gives {p1(vlex_v)}\\% on validation (a separate three-seed run), against {p1(van_v)}\\% for the vanilla model ({p1(ctrl_v)}\\% in a re-run in the same session)",
+        "ablation: vanilla + lexical head (recovered / left)": f"This recovers {recovered:.1f} of the {gap:.1f} points and leaves {rest:.1f} points",
+        "objectives: neural parts": f"adding about {rest:.1f} points only in combination",
+        "table 2: vanilla + lexical head row": f"vanilla + lexical head$^{{\\dagger}}$ & $-${rest:.1f} & -- & $-${vlex_params_k}k",
+        "table 2 caption: vanilla + lexical head": f"a separate three-seed run ({p1(vlex_v)}\\%, seed std {100 * float(vl['vanilla_plus_lexical']['val_std']):.1f})",
         "ablation: pointwise": f"(independent binary scoring: {cost('pointwise objective')})",
         "ablation: tags": f"The difference tags help on the evaluation split only ({cost('− difference tags')})",
         "ablation: cross": f"cross-solution attention (removing it gives {delta('− cross-solution attention', 'val acc', sign=True)} / $-${delta('− cross-solution attention', 'test acc')})",
         "ablation: mean pooling": f"attention pooling ({delta('mean pooling', 'test acc', sign=True)} on the evaluation split with mean pooling)",
         "ablation: MLM warm-up": f"the MLM warm-up ({delta('− MLM warm-up', 'val acc', sign=True)} / $-${delta('− MLM warm-up', 'test acc')})",
         "errors: agreement": f"agree on only {p1(eo[B1]['agreement'])}\\% of the evaluation items",
-        "conclusion: vanilla": f"the clearest improvement ({cost('vanilla Transformer')} points over a vanilla Transformer)",
+        "conclusion: vanilla": f"the clearest improvement ({delta('vanilla Transformer', 'val acc')} points over a vanilla Transformer on validation)",
+        "conclusion: lexical share": f"but {two_thirds} ({recovered:.1f} points) comes from the lexical component alone",
         "errors: only DACT": f"alone solves {p1(eo[B1]['only DACT'])}\\% ({an['items_only_dact_solves_vs_tfidf']} items)",
         "errors: only TF-IDF / oracle": f"TF-IDF alone {p1(eo[B1]['only other'])}\\%, giving an oracle accuracy of {p1(eo[B1]['oracle'])}\\%",
         "errors: oracle vs RoBERTa": f"the oracle accuracy rises to {p1(eo[b3]['oracle'])}\\%",

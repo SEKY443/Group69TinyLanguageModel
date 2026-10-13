@@ -1,0 +1,3 @@
+arm,seed42,seed43,seed44,val_mean,val_std,n_params
+vanilla_plus_lexical,0.6005,0.6030,0.5974,0.6003,0.0028,1778372
+vanilla_control,0.5806,0.5769,0.5645,0.5740,0.0084,1516228
