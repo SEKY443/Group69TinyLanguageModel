@@ -1,14 +1,14 @@
 {
   "group": "73",
-  "built": "2026-10-13 20:39:59 W. Australia Standard Time",
-  "source_commit": "46756f1f91c04beffe8bfdc5a9d138c715b324bf",
-  "branch": "report/diagnostic-reframe",
+  "built": "2026-10-13 20:49:02 W. Australia Standard Time",
+  "source_commit": "ee46f49f54c8ebd16cd712642cc373326481c788",
+  "branch": "report/contributions-update",
   "working_tree_clean_for_sources": true,
   "files": {
     "CITS4012_73.pdf": {
-      "sha256": "993d4ce8df5da3468d1ddf5bbbf8e17cb69d60a2868a60e55b06ee3d28f751df",
+      "sha256": "a650154cd2da84a688ca1b0b6d61651dffee00c1f0ba44f726bd54c707247f15",
       "source": "report\\CITS4012_73.pdf",
-      "bytes": 345365
+      "bytes": 345578
     },
     "CITS4012_73.ipynb": {
       "sha256": "4161ff0ff92f37aa8916ffc4be1c4cc4a0a87c5d21d28ec93cb631299c174ecd",
@@ -16,7 +16,7 @@
       "bytes": 1537777
     }
   },
-  "report_source_sha256": "6dafe1cd05b90a35c9aa746c6aef2ceebe29864c58bf9bba9ab72711a42ae2f5",
+  "report_source_sha256": "fb6a84738250104b8903995a0f2f8dbac90c91c836cf92b3ab64879baa774c65",
   "notebook": {
     "cells": 59,
     "code_cells": 33,
