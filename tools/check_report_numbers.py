@@ -62,6 +62,9 @@ DOCUMENTED = {
     "411": "parameters removed in the vanilla ablation, in thousands (411,264; strict Table 2 check)",
     "0.4": "parameters removed with the tag embedding, in thousands (384; strict Table 2 check)",
     "21": "vanilla parameter reduction in percent (411,264 / 1,927,492; strict prose claim)",
+    "1.26": "full-model validation mean minus the vanilla + lexical head mean (final_results.csv and experiments/vanilla_lexical_ablation/results.csv; strict prose claim)",
+    "2.48": "vanilla + lexical head validation mean minus the vanilla mean (same two files; strict prose claim)",
+    "1042": "seed of the pre-declared restart of the abandoned RoBERTa seed 42 (outputs/logs/B3_roberta-base_seed1042.jsonl)",
 }
 
 
@@ -102,7 +105,7 @@ def matches(text, vals):
 
 TABLE1 = {"B0 majority": "B0 majority", "B1 TF-IDF + LR": "B1 TF-IDF + LR",
           "B2 BiLSTM + attention": "B2 BiLSTM + attention", "(main model)": "DACT (full)",
-          "B3 RoBERTa-base, fine-tuned": "B3 RoBERTa-base (fine-tuned)", "B4 Qwen2.5-1.5B, zero-shot": "B4 Qwen2.5-1.5B (zero-shot)"}
+          "B3 RoBERTa-base": "B3 RoBERTa-base (fine-tuned)", "B4 Qwen2.5-1.5B, zero-shot": "B4 Qwen2.5-1.5B (zero-shot)"}
 ABLATION_NAMES = {"abl0": "− difference tags", "abl1": "− cross-solution attention", "abl2": "− diff bias in pooling",
                   "abl3": "mean pooling", "abl4": "pointwise objective", "abl5": "vanilla Transformer",
                   "abl6": "− lexical head", "abl7": "− MLM warm-up", "abl8": "diff-bias prior 0"}
@@ -111,6 +114,16 @@ TABLE2 = {"difference tags": "− difference tags", "lexical head": "− lexical
           "cross-solution attention": "− cross-solution attention", "tag bias in pooling": "− diff bias in pooling",
           "tag bias initialised at 0": "diff-bias prior 0", "$-$ MLM warm-up": "− MLM warm-up",
           "vanilla": "vanilla Transformer"}
+
+
+def _b3_seed_vals():
+    """Best validation accuracy (a fraction) of every B3 seed that ran all its epochs (event 'end'); sorted ascending."""
+    vals = []
+    for f in glob.glob(os.path.join(ROOT, "outputs", "logs", "B3_*.jsonl")):
+        recs = [json.loads(l) for l in open(f, encoding="utf-8") if l.strip()]
+        if any(r.get("event") == "end" for r in recs):
+            vals.append(max(r["val_acc"] for r in recs if r.get("event") == "epoch"))
+    return sorted(vals)
 
 
 def strict_tables(s):
@@ -123,8 +136,13 @@ def strict_tables(s):
         line = next(l for l in rows if label in l)
         cells = re.findall(r"\d+\.\d", line.split("&", 1)[1])        # value cells only, not the model name
         r = fr[model]
-        expect = [pct(r["val acc"])] + ([pct(r["val std"])] if r["val std"] else []) + \
-                 [pct(r["test acc"])] + ([pct(r["test std"])] if r["test std"] else [])
+        if label == "B3 RoBERTa-base":
+            # one of the three seeds trained: the row shows it alone, with its evaluation CI; the failures are in the footnote
+            ci = [float(x) for x in re.findall(r"[\d.]+", r["test 95% CI"])]
+            expect = [pct(_b3_seed_vals()[-1]), f"{100 * ci[0]:.1f}", f"{100 * ci[1]:.1f}"]
+        else:
+            expect = [pct(r["val acc"])] + ([pct(r["val std"])] if r["val std"] else []) + \
+                     [pct(r["test acc"])] + ([pct(r["test std"])] if r["test std"] else [])
         checked += len(expect)
         if cells != expect:
             errors.append(f"Table 1 '{label}': report {cells} vs results {expect}")
@@ -233,6 +251,8 @@ def prose_claims():
     vlex_v, ctrl_v = float(vl["vanilla_plus_lexical"]["val_mean"]), float(vl["vanilla_control"]["val_mean"])
     recovered, gap, rest = 100 * (vlex_v - van_v), 100 * (full_v - van_v), 100 * (full_v - vlex_v)
     two_thirds = "about two thirds of it" if 0.6 <= recovered / gap <= 0.72 else "SHARE IS NOT TWO THIRDS"
+    two_thirds_short = "about two thirds" if 0.6 <= recovered / gap <= 0.72 else "SHARE IS NOT TWO THIRDS"
+    b3_vals = _b3_seed_vals()          # ascending: the two seeds that did not train, then the one that did
     vlex_params_k = round((n_dact - int(vl["vanilla_plus_lexical"]["n_params"])) / 1000)
     return {
         "abstract: DACT val": f"among the models trained from scratch ({v(D)}\\%)",
@@ -254,7 +274,8 @@ def prose_claims():
         "pretraining gap (test)": f"the zero-shot language model (about {ratio_qwen:.0f} times more parameters) is {delta('B4 Qwen2.5-1.5B (zero-shot)', 'test acc')} points above",
         "RoBERTa gap (validation re-run)": f"RoBERTa ({ratio_roberta} times more parameters) is about {roberta_gap:.0f} points above on validation when its fine-tuning succeeds ({rerun_mean:.1f} vs.\\ {v(D)}\\%)",
         "grid: top-3 spread and seed std": f"lie within {hp_top3[0] * 100 - hp_top3[2] * 100:.2f} points, less than one seed std of the final model ({100 * float(fr[D]['val std']):.1f})",
-        "B3 working seed (caption)": f"the successful seed reaches {p1(max(b3_seeds.values()))}\\% on validation (evaluation 95\\% CI {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f})",
+        "B3 seeds (caption)": f"Seed 1042 (the pre-declared restart of the abandoned seed 42) trained: {p1(b3_vals[-1])}\\% validation, evaluation 95\\% CI {100 * b3_ci[0]:.1f}--{100 * b3_ci[1]:.1f}. Seeds 43 and 44 stayed at chance-level loss ({p1(b3_vals[0])}\\% and {p1(b3_vals[1])}\\%) and are reported, not dropped (mean of all three: ${100 * float(fr[b3]['val acc']):.1f} \\pm {100 * float(fr[b3]['val std']):.1f}$)",
+        "B3 instability (section 4.1)": f"only one of three seeds trained ({p1(b3_vals[-1])}\\% validation; {p1(b3_vals[0])}\\% and {p1(b3_vals[1])}\\% for the others)",
         "B3 A100 reference": f"An earlier A100 run gave {p1(run4[b3]['val acc'])} / {p1(run4[b3]['test acc'])}",
         "B3 re-run seeds (caption)": "all three seeds trained successfully ({:.1f} / {:.1f} / {:.1f})".format(*rerun),
         "B3 re-run table row": f"validation re-run$^\\ddagger$ & {rerun_mean:.1f}\\,$\\pm$\\,{rerun_std:.1f} & --",
@@ -262,8 +283,9 @@ def prose_claims():
         "ablation: vanilla, consistency": "every vanilla seed is below every full-model seed on both splits" if vanilla_below_on_both else "CONSISTENCY CLAIM FALSE",
         "ablation: vanilla, A100 run": f"the A100 run showed {abs(run4_vanilla[0]):.1f} / {abs(run4_vanilla[1]):.1f}",
         "ablation: vanilla + lexical head (validation)": f"gives {p1(vlex_v)}\\% on validation (a separate three-seed run), against {p1(van_v)}\\% for the vanilla model ({p1(ctrl_v)}\\% in a re-run in the same session)",
-        "ablation: vanilla + lexical head (recovered / left)": f"This recovers {recovered:.1f} of the {gap:.1f} points and leaves {rest:.1f} points",
-        "objectives: neural parts": f"adding about {rest:.1f} points only in combination",
+        "ablation: vanilla + lexical head (recovered / left)": f"This recovers {recovered:.2f} of the {gap:.2f} points and leaves {rest:.2f} (${recovered:.2f} + {rest:.2f} = {gap:.2f}$; Table~\\ref{{tab:abl}} rounds to 0.1)",
+        "objectives: lexical share": f"the lexical component accounts for {two_thirds_short} of the gain over a plain Transformer ({recovered:.2f} of {gap:.2f} points on validation) and the neural parts add {rest:.2f} only in combination",
+        "abstract: lexical share": f"a lexical head alone recovers {two_thirds_short} of the validation gap between a vanilla Transformer and the full model ({recovered:.2f} of {gap:.2f} points), and the neural difference-aware components together add the rest ({rest:.2f})",
         "table 2: vanilla + lexical head row": f"vanilla + lexical head$^{{\\dagger}}$ & $-${rest:.1f} & -- & $-${vlex_params_k}k",
         "table 2 caption: vanilla + lexical head": f"a separate three-seed run ({p1(vlex_v)}\\%, seed std {100 * float(vl['vanilla_plus_lexical']['val_std']):.1f})",
         "ablation: pointwise": f"(independent binary scoring: {cost('pointwise objective')})",
@@ -272,8 +294,7 @@ def prose_claims():
         "ablation: mean pooling": f"attention pooling ({delta('mean pooling', 'test acc', sign=True)} on the evaluation split with mean pooling)",
         "ablation: MLM warm-up": f"the MLM warm-up ({delta('− MLM warm-up', 'val acc', sign=True)} / $-${delta('− MLM warm-up', 'test acc')})",
         "errors: agreement": f"agree on only {p1(eo[B1]['agreement'])}\\% of the evaluation items",
-        "conclusion: vanilla": f"the clearest improvement ({delta('vanilla Transformer', 'val acc')} points over a vanilla Transformer on validation)",
-        "conclusion: lexical share": f"but {two_thirds} ({recovered:.1f} points) comes from the lexical component alone",
+        "conclusion: lexical share": f"of the {gap:.2f} validation points above a vanilla Transformer, {recovered:.2f} ({two_thirds_short}) come from the lexical component alone and {rest:.2f} from the neural difference-aware components together",
         "errors: only DACT": f"alone solves {p1(eo[B1]['only DACT'])}\\% ({an['items_only_dact_solves_vs_tfidf']} items)",
         "errors: only TF-IDF / oracle": f"TF-IDF alone {p1(eo[B1]['only other'])}\\%, giving an oracle accuracy of {p1(eo[B1]['oracle'])}\\%",
         "errors: oracle vs RoBERTa": f"the oracle accuracy rises to {p1(eo[b3]['oracle'])}\\%",
@@ -287,7 +308,6 @@ def prose_claims():
         "case: mindful (1300), caption": f"a correct prediction (p = {case['1300']:.2f} for option 1, the gold answer)",
         "case: lotion bars (747), caption": f"an incorrect prediction (p = {case['747']:.2f} for option 1; option 2 is gold)",
         "case: lotion bars (747), text": f"the model prefers this option with p = {case['747']:.2f}",
-        "case: small cheap home (1516)": f"the most uncertain item (p = {case['1516']:.2f}; option 1 is gold)",
         "case: exotic trip (841)": f"(\\emph{{an exotic trip}}, p = {case['841']:.2f})",
         "history: goal matching": f"it lost {100 * (float(goal['control_main_model']['val_mean']) - float(goal['goal_matching']['val_mean'])):.1f} points on validation",
         "history: run 4 vs final spread": f"moved by up to {moved:.1f} points",
