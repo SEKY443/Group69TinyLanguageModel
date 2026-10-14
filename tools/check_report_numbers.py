@@ -105,7 +105,8 @@ def matches(text, vals):
 
 TABLE1 = {"B0 majority": "B0 majority", "B1 TF-IDF + LR": "B1 TF-IDF + LR",
           "B2 BiLSTM + attention": "B2 BiLSTM + attention", "(main model)": "DACT (full)",
-          "B3 RoBERTa-base": "B3 RoBERTa-base (fine-tuned)", "B4 Qwen2.5-1.5B, zero-shot": "B4 Qwen2.5-1.5B (zero-shot)"}
+          "B3 RoBERTa-base, three seeds": "B3 RoBERTa-base (fine-tuned)", "seed 1042 only": "B3 RoBERTa-base (fine-tuned)",
+          "B4 Qwen2.5-1.5B, zero-shot": "B4 Qwen2.5-1.5B (zero-shot)"}
 ABLATION_NAMES = {"abl0": "− difference tags", "abl1": "− cross-solution attention", "abl2": "− diff bias in pooling",
                   "abl3": "mean pooling", "abl4": "pointwise objective", "abl5": "vanilla Transformer",
                   "abl6": "− lexical head", "abl7": "− MLM warm-up", "abl8": "diff-bias prior 0"}
@@ -136,8 +137,8 @@ def strict_tables(s):
         line = next(l for l in rows if label in l)
         cells = re.findall(r"\d+\.\d", line.split("&", 1)[1])        # value cells only, not the model name
         r = fr[model]
-        if label == "B3 RoBERTa-base":
-            # one of the three seeds trained: the row shows it alone, with its evaluation CI; the failures are in the footnote
+        if label == "seed 1042 only":
+            # the one seed that trained, with its evaluation CI (the row above is the three-seed mean, like the other models)
             ci = [float(x) for x in re.findall(r"[\d.]+", r["test 95% CI"])]
             expect = [pct(_b3_seed_vals()[-1]), f"{100 * ci[0]:.1f}", f"{100 * ci[1]:.1f}"]
         else:
@@ -253,9 +254,25 @@ def prose_claims():
     two_thirds = "about two thirds of it" if 0.6 <= recovered / gap <= 0.72 else "SHARE IS NOT TWO THIRDS"
     two_thirds_short = "about two thirds" if 0.6 <= recovered / gap <= 0.72 else "SHARE IS NOT TWO THIRDS"
     b3_vals = _b3_seed_vals()          # ascending: the two seeds that did not train, then the one that did
+    # "best from scratch" must not be claimed while ablated variants score higher: the wording is derived from the results
+    variants = [fr[m] for m in ABLATION_NAMES.values()]
+    full_val, full_test = float(fr[D]["val acc"]), float(fr[D]["test acc"])
+    n_higher = sum(float(r["val acc"]) >= full_val for r in variants)
+    several = "several" if n_higher >= 2 else "NOT SEVERAL (fewer than two variants reach the full model)"
+    vmax, tmax = (f"{100 * max(float(r[c]) for r in variants):.1f}" for c in ("val acc", "test acc"))
+    beats_baselines = all(float(fr[D][c]) > float(fr[m][c]) for m in (B1, B2) for c in ("val acc", "test acc"))
+    more_accurate = ("is more accurate than the two other baselines trained from scratch, the BiLSTM and TF-IDF, on both splits"
+                     if beats_baselines else "DACT DOES NOT BEAT BOTH BASELINES ON BOTH SPLITS")
     vlex_params_k = round((n_dact - int(vl["vanilla_plus_lexical"]["n_params"])) / 1000)
     return {
-        "abstract: DACT val": f"among the models trained from scratch ({v(D)}\\%)",
+        "abstract: DACT val": f"reaches {v(D)}\\% validation accuracy, above the BiLSTM and TF-IDF baselines ({v(B2)} and {v(B1)}\\%), although {several} ablated variants score as high or higher (up to {vmax}\\%)",
+        "intro: variants": f"above the two baselines trained from scratch on validation ({several} ablated variants score as high or higher)",
+        "results: not the best variant": f"\\dact{{}} {more_accurate} (Table~\\ref{{tab:main}}; pairs of numbers are validation / evaluation), but it is not the best variant: {several} ablated variants match or exceed it within the seed spread (validation up to {vmax}\\%, evaluation up to {tmax}\\%; Table~\\ref{{tab:abl}})",
+        "conclusion: baselines": f"It scored above the BiLSTM and TF-IDF baselines on validation ({several} ablated variants scored as high or higher)",
+        "caveat: decomposition": "The split assumes that the two parts do not interact and compares runs from different sessions with different parameter counts, so it describes this ordering, not the cause of the gain.",
+        "caveat: equivalence test": "We verified, deterministically on CPU for \\dact{} and the BiLSTM, that later code changes (diagnostics, data loading, storage paths) do not alter the trained weights or predictions; the pretrained baselines and the GPU run were not re-checked this way.",
+        "caveat: attention": "The focus is therefore not just the initial bias, which fits its small effect. It is not separated from the tag-informed token representations that feed the pooling, though: the tags stay decodable at every layer.",
+        "caveat: world knowledge": "does not contain (we did not test this directly).",
         "abstract: DACT vs TF-IDF test, p": f"({t(D)} vs.\\ {t(B1)}\\%, McNemar $p{{=}}{pval(B1):.2f}$)",
         "duplicate: re-scoring change": f"changes accuracy by about {abs(float(rs['dact_full']['difference_points'])):.2f} points",
         "duplicate: DACT": f"{100 * float(rs['dact_full']['test_acc_all_1838']):.2f}\\,$\\to$\\,{100 * float(rs['dact_full']['test_acc_without_duplicate_1837']):.2f}\\%",
@@ -285,7 +302,7 @@ def prose_claims():
         "ablation: vanilla + lexical head (validation)": f"gives {p1(vlex_v)}\\% on validation (a separate three-seed run), against {p1(van_v)}\\% for the vanilla model ({p1(ctrl_v)}\\% in a re-run in the same session)",
         "ablation: vanilla + lexical head (recovered / left)": f"This recovers {recovered:.2f} of the {gap:.2f} points and leaves {rest:.2f} (${recovered:.2f} + {rest:.2f} = {gap:.2f}$; Table~\\ref{{tab:abl}} rounds to 0.1)",
         "objectives: lexical share": f"the lexical component accounts for {two_thirds_short} of the gain over a plain Transformer ({recovered:.2f} of {gap:.2f} points on validation) and the neural parts add {rest:.2f} only in combination",
-        "abstract: lexical share": f"a lexical head alone recovers {two_thirds_short} of the validation gap between a vanilla Transformer and the full model ({recovered:.2f} of {gap:.2f} points), and the neural difference-aware components together add the rest ({rest:.2f})",
+        "abstract: lexical share": f"recovers {two_thirds_short} of the validation gap to the full model ({recovered:.2f} of {gap:.2f} points, from a separate run and assuming no interaction between components), and the neural difference-aware components together account for the remaining {rest:.2f}",
         "table 2: vanilla + lexical head row": f"vanilla + lexical head$^{{\\dagger}}$ & $-${rest:.1f} & -- & $-${vlex_params_k}k",
         "table 2 caption: vanilla + lexical head": f"a separate three-seed run ({p1(vlex_v)}\\%, seed std {100 * float(vl['vanilla_plus_lexical']['val_std']):.1f})",
         "ablation: pointwise": f"(independent binary scoring: {cost('pointwise objective')})",
