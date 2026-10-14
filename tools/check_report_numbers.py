@@ -320,7 +320,7 @@ def prose_claims():
         "attention: bias 0": f"set to 0 still reaches {p1(an['attention_mass_trained_tag_bias_0'])}\\%",
         "attention: bias moved": f"(1.0\\,$\\to$\\,{an['tag_bias_other_shared_diff'].split()[-1]})",
         "entropy, p": f"entropy is {float(pent[0]):.2f} (1 = uniform), for correct and wrong predictions alike ($p{{=}}{float(pent[3]):.2f}$)",
-        "probe: vanilla embedding / encoder": f"reaches {p1(probe['embedding']['vanilla (no tags)'])}\\% balanced accuracy on the vanilla Transformer's embeddings and only {p1(probe['encoder 2']['vanilla (no tags)'])}\\%",
+        "probe: vanilla embedding / encoder": f"reaches {p1(probe['embedding']['vanilla (no tags)'])}\\% balanced accuracy on the vanilla Transformer's embeddings and rises only to {p1(probe['encoder 2']['vanilla (no tags)'])}\\%",
         "attention: wrong vs correct": f"({p1(an['attention_mass_wrong_predictions'])} vs.\\ {p1(an['attention_mass_correct_predictions'])}\\%, Mann--Whitney $p{{=}}{p_wrong:.2f}$)" if p_wrong >= 0.001 else "p < 0.001",
         "case: mindful (1300), caption": f"a correct prediction (p = {case['1300']:.2f} for option 1, the gold answer)",
         "case: lotion bars (747), caption": f"an incorrect prediction (p = {case['747']:.2f} for option 1; option 2 is gold)",
