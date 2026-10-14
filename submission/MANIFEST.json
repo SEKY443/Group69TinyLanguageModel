@@ -1,22 +1,22 @@
 {
   "group": "73",
-  "built": "2026-10-14 13:55:16 CST",
-  "source_commit": "8bda0e10b8f2e13d7d76e14fe153558b590c542d",
+  "built": "2026-10-14 22:24:47 CST",
+  "source_commit": "34871630de37b69a9988577d57915b89fb362ea5",
   "branch": "fix/report-claims",
   "working_tree_clean_for_sources": true,
   "files": {
     "CITS4012_73.pdf": {
-      "sha256": "a15beb62c294f15881da35a11dbcdc6827f94be89c5636d277acca28ca27c9be",
+      "sha256": "b0c5af7b66f47d62c35462e232b0a75496b40fc873ddcc0efb8e2b281ebd11a2",
       "source": "report/CITS4012_73.pdf",
-      "bytes": 294710
+      "bytes": 294777
     },
     "CITS4012_73.ipynb": {
-      "sha256": "e5a94af9ac01cf780b0c3aaf2169fccc2ecab9a512f4f763daa12eb857752eec",
+      "sha256": "bce7dc8ea721fe9a441a6e5c554334eb57545678f554f67c08c8d1a96c99d867",
       "source": "CITS4012_73.ipynb",
-      "bytes": 1542623
+      "bytes": 1542884
     }
   },
-  "report_source_sha256": "c4d7547533e3057d7d1af2b8f5e9e29cfb43d6730e52e5489aa9bdf1b923f45a",
+  "report_source_sha256": "2981eaef1d2923e5f0d5fca02de2d2400c3fae1376ae3bb1bb62d1ed87ffb871",
   "notebook": {
     "cells": 59,
     "code_cells": 33,
